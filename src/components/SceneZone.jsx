@@ -6,7 +6,6 @@ import * as THREE from 'three';
 export function SceneZone(props)
 {
     const sceneManager = props.sceneManager;
-    const controlsRef = props.controlsRef;
     const sceneData = props.object;
 
     const handleInteraction = (event) =>
@@ -29,12 +28,7 @@ export function SceneZone(props)
 
             case "Go To Scene Zone":
                 const sceneZone = sceneManager.getSceneZone(data);
-                const position = sceneZone.cameraAnchor.position;
-                let target = new THREE.Vector3();
-                sceneZone.cameraTarget.getCenter(target);
-
-                controlsRef.current?.setLookAt(...position, ...target, true);
-                controlsRef.current?.fitToBox(sceneZone.cameraTarget, true);
+                props.goToSceneZone(sceneZone);
                 break;
 
             default:
