@@ -1,3 +1,5 @@
+import { Bounds, meshBounds } from "@react-three/drei";
+import { Box3, Vector3 } from "three";
 
 
 export class SceneManager
@@ -25,7 +27,7 @@ export class SceneManager
                 {
                     const sceneZone = this.getSceneZone(userData.zone)
                     this.addObject(sceneZone, node);
-                    // this.scene.remove(node);
+                    this.scene.remove(node);
                 }
             });
         });
@@ -56,6 +58,7 @@ export class SceneManager
 
             index: -1,
             cameraAnchor: {},
+            cameraTarget: new Box3(),
 
             objects: {
                 interactables: [],
@@ -70,7 +73,8 @@ export class SceneManager
 
     addObject(sceneZone, object)
     {
-        console.log(object.userData);
+        sceneZone.cameraTarget.expandByObject(object);
+
         switch (object.userData.type)
         {
             case 'background':
