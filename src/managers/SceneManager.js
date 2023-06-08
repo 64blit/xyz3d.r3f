@@ -25,12 +25,12 @@ export class SceneManager
                 {
                     const sceneZone = this.getSceneZone(userData.zone)
                     this.addObject(sceneZone, node);
-                    this.scene.remove(node);
+                    // this.scene.remove(node);
                 }
             });
         });
-        this.sceneZones.sort((a, b) => a.index - b.index);
 
+        this.sceneZones.sort((a, b) => a.index - b.index);
     }
 
 
@@ -70,6 +70,7 @@ export class SceneManager
 
     addObject(sceneZone, object)
     {
+        console.log(object.userData);
         switch (object.userData.type)
         {
             case 'background':
@@ -102,6 +103,19 @@ export class SceneManager
 
     addInteractable(sceneZone, object)
     {
+
+        object.children.forEach((child) =>
+        {
+            child.traverse((node) =>
+            {
+                node.userData.name = node.name;
+                node.userData.type = object.userData.type;
+                node.userData.interactableType = object.userData.interactableType;
+                node.userData.interactableData = object.userData.interactableData;
+            })
+
+        });
+
         sceneZone.objects.interactables.push(object);
     }
 

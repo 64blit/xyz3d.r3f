@@ -32,6 +32,7 @@ export function SceneXyz3D(props)
 
             <Suspense fallback={<ProgressLoader />}>
                 <primitive object={scene}>
+
                     {sceneManager?.getSceneZones().map((object, key) => (
 
                         <SceneZone
@@ -41,6 +42,7 @@ export function SceneXyz3D(props)
                             key={key}
                         />
                     ))}
+
                 </primitive>
 
                 {props.children}

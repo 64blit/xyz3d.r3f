@@ -8,10 +8,9 @@ export function SceneZone(props)
     const controlsRef = props.controlsRef;
     const sceneData = props.object;
 
-
     const handleInteraction = (event) =>
     {
-
+        console.log("handleInteraction", event.object.userData);
     }
 
     return (

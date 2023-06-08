@@ -7,7 +7,7 @@ import { HtmlOverlay } from './HtmlOverlay.jsx';
 
 export function Xyz3D()
 {
-    const [ displayPopup, setDisplayPopup ] = useState(true);
+    const [ displayPopup, setDisplayPopup ] = useState(false);
     const [ popupContent, setPopupContent ] = useState(null);
 
     return (
