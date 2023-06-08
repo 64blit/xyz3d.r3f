@@ -1,6 +1,6 @@
 
 import React, { useRef, useState, useEffect, Suspense, forwardRef } from 'react';
-import { useGLTF } from "@react-three/drei";
+import { useAnimations, useGLTF } from "@react-three/drei";
 
 import { SceneManager } from '../managers/SceneManager.js';
 import { ProgressLoader } from './ProgressLoader.jsx';
@@ -15,9 +15,15 @@ export function SceneXyz3D(props)
 
     const controlsRef = useRef(null);
 
-    const gltf = useGLTF(props.path);
-    const scene = gltf.scene;
+    const { scene, animations } = useGLTF(props.path);
 
+    const { actions } = useAnimations(animations);
+
+    // play animation by name
+    const playAnimation = (name) =>
+    {
+        actions[ name ].play();
+    }
 
     const goToSceneZone = (sceneZone) =>
     {
@@ -54,6 +60,7 @@ export function SceneXyz3D(props)
                             onDisplayPopup={props.onDisplayPopup}
                             setPopupContent={props.setPopupContent}
                             goToSceneZone={goToSceneZone}
+                            playAnimation={playAnimation}
 
                             object={object}
                             key={key}

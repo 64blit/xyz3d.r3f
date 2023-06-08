@@ -8,12 +8,23 @@ export function SceneZone(props)
     const sceneManager = props.sceneManager;
     const sceneData = props.object;
 
+    const [ hovered, setHovered ] = useState(false);
+
+    useEffect(() =>
+    {
+        document.body.style.cursor = hovered ? "pointer" : "auto";
+
+    }, [ hovered ])
+
+
     const handleInteraction = (event) =>
     {
         const type = event.object.userData.interactableType;
         const data = event.object.userData.interactableData;
 
         console.log("handleInteraction", event.object.userData);
+        playSelectAnimation(event.object);
+
         switch (type)
         {
 
@@ -38,11 +49,47 @@ export function SceneZone(props)
         }
     }
 
+    // on hover callback for playing any hover animations found inside the userData varaiable under hoverAnimations
+    const handleHoverOver = (event) =>
+    {
+        setHovered(true);
+        const onHoverAnimations = event.object.userData.onHoverAnimations;
+        if (onHoverAnimations != null)
+        {
+            onHoverAnimations.forEach((actionName) =>
+            {
+                props.playAnimation(actionName);
+            });
+        }
+    }
+    const handleHoverOff = (event) =>
+    {
+        setHovered(false);
+    }
+
+    const playSelectAnimation = (object) =>
+    {
+        const onClickAnimations = object.userData.onClickAnimations;
+        if (onClickAnimations != null)
+        {
+            onClickAnimations.forEach((actionName) =>
+            {
+                props.playAnimation(actionName);
+            });
+        }
+    }
+
+
     return (
         <>
             {sceneData.objects.interactables.map((object, key) =>
             {
-                return <primitive object={object} key={key} onClick={handleInteraction} />;
+                return <primitive
+                    object={object}
+                    key={key}
+                    onClick={handleInteraction}
+                    onPointerOver={handleHoverOver}
+                    onPointerOut={handleHoverOff} />;
             })}
 
             {sceneData.objects.backgrounds.map((object, key) =>

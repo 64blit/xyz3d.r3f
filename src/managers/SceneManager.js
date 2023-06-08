@@ -63,6 +63,10 @@ export class SceneManager
             objects: {
                 interactables: [],
                 backgrounds: []
+            },
+
+            animations: {
+                looping: [],
             }
         };
 
