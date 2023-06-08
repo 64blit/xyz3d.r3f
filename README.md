@@ -1,30 +1,25 @@
-# React Three Fiber + Vite Starter
+#
 
-_A simple React Three Fiber + Vite starter with an import-ready CodeSandbox config._
+<h1 align="center">
+ 🌟 xyz3d.r3f 🌟
+</h1>
 
-![Preview](/public/preview.gif)
+<p align="center">
+  <a href="https://www.npmjs.com/package/xyz3d">
+    <img src="https://img.shields.io/npm/v/xyz3d.svg" alt="Version" />
+  </a>
+  <a href="https://www.npmjs.com/package/xyz3d">
+    <img src="https://badgen.net/packagephobia/publish/xyz3d" alt="Minzipped" />
+  </a>
+  <a href="https://www.npmjs.com/package/xyz3d">
+    <img src="https://img.shields.io/npm/dt/xyz3d.svg" alt="Downloads" />
+  </a>
+  <a href="https://www.npmjs.com/package/xyz3d">
+    <img src="https://badgen.net/npm/license/xyz3d" alt="License" />
+  </a>
+</p>
 
-### Resources:
+#
 
-- [React Three Fiber](https://docs.pmnd.rs/react-three-fiber/): Three.js Renderer
-- [Drei](https://github.com/pmndrs/drei): React Three Fiber Helpers
-- [Three.js](https://threejs.org/docs/index.html#manual/en/introduction/Creating-a-scene): 3D Engine
-- [Vite](https://vitejs.dev/guide/): Static Web Server
-- [CodeSandbox](https://codesandbox.io/docs/configuration): Online Prototyping Container (optional)
-
-### Installation
-
-```
-npm install
-```
-
-### Scripts
-
-```
-npm run dev
-npm run build
-npm run preview
-npm run sandbox
-```
-### CodeSandbox
-To create a sandbox from this starter, [import your repository URL](https://codesandbox.io/dashboard/repositories) (this repo works too), or [fork this template](https://codesandbox.io/s/react-three-fiber-vite-starter-r1tgld).
+A react version of [xyz3d.js](https://www.npmjs.com/package/xyz3d).
+One-click websites from inside blender is on it's way :-)
