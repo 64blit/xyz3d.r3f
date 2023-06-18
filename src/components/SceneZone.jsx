@@ -1,11 +1,9 @@
-import { Bounds } from '@react-three/drei';
+import { Scroll, ScrollControls, useScroll } from '@react-three/drei';
 import React, { useRef, useState, useEffect } from 'react';
-import { render } from 'react-dom';
 import * as THREE from 'three';
 
 export function SceneZone(props)
 {
-    const sceneManager = props.sceneManager;
     const sceneData = props.object;
 
     const [ hovered, setHovered ] = useState(false);
@@ -22,7 +20,6 @@ export function SceneZone(props)
         const type = event.object.userData.interactableType;
         const data = event.object.userData.interactableData;
 
-        console.log("handleInteraction", event.object.userData);
         playSelectAnimation(event.object);
 
         switch (type)
@@ -38,8 +35,7 @@ export function SceneZone(props)
                 break;
 
             case "Go To Scene Zone":
-                const sceneZone = sceneManager.getSceneZone(data);
-                props.goToSceneZone(sceneZone);
+                props.goToSceneZone(data);
                 break;
 
             default:
@@ -96,9 +92,7 @@ export function SceneZone(props)
             {
                 return <primitive object={object} key={key} />;
             })}
-
-
-        </>
+        </ >
     );
 
 }

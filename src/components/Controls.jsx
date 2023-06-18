@@ -13,6 +13,8 @@ export function Controls(props)
     const gl = useThree((state) => state.gl);
     useFrame((state, delta) => ref.current.update(delta));
 
+
+
     return (
         <cameraControls ref={ref} args={[ camera, gl.domElement ]} {...props} />
     )

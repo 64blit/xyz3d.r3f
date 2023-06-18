@@ -11,7 +11,8 @@ export function Xyz3D()
     const [ popupContent, setPopupContent ] = useState(null);
 
     return (
-        <ErrorBoundary>
+        <>
+            {/* <ErrorBoundary> */}
 
             <Canvas>
                 <ambientLight />
@@ -20,6 +21,7 @@ export function Xyz3D()
 
             {displayPopup && <HtmlOverlay content={popupContent} setDisplayPopup={setDisplayPopup} />}
 
-        </ErrorBoundary>
+            {/* </ErrorBoundary> */}
+        </>
     );
 }

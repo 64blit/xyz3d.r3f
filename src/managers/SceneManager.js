@@ -59,6 +59,7 @@ export class SceneManager
             index: -1,
             cameraAnchor: {},
             cameraTarget: new Box3(),
+            cameraTargetPosition: new Vector3(),
 
             objects: {
                 interactables: [],
@@ -79,6 +80,10 @@ export class SceneManager
     {
         sceneZone.cameraTarget.expandByObject(object);
 
+        const target = new Vector3();
+        sceneZone.cameraTarget.getCenter(target);
+        sceneZone.cameraTargetPosition = target;
+
         switch (object.userData.type)
         {
             case 'background':
@@ -95,6 +100,7 @@ export class SceneManager
         }
 
     }
+
     addBackground(sceneZone, object)
     {
         sceneZone.objects.backgrounds.push(object);
