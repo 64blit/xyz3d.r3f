@@ -18,6 +18,7 @@ export function SceneXyz3D(props)
 {
     const [ sceneManager, setSceneManager ] = useState(null);
     const [ scroll, setScroll ] = useState(null);
+    const [ isBusy, setIsBusy ] = useState(false);
 
     const [ targetSceneZone, setTargetSceneZone ] = useState(1);
 
@@ -35,18 +36,28 @@ export function SceneXyz3D(props)
 
     const goToSceneZone = (name) =>
     {
+        if (scroll == null || camera == null || sceneManager == null) return;
+
+        setIsBusy(true);
+
         const sceneZone = sceneManager.getSceneZone(name);
+        const newScrollOffset = sceneZone.index / (sceneManager.sceneZones.length - 1);
+
+        const scrollTarget = scroll.el;
+        const scrollTop = (scrollTarget.scrollHeight - scrollTarget.clientHeight) * (newScrollOffset);
+        scrollTarget.scrollTo({ top: scrollTop });
 
         const position = sceneZone.cameraAnchor.position;
         const target = sceneZone.cameraTargetPosition;
 
         controlsRef.current?.setLookAt(...position, ...target, true);
-        controlsRef.current?.fitToBox(sceneZone.cameraTarget, true);
+
+        setIsBusy(false);
     }
 
     const scrollHandler = () =>
     {
-        if (scroll == null || camera == null || sceneManager == null) return;
+        if (isBusy || scroll == null || camera == null || sceneManager == null) return;
 
         const scaledScrollOffset = scroll.offset * (sceneManager.sceneZones.length - 1);
 
@@ -55,15 +66,15 @@ export function SceneXyz3D(props)
         const currentZone = sceneManager.sceneZones[ currentZoneIndex ];
         const nextZone = sceneManager.sceneZones[ nextZoneIndex ];
 
-        const t = scaledScrollOffset % 1; // Interpolation factor, between 0 and 1 (0 for currentZone, 1 for nextZone)
+        const percent = scaledScrollOffset % 1; // Interpolation factor, between 0 and 1 (0 for currentZone, 1 for nextZone)
 
         controlsRef.current?.lerpLookAt(
             ...currentZone.cameraAnchor.position,
             ...currentZone.cameraTargetPosition,
             ...nextZone.cameraAnchor.position,
             ...nextZone.cameraTargetPosition,
-            t,
-            true
+            percent,
+            false
         );
     };
 
