@@ -11,7 +11,6 @@ export function SceneZone(props)
     useEffect(() =>
     {
         document.body.style.cursor = hovered ? "pointer" : "auto";
-
     }, [ hovered ])
 
 
