@@ -11,12 +11,13 @@ export function SceneZone(props)
     useEffect(() =>
     {
         document.body.style.cursor = hovered ? "pointer" : "auto";
-
     }, [ hovered ])
 
 
     const handleInteraction = (event) =>
     {
+        event.stopPropagation();
+
         const type = event.object.userData.interactableType;
         const data = event.object.userData.interactableData;
 
@@ -65,7 +66,9 @@ export function SceneZone(props)
 
     const playSelectAnimation = (object) =>
     {
-        const onClickAnimations = object.userData.onClickAnimations;
+        
+        const onClickAnimations = object.userData?.animationType === "On Select" ? object.userData.animationData.split(',') : null;
+
         if (onClickAnimations != null)
         {
             onClickAnimations.forEach((actionName) =>
@@ -90,7 +93,9 @@ export function SceneZone(props)
 
             {sceneData.objects.backgrounds.map((object, key) =>
             {
-                return <primitive object={object} key={key} />;
+                return <primitive
+                    object={object}
+                    key={key} />;
             })}
         </ >
     );

@@ -15,14 +15,20 @@ export class SceneManager
 
     populateSceneZones(scene)
     {
+
         const children = [ ...scene.children ];
 
         children.forEach((child) =>
         {
             child.traverse((node) =>
             {
-                const userData = node.userData;
+                const userData = Object.assign({}, node.userData);
                 // if a new scene zone is found in the node which is not already in the scenezone array add it to the array
+
+                // print userData of node named Cube.013
+                if (node.name.includes('Cube.013'))
+                    console.log(12312213, userData)
+
                 if (userData && 'zone' in userData)
                 {
                     const sceneZone = this.getSceneZone(userData.zone)
@@ -99,6 +105,25 @@ export class SceneManager
                 break;
         }
 
+        if ('LoopingAnimations' in object.userData)
+        {
+            console.log(object.userData.LoopingAnimations.remove(' ').split(','))
+            sceneZone.animations.looping.push(object.userData.LoopingAnimations.remove(' ').split(','));
+        }
+        if ('OnHoverOverAnimations' in object.userData)
+        {
+
+        }
+        if ('OnHoverOffAnimations' in object.userData)
+        {
+
+        }
+        if ('OnSelectAnimations' in object.userData)
+        {
+
+        }
+
+
     }
 
     addBackground(sceneZone, object)
@@ -133,4 +158,21 @@ export class SceneManager
         sceneZone.objects.interactables.push(object);
     }
 
+    getLoopingAnimations()
+    {
+        const loopingAnimations = [];
+        for (let i = 0; i < this.sceneZones.length; i++)
+        {
+            // loop over this.sceneZones and add all looping animations to an array
+            const element = this.sceneZones[ i ];
+
+            for (let j = 0; j < element.animations.looping.length; j++)
+            {
+                const animation = element.animations.looping[ j ];
+                loopingAnimations.push(animation);
+            }
+
+        }
+        return loopingAnimations;
+    }
 }

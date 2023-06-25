@@ -26,12 +26,15 @@ export function SceneXyz3D(props)
 
     const { camera } = useThree();
     const { scene, animations } = useGLTF(props.path);
-    const { actions } = useAnimations(animations);
+    const { ref, mixer, names, actions, clips } = useAnimations(animations);
 
     // play animation by name
     const playAnimation = (name) =>
     {
-        actions[ name ].play();
+        console.log("Starting animation: ", name, ref, mixer, names, actions, clips);
+
+        actions[ name ]?.play();
+
     }
 
     const goToSceneZone = (name) =>
@@ -110,7 +113,15 @@ export function SceneXyz3D(props)
         const sceneManager = new SceneManager(scene);
         setSceneManager(sceneManager);
 
-    }, [ scene ]);
+        console.log(sceneManager.getLoopingAnimations())
+        // play all looping animations
+        sceneManager.getLoopingAnimations().forEach((actionName) =>
+        {
+
+            playAnimation(actionName);
+        });
+
+    }, [ scene, animations ]);
 
     // go to first scene zone on load
     useEffect(() =>
