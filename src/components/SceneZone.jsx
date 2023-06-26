@@ -1,6 +1,7 @@
 import { Scroll, ScrollControls, useScroll } from '@react-three/drei';
 import React, { useRef, useState, useEffect } from 'react';
 import * as THREE from 'three';
+import { ConvexGeometry } from 'three/addons/geometries/ConvexGeometry.js';
 
 export function SceneZone(props)
 {
@@ -66,12 +67,12 @@ export function SceneZone(props)
 
     const playSelectAnimation = (object) =>
     {
-        
-        const onClickAnimations = object.userData?.animationType === "On Select" ? object.userData.animationData.split(',') : null;
 
-        if (onClickAnimations != null)
+        const actions = object.userData.OnSelectAnimations || null;
+
+        if (actions != null)
         {
-            onClickAnimations.forEach((actionName) =>
+            actions.forEach((actionName) =>
             {
                 props.playAnimation(actionName);
             });

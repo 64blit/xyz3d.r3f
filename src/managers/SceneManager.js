@@ -9,6 +9,7 @@ export class SceneManager
         this.scene = scene;
 
         this.sceneZones = [];
+        this.loopingAnimations = [];
 
         this.populateSceneZones(scene);
     }
@@ -22,12 +23,9 @@ export class SceneManager
         {
             child.traverse((node) =>
             {
-                const userData = Object.assign({}, node.userData);
-                // if a new scene zone is found in the node which is not already in the scenezone array add it to the array
+                const userData = node.userData;
 
-                // print userData of node named Cube.013
-                if (node.name.includes('Cube.013'))
-                    console.log(12312213, userData)
+                this.addAnimations(node)
 
                 if (userData && 'zone' in userData)
                 {
@@ -41,6 +39,48 @@ export class SceneManager
         this.sceneZones.sort((a, b) => a.index - b.index);
     }
 
+    addAnimations(object)
+    {
+
+        if ('LoopingAnimations' in object.userData)
+        {
+            const actionNames = object.userData.LoopingAnimations.replace(/\s/g, '').split(',');
+            this.loopingAnimations.push(...actionNames);
+        }
+        if ('OnPointerEnter' in object.userData)
+        {
+            const actionNames = object.userData.OnPointerEnter.replace(/\s/g, '').split(',');
+            object.userData.OnPointerEnter = actionNames;
+        }
+        if ('OnPointerExit' in object.userData)
+        {
+            const actionNames = object.userData.OnPointerExit.replace(/\s/g, '').split(',');
+            object.userData.OnPointerExit = actionNames;
+
+        }
+        if ('OnSelectAnimations' in object.userData)
+        {
+            const actionNames = object.userData.OnSelectAnimations.replace(/\s/g, '').split(',');
+            object.userData.OnSelectAnimations = actionNames;
+        }
+
+
+        if ('CameraAnimations' in object.userData)
+        {
+            const actionNames = object.userData.CameraAnimations.replace(/\s/g, '').split(',');
+
+            if (typeof (object.userData.OnSelectAnimations) == Array)
+            {
+                object.userData.CameraAnimations.push(...actionNames);
+            } else
+            {
+                object.userData.CameraAnimations = actionNames;
+            }
+        }
+
+
+
+    }
 
     getSceneZones()
     {
@@ -70,10 +110,6 @@ export class SceneManager
             objects: {
                 interactables: [],
                 backgrounds: []
-            },
-
-            animations: {
-                looping: [],
             }
         };
 
@@ -103,24 +139,6 @@ export class SceneManager
                 break;
             default:
                 break;
-        }
-
-        if ('LoopingAnimations' in object.userData)
-        {
-            console.log(object.userData.LoopingAnimations.remove(' ').split(','))
-            sceneZone.animations.looping.push(object.userData.LoopingAnimations.remove(' ').split(','));
-        }
-        if ('OnHoverOverAnimations' in object.userData)
-        {
-
-        }
-        if ('OnHoverOffAnimations' in object.userData)
-        {
-
-        }
-        if ('OnSelectAnimations' in object.userData)
-        {
-
         }
 
 
@@ -160,19 +178,7 @@ export class SceneManager
 
     getLoopingAnimations()
     {
-        const loopingAnimations = [];
-        for (let i = 0; i < this.sceneZones.length; i++)
-        {
-            // loop over this.sceneZones and add all looping animations to an array
-            const element = this.sceneZones[ i ];
 
-            for (let j = 0; j < element.animations.looping.length; j++)
-            {
-                const animation = element.animations.looping[ j ];
-                loopingAnimations.push(animation);
-            }
-
-        }
-        return loopingAnimations;
+        return this.loopingAnimations;
     }
 }

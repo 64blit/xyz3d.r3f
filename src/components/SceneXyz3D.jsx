@@ -26,14 +26,23 @@ export function SceneXyz3D(props)
 
     const { camera } = useThree();
     const { scene, animations } = useGLTF(props.path);
-    const { ref, mixer, names, actions, clips } = useAnimations(animations);
+    const { ref, mixer, names, actions, clips } = useAnimations(animations, scene);
 
     // play animation by name
-    const playAnimation = (name) =>
+    const playAnimation = (name, loopType = THREE.LoopOnce) =>
     {
-        console.log("Starting animation: ", name, ref, mixer, names, actions, clips);
+        console.log("Starting animation: ", actions[ name ], ref, mixer, names, actions, clips);
 
-        actions[ name ]?.play();
+        // Play the action one time
+        if (actions[ name ] && actions[ name ].isRunning() == false)
+        {
+
+            actions[ name ].setLoop(loopType);
+            actions[ name ].clampWhenFinished = true;
+            actions[ name ].reset();
+            actions[ name ].play();
+        }
+
 
     }
 
@@ -117,8 +126,7 @@ export function SceneXyz3D(props)
         // play all looping animations
         sceneManager.getLoopingAnimations().forEach((actionName) =>
         {
-
-            playAnimation(actionName);
+            playAnimation(actionName, THREE.LoopRepeat);
         });
 
     }, [ scene, animations ]);
