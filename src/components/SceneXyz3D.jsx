@@ -31,12 +31,10 @@ export function SceneXyz3D(props)
     // play animation by name
     const playAnimation = (name, loopType = THREE.LoopOnce) =>
     {
-        console.log("Starting animation: ", actions[ name ], ref, mixer, names, actions, clips);
 
         // Play the action one time
         if (actions[ name ] && actions[ name ].isRunning() == false)
         {
-
             actions[ name ].setLoop(loopType);
             actions[ name ].clampWhenFinished = true;
             actions[ name ].reset();
@@ -122,7 +120,6 @@ export function SceneXyz3D(props)
         const sceneManager = new SceneManager(scene);
         setSceneManager(sceneManager);
 
-        console.log(sceneManager.getLoopingAnimations())
         // play all looping animations
         sceneManager.getLoopingAnimations().forEach((actionName) =>
         {

@@ -11,25 +11,25 @@ export function Xyz3D()
     const [ displayPopup, setDisplayPopup ] = useState(false);
     const [ popupContent, setPopupContent ] = useState(null);
 
-    const envMap = useEnvironment({files: "assets/4k.hdr"});
-    
+    const envMap = useEnvironment({ files: "assets/4k.hdr" });
+
 
     return (
         <>
             {/* <ErrorBoundary> */}
 
-                <Canvas>
-                    <SceneXyz3D 
-                        envMap={envMap}
-                        path={"assets/scene.glb"}
-                        onDisplayPopup={setDisplayPopup}
-                        setPopupContent={setPopupContent}
-                    />
+            <Canvas>
+                <SceneXyz3D
+                    envMap={envMap}
+                    path={"assets/scene.glb"}
+                    onDisplayPopup={setDisplayPopup}
+                    setPopupContent={setPopupContent}
+                />
 
-                    <Environment  map={envMap} frames={1} resolution={512} background />
-                </Canvas>
+                <Environment map={envMap} frames={1} resolution={512} background />
+            </Canvas>
 
-                {displayPopup && <HtmlOverlay content={popupContent} setDisplayPopup={setDisplayPopup} />}
+            {displayPopup && <HtmlOverlay content={popupContent} setDisplayPopup={setDisplayPopup} />}
 
             {/* </ErrorBoundary> */}
         </>
