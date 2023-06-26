@@ -16,22 +16,22 @@ export function Xyz3D()
 
     return (
         <>
-            {/* <ErrorBoundary> */}
+            <ErrorBoundary>
 
-            <Canvas>
-                <SceneXyz3D
-                    envMap={envMap}
-                    path={"assets/scene.glb"}
-                    onDisplayPopup={setDisplayPopup}
-                    setPopupContent={setPopupContent}
-                />
+                <Canvas>
+                    <SceneXyz3D
+                        envMap={envMap}
+                        path={"assets/scene.glb"}
+                        onDisplayPopup={setDisplayPopup}
+                        setPopupContent={setPopupContent}
+                    />
 
-                <Environment map={envMap} frames={1} resolution={512} background />
-            </Canvas>
+                    <Environment map={envMap} frames={1} resolution={512} background />
+                </Canvas>
 
-            {displayPopup && <HtmlOverlay content={popupContent} setDisplayPopup={setDisplayPopup} />}
+                {displayPopup && <HtmlOverlay content={popupContent} setDisplayPopup={setDisplayPopup} />}
 
-            {/* </ErrorBoundary> */}
+            </ErrorBoundary>
         </>
     );
 }
