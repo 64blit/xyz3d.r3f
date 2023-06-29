@@ -23,7 +23,7 @@ export class SceneManager
         {
             child.traverse((node) =>
             {
-                const userData = node.userData;
+                const userData = Object.assign({}, node.userData);
 
                 this.addAnimations(node)
 
@@ -41,21 +41,25 @@ export class SceneManager
 
     addAnimations(object)
     {
-
         if ('LoopingAnimations' in object.userData)
         {
-            const actionNames = object.userData.LoopingAnimations.replace(/\s/g, '').split(',');
-            this.loopingAnimations.push(...actionNames);
+            // console.log(object.userData);
+
+            object.userData.LoopingAnimations = object.userData.LoopingAnimations.replace(/\s/g, '').split(',');
+
+            this.loopingAnimations.push(...object.userData.LoopingAnimations);
         }
-        if ('OnPointerEnter' in object.userData)
+        if ('OnPointerEnterAnimations' in object.userData)
         {
-            const actionNames = object.userData.OnPointerEnter.replace(/\s/g, '').split(',');
-            object.userData.OnPointerEnter = actionNames;
+            // console.log(object.userData);
+            const actionNames = object.userData.OnPointerEnterAnimations.replace(/\s/g, '').split(',');
+            object.userData.OnPointerEnterAnimations = actionNames;
         }
-        if ('OnPointerExit' in object.userData)
+        if ('OnPointerExitAnimations' in object.userData)
         {
-            const actionNames = object.userData.OnPointerExit.replace(/\s/g, '').split(',');
-            object.userData.OnPointerExit = actionNames;
+            // console.log(object.userData);
+            const actionNames = object.userData.OnPointerExitAnimations.replace(/\s/g, '').split(',');
+            object.userData.OnPointerExitAnimations = actionNames;
 
         }
         if ('OnSelectAnimations' in object.userData)

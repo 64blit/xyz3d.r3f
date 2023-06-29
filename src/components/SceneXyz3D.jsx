@@ -32,9 +32,11 @@ export function SceneXyz3D(props)
     const playAnimation = (name, loopType = THREE.LoopOnce) =>
     {
 
-        // Play the action one time
         if (actions[ name ] && actions[ name ].isRunning() == false)
         {
+
+            console.log("Playing animation: ", name)
+
             actions[ name ].setLoop(loopType);
             actions[ name ].clampWhenFinished = true;
             actions[ name ].reset();
@@ -150,31 +152,30 @@ export function SceneXyz3D(props)
                     controlsRef &&
                     <SceneZoneWrapper setScroll={setScroll}>
 
-                        <Suspense fallback={<ProgressLoader />}>
 
-                            <primitive object={scene}>
+                        <primitive object={scene}>
 
-                                {sceneManager.getSceneZones().map((object, key) => (
+                            {sceneManager.getSceneZones().map((object, key) => (
 
-                                    <SceneZone
-                                        onScroll={setScroll}
-                                        onDisplayPopup={props.onDisplayPopup}
-                                        setPopupContent={props.setPopupContent}
-                                        goToSceneZone={goToSceneZone}
-                                        playAnimation={playAnimation}
+                                <SceneZone
+                                    onScroll={setScroll}
+                                    onDisplayPopup={props.onDisplayPopup}
+                                    setPopupContent={props.setPopupContent}
+                                    goToSceneZone={goToSceneZone}
+                                    playAnimation={playAnimation}
 
-                                        object={object}
-                                        key={key}
-                                    />
-                                ))}
+                                    object={object}
+                                    key={key}
+                                />
+                            ))}
 
-                            </primitive>
+                        </primitive>
 
-                            {props.children}
-                        </Suspense>
+                        {props.children}
                     </SceneZoneWrapper>
                 }
             </ScrollControls>
         </>
     );
+
 }

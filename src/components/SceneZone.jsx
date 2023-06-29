@@ -48,10 +48,10 @@ export function SceneZone(props)
     }
 
     // on hover callback for playing any hover animations found inside the userData varaiable under hoverAnimations
-    const handleHoverOver = (event) =>
+    const handlePointerEnter = (event) =>
     {
         setHovered(true);
-        const onHoverAnimations = event.object.userData.onHoverAnimations;
+        const onHoverAnimations = event.object.userData.OnPointerEnterAnimations || null;
         if (onHoverAnimations != null)
         {
             onHoverAnimations.forEach((actionName) =>
@@ -60,14 +60,22 @@ export function SceneZone(props)
             });
         }
     }
-    const handleHoverOff = (event) =>
+    
+    const handlePointerExit = (event) =>
     {
         setHovered(false);
+        const onPointerExit = event.object.userData.OnPointerExitAnimations || null;
+        if (onPointerExit != null)
+        {
+            onPointerExit.forEach((actionName) =>
+            {
+                props.playAnimation(actionName);
+            });
+        }
     }
 
     const playSelectAnimation = (object) =>
     {
-
         const actions = object.userData.OnSelectAnimations || null;
 
         if (actions != null)
@@ -88,8 +96,9 @@ export function SceneZone(props)
                     object={object}
                     key={key}
                     onClick={handleInteraction}
-                    onPointerOver={handleHoverOver}
-                    onPointerOut={handleHoverOff} />;
+                    onPointerEnter={handlePointerEnter}
+                    onPointerLeave={handlePointerExit}
+                />;
             })}
 
             {sceneData.objects.backgrounds.map((object, key) =>
