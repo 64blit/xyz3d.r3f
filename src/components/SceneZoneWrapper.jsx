@@ -1,5 +1,4 @@
 // a react component that passes useScroll to the parent
-//
 
 import { useScroll } from "@react-three/drei";
 import { useEffect } from "react";

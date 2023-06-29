@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CubeLoader = ({ progress }) =>
+const InfinitySVG = ({ progress }) =>
 {
     const strokeStyles = {
         strokeDashoffset: `${320 - (progress * 320)}`,
@@ -42,4 +42,4 @@ const CubeLoader = ({ progress }) =>
     );
 };
 
-export default CubeLoader;
+export default InfinitySVG;

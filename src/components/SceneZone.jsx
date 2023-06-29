@@ -1,7 +1,4 @@
-import { Scroll, ScrollControls, useScroll } from '@react-three/drei';
-import React, { useRef, useState, useEffect } from 'react';
-import * as THREE from 'three';
-import { ConvexGeometry } from 'three/addons/geometries/ConvexGeometry.js';
+import React, { useState, useEffect } from 'react';
 
 export function SceneZone(props)
 {
@@ -60,7 +57,7 @@ export function SceneZone(props)
             });
         }
     }
-    
+
     const handlePointerExit = (event) =>
     {
         setHovered(false);

@@ -1,16 +1,13 @@
 
-import React, { useRef, useState, useEffect, Suspense } from 'react';
-import { Html, Scroll, ScrollControls, useAnimations, useGLTF, useScroll } from "@react-three/drei";
+import React, { useRef, useState, useEffect } from 'react';
+import { ScrollControls, useAnimations, useGLTF } from "@react-three/drei";
 
 import { useFrame, useThree } from '@react-three/fiber';
 
 import { SceneManager } from '../managers/SceneManager.js';
-import { ProgressLoader } from './ProgressLoader.jsx';
 import { Controls } from './Controls.jsx';
 import { SceneZone } from './SceneZone.jsx';
 import * as THREE from 'three';
-import { map } from '../utils/BaseUtils.js';
-import { RectAreaLightUniformsLib } from 'three-stdlib';
 import { SceneZoneWrapper } from './SceneZoneWrapper.jsx';
 
 

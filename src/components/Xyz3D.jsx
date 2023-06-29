@@ -1,9 +1,7 @@
-import React, { useRef, useState, useEffect, Suspense } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { ErrorBoundary } from './ErrorBoundary.jsx';
+import React, { useState, Suspense } from 'react';
+import { Canvas } from '@react-three/fiber';
 import { SceneXyz3D } from './SceneXyz3D.jsx';
 import { HtmlOverlay } from './HtmlOverlay.jsx';
-import { Environment, Sky, Stars, useEnvironment } from '@react-three/drei';
 import { ProgressLoader } from './ProgressLoader.jsx';
 import EnvironmentXyz3D from './EnvironmentXyz3D.jsx';
 
@@ -22,15 +20,17 @@ export function Xyz3D()
                 {/* The 3D rendering canvas */}
                 <Canvas>
 
-                    {/* The loading screen */}
+                    {/* The progress bar / loading screen */}
                     <Suspense fallback={<ProgressLoader />}>
 
+                        {/* The 3D Scene */}
                         <SceneXyz3D
                             path={"assets/scene.glb"}
                             onDisplayPopup={setDisplayPopup}
                             setPopupContent={setPopupContent}
                         />
 
+                        {/* The environment light and background (ie. skybox) */}
                         <EnvironmentXyz3D files={"assets/4k.hdr"} frames={1} resolution={512} background />
 
                     </Suspense>
@@ -38,6 +38,7 @@ export function Xyz3D()
 
             </div>
 
+            {/* The container for HTML content */}
             {displayPopup && <HtmlOverlay content={popupContent} setDisplayPopup={setDisplayPopup} />}
         </>
     );

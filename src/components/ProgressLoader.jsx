@@ -3,7 +3,7 @@ import
     Html,
     useProgress
 } from "@react-three/drei";
-import CubeLoader from "./CubeLoader";
+import InfinitySVG from "./InfinitySVG";
 
 
 export function ProgressLoader()
@@ -13,7 +13,7 @@ export function ProgressLoader()
     return (
         <>
             <Html center>
-                <CubeLoader progress={Math.floor(progress)} />
+                <InfinitySVG progress={Math.floor(progress)} />
             </Html>
         </>
     );
