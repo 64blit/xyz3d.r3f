@@ -14,6 +14,7 @@ export function Xyz3D()
 
     return (
         <>
+
             {/* Wrapper div to cover the screen */}
             <div className="absolute inset-0 bg-black">
 
@@ -40,6 +41,7 @@ export function Xyz3D()
 
             {/* The container for HTML content */}
             {displayPopup && <HtmlOverlay content={popupContent} setDisplayPopup={setDisplayPopup} />}
+
         </>
     );
 }
