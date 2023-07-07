@@ -13,9 +13,17 @@ import { SceneZoneWrapper } from './SceneZoneWrapper.jsx';
 
 export function SceneXyz3D(props)
 {
+    //  an enum for the scroll state
+    const SCROLLING = Object.freeze({
+        ENTERING: 0,
+        EXITING: 1,
+        IDLE: 2
+    });
     const [ sceneManager, setSceneManager ] = useState(null);
     const [ scroll, setScroll ] = useState(null);
     const [ isBusy, setIsBusy ] = useState(false);
+    const [ scrollState, setScrollState ] = useState(SCROLLING.ENTERING);
+    const [ prevScrollPercentage, setPrevScrollPercentage ] = useState(0);
 
     const [ targetSceneZone, setTargetSceneZone ] = useState(1);
 
@@ -75,20 +83,71 @@ export function SceneXyz3D(props)
         const currentZone = sceneManager.sceneZones[ currentZoneIndex ];
         const nextZone = sceneManager.sceneZones[ nextZoneIndex ];
 
-        const percent = scaledScrollOffset % 1; // Interpolation factor, between 0 and 1 (0 for currentZone, 1 for nextZone)
+
+        const scrollPercentage = scaledScrollOffset % 1; // Interpolation factor, between 0 and 1 (0 for currentZone, 1 for nextZone)
+
+        updateScrollState(scrollPercentage);
+
+        // console.log(currentZone.name, nextZone.name, scrollState);
+        playSceneZoneAnimations(nextZone, currentZone, scrollState);
 
         controlsRef.current?.lerpLookAt(
             ...currentZone.cameraAnchor.position,
             ...currentZone.cameraTargetPosition,
             ...nextZone.cameraAnchor.position,
             ...nextZone.cameraTargetPosition,
-            percent,
+            scrollPercentage,
             false
         );
     };
 
+    const playSceneZoneAnimations = (enterZone, exitZone, scrollState) =>
+    {
 
-    const fixSceneZonesPositions = () =>
+        if (scrollState === SCROLLING.ENTERING)
+        {
+            console.log("Entering", enterZone.name);
+            enterZone.enterAnimations.forEach((actionName) =>
+            {
+                playAnimation(actionName);
+            });
+        } else if (scrollState === SCROLLING.EXITING)
+        {
+            console.log("Exiting", exitZone.name);
+            exitZone.exitAnimations.forEach((actionName) =>
+            {
+                playAnimation(actionName);
+            });
+        }
+    }
+
+    const updateScrollState = (scrollPercentage) =>
+    {
+
+        //  if we are entering or exiting a scene zone, set the scroll state
+        if (
+            ((prevScrollPercentage < .1 && scrollPercentage >= .1) ||
+                (prevScrollPercentage > .9 && scrollPercentage <= .9))
+            && (scrollState !== SCROLLING.EXITING)
+        )
+        {
+            setScrollState(SCROLLING.EXITING);
+        } else if (
+            ((prevScrollPercentage >= .1 && scrollPercentage < .1) ||
+                (prevScrollPercentage <= .9 && scrollPercentage > .9))
+            && (scrollState !== SCROLLING.ENTERING)
+        )
+        {
+            setScrollState(SCROLLING.ENTERING);
+        } else
+        {
+            setScrollState(SCROLLING.IDLE);
+        }
+
+        setPrevScrollPercentage(scrollPercentage);
+    }
+
+    const fixCameraAnchorPositions = () =>
     {
         const sceneZones = sceneManager.sceneZones;
         // return;
@@ -132,7 +191,7 @@ export function SceneXyz3D(props)
     {
         if (sceneManager)
         {
-            fixSceneZonesPositions();
+            fixCameraAnchorPositions();
             goToSceneZone(sceneManager.sceneZones[ 0 ].name);
         }
 

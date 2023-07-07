@@ -25,43 +25,45 @@ export class SceneManager
             {
                 const userData = Object.assign({}, node.userData);
 
-                this.addAnimations(node)
-
+                let sceneZone = null
                 if (userData && 'zone' in userData)
                 {
-                    const sceneZone = this.getSceneZone(userData.zone)
+                    sceneZone = this.getSceneZone(userData.zone)
                     this.addObject(sceneZone, node);
                     this.scene.remove(node);
                 }
+
+                this.addAnimations(sceneZone, node)
             });
         });
 
         this.sceneZones.sort((a, b) => a.index - b.index);
     }
 
-    addAnimations(object)
+    addAnimations(sceneZone, object)
     {
         if ('LoopingAnimations' in object.userData)
         {
             // console.log(object.userData);
-
             object.userData.LoopingAnimations = object.userData.LoopingAnimations.replace(/\s/g, '').split(',');
-
             this.loopingAnimations.push(...object.userData.LoopingAnimations);
         }
+
+
         if ('OnPointerEnterAnimations' in object.userData)
         {
             // console.log(object.userData);
             const actionNames = object.userData.OnPointerEnterAnimations.replace(/\s/g, '').split(',');
             object.userData.OnPointerEnterAnimations = actionNames;
         }
+
         if ('OnPointerExitAnimations' in object.userData)
         {
             // console.log(object.userData);
             const actionNames = object.userData.OnPointerExitAnimations.replace(/\s/g, '').split(',');
             object.userData.OnPointerExitAnimations = actionNames;
-
         }
+
         if ('OnSelectAnimations' in object.userData)
         {
             const actionNames = object.userData.OnSelectAnimations.replace(/\s/g, '').split(',');
@@ -69,20 +71,25 @@ export class SceneManager
         }
 
 
-        if ('CameraAnimations' in object.userData)
-        {
-            const actionNames = object.userData.CameraAnimations.replace(/\s/g, '').split(',');
 
-            if (typeof (object.userData.OnSelectAnimations) == Array)
-            {
-                object.userData.CameraAnimations.push(...actionNames);
-            } else
-            {
-                object.userData.CameraAnimations = actionNames;
-            }
+        if (sceneZone == null)
+        {
+            return;
         }
 
+        if ('OnSceneEnterAnimations' in object.userData)
+        {
+            // console.log(object.userData);
+            object.userData.OnSceneEnterAnimations = object.userData.OnSceneEnterAnimations.replace(/\s/g, '').split(',');
+            sceneZone.enterAnimations.push(...object.userData.OnSceneEnterAnimations);
+        }
 
+        if ('OnSceneExitAnimations' in object.userData)
+        {
+            // console.log(object.userData);
+            object.userData.OnSceneExitAnimations = object.userData.OnSceneExitAnimations.replace(/\s/g, '').split(',');
+            sceneZone.exitAnimations.push(...object.userData.OnSceneExitAnimations);
+        }
 
     }
 
@@ -110,6 +117,8 @@ export class SceneManager
             cameraAnchor: {},
             cameraTarget: new Box3(),
             cameraTargetPosition: new Vector3(),
+            enterAnimations: [],
+            exitAnimations: [],
 
             objects: {
                 interactables: [],
