@@ -108,7 +108,7 @@ export function SceneXyz3D(props)
             ...nextZone.cameraAnchor.position,
             ...nextZone.cameraTargetPosition,
             percent,
-            false
+            true
         );
     };
 
