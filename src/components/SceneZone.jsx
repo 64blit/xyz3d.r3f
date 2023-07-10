@@ -89,7 +89,7 @@ export function SceneZone(props)
         <>
             {sceneData.objects.interactables.map((object, key) =>
             {
-                return <primitive
+                <primitive
                     object={object}
                     key={key}
                     onClick={handleInteraction}
@@ -100,7 +100,7 @@ export function SceneZone(props)
 
             {sceneData.objects.backgrounds.map((object, key) =>
             {
-                return <primitive
+                <primitive
                     object={object}
                     key={key} />;
             })}

@@ -4,17 +4,21 @@ import { Box3, Vector3 } from "three";
 
 export class SceneManager
 {
-    constructor(scene)
+    constructor(scene, controls)
     {
         this.scene = scene;
 
         this.sceneZones = [];
+        this.waypoints = [];
         this.loopingAnimations = [];
 
-        this.populateSceneZones(scene);
+        this.fillZones(scene);
+
+        this.fixZones(controls);
+        this.fixWaypoints();
     }
 
-    populateSceneZones(scene)
+    fillZones(scene)
     {
 
         const children = [ ...scene.children ];
@@ -27,16 +31,23 @@ export class SceneManager
 
                 this.addAnimations(node)
 
+                let sceneZone = null;
+
                 if (userData && 'zone' in userData)
                 {
-                    const sceneZone = this.getSceneZone(userData.zone)
-                    this.addObject(sceneZone, node);
-                    this.scene.remove(node);
+                    sceneZone = this.getSceneZone(userData.zone)
                 }
+
+                this.addObject(sceneZone, node);
+
             });
         });
 
         this.sceneZones.sort((a, b) => a.index - b.index);
+        this.waypoints.sort((a, b) => a.index - b.index);
+
+
+
     }
 
     addAnimations(object)
@@ -112,6 +123,7 @@ export class SceneManager
             cameraTargetPosition: new Vector3(),
 
             objects: {
+                count: 0,
                 interactables: [],
                 backgrounds: []
             }
@@ -122,13 +134,32 @@ export class SceneManager
         return newSceneZone;
     }
 
+
+    getSceneZoneByIndex(index)
+    {
+        for (let i = 0; i < this.sceneZones.length; i++)
+        {
+            const sceneZone = this.sceneZones[ i ];
+            if (sceneZone.index === index)
+            {
+                return sceneZone;
+            }
+        }
+
+        return null;
+    }
+
     addObject(sceneZone, object)
     {
-        sceneZone.cameraTarget.expandByObject(object);
 
-        const target = new Vector3();
-        sceneZone.cameraTarget.getCenter(target);
-        sceneZone.cameraTargetPosition = target;
+        if (sceneZone)
+        {
+            const target = new Vector3();
+            sceneZone.cameraTarget.expandByObject(object);
+            sceneZone.cameraTarget.getCenter(target);
+            sceneZone.cameraTargetPosition = target;
+            sceneZone.objects.count++;
+        }
 
         switch (object.userData.type)
         {
@@ -148,18 +179,90 @@ export class SceneManager
 
     }
 
+    fixEmptyZones()
+    {
+        this.sceneZones.forEach((sceneZone) =>
+        {
+            if (sceneZone.objects.count === 1)
+            {
+
+                // sets the sceneZone.cameraTargetPosition to a point in the direction of the cameraAnchor's rotation
+                const cameraAnchor = sceneZone.cameraAnchor;
+                const cameraAnchorPosition = cameraAnchor.position;
+                const cameraAnchorRotation = cameraAnchor.quaternion;
+                const cameraAnchorDirection = new Vector3(0, 0, -1);
+
+                cameraAnchorDirection.applyQuaternion(cameraAnchorRotation);
+
+                const cameraTargetPosition = new Vector3();
+                cameraTargetPosition.copy(cameraAnchorDirection).add(cameraAnchorPosition);
+
+
+                element.cameraTargetPosition = cameraTargetPosition;
+            }
+
+        });
+    }
+
+    fixWaypoints()
+    {
+        this.waypoints.forEach((element) =>
+        {
+            const sceneZone = this.getSceneZoneByIndex(element.index);
+            if (sceneZone)
+            {
+                // uses the objects in the sceneZone to set the cameraTargetPosition
+                element.cameraTargetPosition = sceneZone.cameraTargetPosition;
+
+            } else
+            {
+
+                // Uses the direction of the camera anchor to point the camera
+                const cameraAnchor = element.cameraAnchor;
+                const cameraAnchorPosition = cameraAnchor.position;
+                const cameraAnchorRotation = cameraAnchor.quaternion;
+                const cameraAnchorDirection = new Vector3(0, 0, -1);
+
+                cameraAnchorDirection.applyQuaternion(cameraAnchorRotation);
+
+                const cameraTargetPosition = new Vector3();
+                cameraTargetPosition.copy(cameraAnchorDirection).add(cameraAnchorPosition);
+
+                element.cameraTargetPosition = cameraTargetPosition;
+
+            }
+
+
+        });
+    }
+
     addBackground(sceneZone, object)
     {
-        sceneZone.objects.backgrounds.push(object);
+
+        if (sceneZone)
+        {
+            sceneZone.objects.backgrounds.push(object);
+        }
     }
 
     addCameraAnchor(sceneZone, object)
     {
         const cameraAnchorIndex = object.userData.cameraAnchorIndex;
-        sceneZone.index = cameraAnchorIndex;
         object.visible = false;
 
-        sceneZone.cameraAnchor = object;
+        if (sceneZone)
+        {
+            sceneZone.index = cameraAnchorIndex;
+            sceneZone.cameraAnchor = object;
+        }
+
+        this.waypoints.push({
+            index: cameraAnchorIndex,
+            cameraAnchor: object,
+            cameraTarget: new Box3(),
+            cameraTargetPosition: new Vector3()
+        });
+
     }
 
     addInteractable(sceneZone, object)
@@ -177,12 +280,43 @@ export class SceneManager
 
         });
 
-        sceneZone.objects.interactables.push(object);
+        if (sceneZone)
+        {
+            sceneZone.objects.interactables.push(object);
+        }
     }
 
     getLoopingAnimations()
     {
 
         return this.loopingAnimations;
+    }
+
+    fixZones(controls)
+    {
+        this.fixEmptyZones();
+
+        // Move the camera anchor to make sure all scene zone content is in the camera frustum 
+        this.sceneZones.forEach(sceneZone =>
+        {
+            const position = sceneZone.cameraAnchor.position;
+            const target = sceneZone.cameraTargetPosition;
+
+            controls.setLookAt(...position, ...target, false);
+            controls.fitToBox(sceneZone.cameraTarget, false);
+            controls.update(0);
+
+            sceneZone.cameraAnchor.position.x = controls.camera.position.x;
+            sceneZone.cameraAnchor.position.y = controls.camera.position.y;
+            sceneZone.cameraAnchor.position.z = controls.camera.position.z;
+
+            this.waypoints[ sceneZone.index ].cameraAnchor.position.x = controls.camera.position.x;
+            this.waypoints[ sceneZone.index ].cameraAnchor.position.y = controls.camera.position.y;
+            this.waypoints[ sceneZone.index ].cameraAnchor.position.z = controls.camera.position.z;
+
+            this.waypoints[ sceneZone.index ].cameraTargetPosition = sceneZone.cameraTargetPosition;
+
+        });
+
     }
 }

@@ -10,7 +10,6 @@ const InfinitySVG = ({ progress }) =>
         <div className="flex items-center justify-center h-screen">
             <style>
                 {`
-          
                 svg .path {
                     stroke-dasharray: 320;
                     stroke-dashoffset: ${320 - (progress * 320)};

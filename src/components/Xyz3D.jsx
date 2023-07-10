@@ -21,7 +21,7 @@ export function Xyz3D()
                 {/* The 3D rendering canvas */}
                 <Canvas>
 
-                    {/* The progress bar / loading screen */}
+                    {/* The loading screen */}
                     <Suspense fallback={<ProgressLoader />}>
 
                         {/* The 3D Scene */}

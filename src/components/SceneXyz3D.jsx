@@ -1,5 +1,5 @@
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, componentDidMount } from 'react';
 import { ScrollControls, useAnimations, useGLTF } from "@react-three/drei";
 
 import { useFrame, useThree } from '@react-three/fiber';
@@ -13,17 +13,15 @@ import { SceneZoneWrapper } from './SceneZoneWrapper.jsx';
 
 export function SceneXyz3D(props)
 {
-    const [ sceneManager, setSceneManager ] = useState(null);
-    const [ scroll, setScroll ] = useState(null);
-    const [ isBusy, setIsBusy ] = useState(false);
-
-    const [ targetSceneZone, setTargetSceneZone ] = useState(1);
-
-    const controlsRef = useRef(null);
-
     const { camera } = useThree();
     const { scene, animations } = useGLTF(props.path);
     const { ref, mixer, names, actions, clips } = useAnimations(animations, scene);
+
+
+    const [ sceneManager, setSceneManager ] = useState(null);
+    const [ scroll, setScroll ] = useState(null);
+    const [ isBusy, setIsBusy ] = useState(false);
+    const controlsRef = useRef(null);
 
     // play animation by name
     const playAnimation = (name, loopType = THREE.LoopOnce) =>
@@ -50,6 +48,13 @@ export function SceneXyz3D(props)
         setIsBusy(true);
 
         const sceneZone = sceneManager.getSceneZone(name);
+
+        if (sceneZone == null)
+        {
+            console.log("Scene zone not found: ", name);
+            return;
+        }
+
         const newScrollOffset = sceneZone.index / (sceneManager.sceneZones.length - 1);
 
         const scrollTarget = scroll.el;
@@ -64,16 +69,43 @@ export function SceneXyz3D(props)
         setIsBusy(false);
     }
 
-    const scrollHandler = () =>
+    const goToWaypoint = (index) =>
+    {
+        if (scroll == null || camera == null || sceneManager == null || controlsRef.current == null) return;
+
+        setIsBusy(true);
+
+        const sceneZone = sceneManager.waypoints[ index ];
+
+        if (sceneZone == null)
+        {
+            console.log("Waypoint not found: ", index);
+            return;
+        }
+
+        const newScrollOffset = sceneZone.index / (sceneManager.sceneZones.length - 1);
+
+        const scrollTarget = scroll.el;
+        const scrollTop = (scrollTarget.scrollHeight - scrollTarget.clientHeight) * (newScrollOffset);
+        scrollTarget.scrollTo({ top: scrollTop });
+
+        const position = sceneZone.cameraAnchor.position;
+        const target = sceneZone.cameraTargetPosition;
+
+        controlsRef.current?.setLookAt(...position, ...target, true);
+        setIsBusy(false);
+    }
+
+    const waypointScrollHandler = () =>
     {
         if (isBusy || scroll == null || camera == null || sceneManager == null) return;
 
-        const scaledScrollOffset = scroll.offset * (sceneManager.sceneZones.length - 1);
+        const scaledScrollOffset = scroll.offset * (sceneManager.waypoints.length - 1);
 
         const currentZoneIndex = Math.floor(scaledScrollOffset);
         const nextZoneIndex = Math.ceil(scaledScrollOffset);
-        const currentZone = sceneManager.sceneZones[ currentZoneIndex ];
-        const nextZone = sceneManager.sceneZones[ nextZoneIndex ];
+        const currentZone = sceneManager.waypoints[ currentZoneIndex ];
+        const nextZone = sceneManager.waypoints[ nextZoneIndex ];
 
         const percent = scaledScrollOffset % 1; // Interpolation factor, between 0 and 1 (0 for currentZone, 1 for nextZone)
 
@@ -83,66 +115,43 @@ export function SceneXyz3D(props)
             ...nextZone.cameraAnchor.position,
             ...nextZone.cameraTargetPosition,
             percent,
-            false
+            true
         );
     };
 
 
-    const fixSceneZonesPositions = () =>
-    {
-        const sceneZones = sceneManager.sceneZones;
-        // return;
-        sceneZones.forEach(sceneZone =>
-        {
-            const position = sceneZone.cameraAnchor.position;
-            const target = sceneZone.cameraTargetPosition;
-
-            controlsRef.current?.setLookAt(...position, ...target, false);
-            controlsRef.current?.fitToBox(sceneZone.cameraTarget, false);
-            controlsRef.current?.update(0);
-
-            sceneZone.cameraAnchor.position.x = controlsRef.current?.camera.position.x;
-            sceneZone.cameraAnchor.position.y = controlsRef.current?.camera.position.y;
-            sceneZone.cameraAnchor.position.z = controlsRef.current?.camera.position.z;
-
-        });
-    }
-
     useFrame(() =>
     {
-        scrollHandler();
+        waypointScrollHandler();
     });
 
     // set up scene manager
     useEffect(() =>
     {
-        const sceneManager = new SceneManager(scene);
-        setSceneManager(sceneManager);
+        const manager = new SceneManager(scene, controlsRef.current);
+        setSceneManager(manager);
 
         // play all looping animations
-        sceneManager.getLoopingAnimations().forEach((actionName) =>
+        manager.getLoopingAnimations().forEach((actionName) =>
         {
             playAnimation(actionName, THREE.LoopRepeat);
         });
 
-    }, [ scene, animations ]);
+    }, [ scene, animations, controlsRef ]);
 
     // go to first scene zone on load
     useEffect(() =>
     {
-        if (sceneManager)
-        {
-            fixSceneZonesPositions();
-            goToSceneZone(sceneManager.sceneZones[ 0 ].name);
-        }
+        goToWaypoint(0);
 
     }, [ sceneManager ]);
 
 
-
     return (
         <>
-            <ScrollControls enabled={true} pages={sceneManager?.sceneZones.length} >
+
+            <ScrollControls enabled={true} pages={sceneManager?.waypoints.length - 1} >
+
                 <Controls innerRef={controlsRef} />
                 {
                     sceneManager &&
@@ -152,19 +161,20 @@ export function SceneXyz3D(props)
 
                         <primitive object={scene}>
 
-                            {sceneManager.getSceneZones().map((object, key) => (
+                            {
+                                sceneManager.getSceneZones().map((object, key) => (
 
-                                <SceneZone
-                                    onScroll={setScroll}
-                                    onDisplayPopup={props.onDisplayPopup}
-                                    setPopupContent={props.setPopupContent}
-                                    goToSceneZone={goToSceneZone}
-                                    playAnimation={playAnimation}
+                                    <SceneZone
+                                        onScroll={setScroll}
+                                        onDisplayPopup={props.onDisplayPopup}
+                                        setPopupContent={props.setPopupContent}
+                                        goToSceneZone={goToSceneZone}
+                                        playAnimation={playAnimation}
 
-                                    object={object}
-                                    key={key}
-                                />
-                            ))}
+                                        object={object}
+                                        key={key}
+                                    />
+                                ))}
 
                         </primitive>
 
@@ -172,6 +182,7 @@ export function SceneXyz3D(props)
                     </SceneZoneWrapper>
                 }
             </ScrollControls>
+
         </>
     );
 
