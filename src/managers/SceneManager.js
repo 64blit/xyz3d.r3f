@@ -11,10 +11,11 @@ export class SceneManager
         this.sceneZones = [];
         this.waypoints = [];
         this.loopingAnimations = [];
+        this.controls = controls;
 
         this.fillZones(scene);
 
-        this.fixZones(controls);
+        this.fixZones();
         this.fixWaypoints();
     }
 
@@ -118,7 +119,7 @@ export class SceneManager
             name: sceneZoneName,
 
             index: -1,
-            cameraAnchor: {},
+            cameraAnchor: null,
             cameraTarget: new Box3(),
             cameraTargetPosition: new Vector3(),
 
@@ -185,7 +186,6 @@ export class SceneManager
         {
             if (sceneZone.objects.count === 1)
             {
-
                 // sets the sceneZone.cameraTargetPosition to a point in the direction of the cameraAnchor's rotation
                 const cameraAnchor = sceneZone.cameraAnchor;
                 const cameraAnchorPosition = cameraAnchor.position;
@@ -236,29 +236,29 @@ export class SceneManager
         });
     }
 
-    addBackground(sceneZone, object)
+    addBackground(sceneZone, backgroundObject)
     {
 
         if (sceneZone)
         {
-            sceneZone.objects.backgrounds.push(object);
+            sceneZone.objects.backgrounds.push(backgroundObject);
         }
     }
 
-    addCameraAnchor(sceneZone, object)
+    addCameraAnchor(sceneZone, anchorObject)
     {
-        const cameraAnchorIndex = object.userData.cameraAnchorIndex;
-        object.visible = false;
+        const cameraAnchorIndex = anchorObject.userData.cameraAnchorIndex;
+        anchorObject.visible = false;
 
         if (sceneZone)
         {
             sceneZone.index = cameraAnchorIndex;
-            sceneZone.cameraAnchor = object;
+            sceneZone.cameraAnchor = anchorObject;
         }
 
         this.waypoints.push({
             index: cameraAnchorIndex,
-            cameraAnchor: object,
+            cameraAnchor: anchorObject,
             cameraTarget: new Box3(),
             cameraTargetPosition: new Vector3()
         });
@@ -292,31 +292,77 @@ export class SceneManager
         return this.loopingAnimations;
     }
 
-    fixZones(controls)
+    fixZones()
     {
         this.fixEmptyZones();
 
         // Move the camera anchor to make sure all scene zone content is in the camera frustum 
         this.sceneZones.forEach(sceneZone =>
         {
+            if (sceneZone.objects.count === 1 || sceneZone.cameraAnchor === null)
+            {
+                return;
+            }
+
             const position = sceneZone.cameraAnchor.position;
             const target = sceneZone.cameraTargetPosition;
+            const targetBox = sceneZone.cameraTarget;
 
-            controls.setLookAt(...position, ...target, false);
-            controls.fitToBox(sceneZone.cameraTarget, false);
-            controls.update(0);
+            const framingDistance = this.getFramingDistance(targetBox, 1);
+            this.orbitCameraTo(position, target, framingDistance, false);
+            this.controls.update(0);
 
-            sceneZone.cameraAnchor.position.x = controls.camera.position.x;
-            sceneZone.cameraAnchor.position.y = controls.camera.position.y;
-            sceneZone.cameraAnchor.position.z = controls.camera.position.z;
+            sceneZone.cameraAnchor.position.x = this.controls.camera.position.x;
+            sceneZone.cameraAnchor.position.y = this.controls.camera.position.y;
+            sceneZone.cameraAnchor.position.z = this.controls.camera.position.z;
+            console.log(sceneZone.cameraAnchor.position)
 
-            this.waypoints[ sceneZone.index ].cameraAnchor.position.x = controls.camera.position.x;
-            this.waypoints[ sceneZone.index ].cameraAnchor.position.y = controls.camera.position.y;
-            this.waypoints[ sceneZone.index ].cameraAnchor.position.z = controls.camera.position.z;
+            this.waypoints[ sceneZone.index ].cameraAnchor.position.x = this.controls.camera.position.x;
+            this.waypoints[ sceneZone.index ].cameraAnchor.position.y = this.controls.camera.position.y;
+            this.waypoints[ sceneZone.index ].cameraAnchor.position.z = this.controls.camera.position.z;
 
             this.waypoints[ sceneZone.index ].cameraTargetPosition = sceneZone.cameraTargetPosition;
 
         });
 
     }
+
+
+    orbitCameraTo(positionTarget, lookTarget, camDist, damp = false)
+    {
+        // Keep the camera further than the distnace to the anchor point
+        if (camDist < positionTarget.distanceTo(lookTarget))
+        {
+            camDist = positionTarget.distanceTo(lookTarget)
+        }
+
+        const newPositionTarget = positionTarget.clone().sub(lookTarget).setLength(camDist).add(lookTarget)
+
+        if (!this.controls)
+        {
+            return
+        }
+
+        return this.controls.setLookAt(...newPositionTarget, ...lookTarget, damp)
+    }
+
+    // A function to make sure the threejs camera displays the entire bounding box
+    getFramingDistance(sceneBox, offset = 1)
+    {
+        // the size of the sceneBox
+        let boxSize = new Vector3()
+        sceneBox.getSize(boxSize);
+        boxSize = Math.max(...boxSize);
+
+        let cameraDist = (offset * boxSize) / (2 * Math.atan((Math.PI * this.controls.camera.fov) / 360))
+
+        if (this.controls.camera.aspect < 1)
+        {
+            cameraDist *= 1.5
+        }
+
+        return cameraDist
+    }
+
+
 }

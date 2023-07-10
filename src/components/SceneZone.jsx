@@ -87,24 +87,20 @@ export function SceneZone(props)
 
     return (
         <>
-            {sceneData.objects.interactables.map((object, key) =>
-            {
+            {sceneData.objects.interactables.map((object, key) => (
                 <primitive
                     object={object}
                     key={key}
                     onClick={handleInteraction}
                     onPointerEnter={handlePointerEnter}
                     onPointerLeave={handlePointerExit}
-                />;
-            })}
+                />
+            ))}
 
-            {sceneData.objects.backgrounds.map((object, key) =>
-            {
-                <primitive
-                    object={object}
-                    key={key} />;
-            })}
-        </ >
+            {sceneData.objects.backgrounds.map((object, key) => (
+                <primitive object={object} key={key} />
+            ))}
+        </>
     );
 
 }

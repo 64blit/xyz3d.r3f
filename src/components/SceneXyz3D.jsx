@@ -41,7 +41,18 @@ export function SceneXyz3D(props)
 
     }
 
-    const goToSceneZone = (name) =>
+    const goToSceneZoneByIndex = (index) =>
+    {
+        if (scroll == null || camera == null || sceneManager == null || controlsRef.current == null) return;
+
+        setIsBusy(true);
+
+        const sceneZone = sceneManager.waypoints[ index ];
+        goToSceneZone(sceneZone);
+
+    }
+
+    const goToSceneZoneByName = (name) =>
     {
         if (scroll == null || camera == null || sceneManager == null) return;
 
@@ -49,6 +60,12 @@ export function SceneXyz3D(props)
 
         const sceneZone = sceneManager.getSceneZone(name);
 
+        goToSceneZone(sceneZone);
+
+    }
+
+    const goToSceneZone = (sceneZone) =>
+    {
         if (sceneZone == null)
         {
             console.log("Scene zone not found: ", name);
@@ -59,44 +76,20 @@ export function SceneXyz3D(props)
 
         const scrollTarget = scroll.el;
         const scrollTop = (scrollTarget.scrollHeight - scrollTarget.clientHeight) * (newScrollOffset);
-        scrollTarget.scrollTo({ top: scrollTop });
+        scrollTarget.scrollTo({ top: scrollTop, behavior: "smooth" });
 
         const position = sceneZone.cameraAnchor.position;
         const target = sceneZone.cameraTargetPosition;
 
-        controlsRef.current?.setLookAt(...position, ...target, true);
-
-        setIsBusy(false);
-    }
-
-    const goToWaypoint = (index) =>
-    {
-        if (scroll == null || camera == null || sceneManager == null || controlsRef.current == null) return;
-
-        setIsBusy(true);
-
-        const sceneZone = sceneManager.waypoints[ index ];
-
-        if (sceneZone == null)
+        controlsRef.current?.setLookAt(...position, ...target, true).then(() =>
         {
-            console.log("Waypoint not found: ", index);
-            return;
-        }
-
-        const newScrollOffset = sceneZone.index / (sceneManager.sceneZones.length - 1);
-
-        const scrollTarget = scroll.el;
-        const scrollTop = (scrollTarget.scrollHeight - scrollTarget.clientHeight) * (newScrollOffset);
-        scrollTarget.scrollTo({ top: scrollTop });
-
-        const position = sceneZone.cameraAnchor.position;
-        const target = sceneZone.cameraTargetPosition;
-
-        controlsRef.current?.setLookAt(...position, ...target, true);
-        setIsBusy(false);
+            setIsBusy(false);
+        });
     }
 
-    const waypointScrollHandler = () =>
+
+
+    const scrollHandler = () =>
     {
         if (isBusy || scroll == null || camera == null || sceneManager == null) return;
 
@@ -115,14 +108,13 @@ export function SceneXyz3D(props)
             ...nextZone.cameraAnchor.position,
             ...nextZone.cameraTargetPosition,
             percent,
-            true
+            false
         );
     };
 
-
     useFrame(() =>
     {
-        waypointScrollHandler();
+        scrollHandler();
     });
 
     // set up scene manager
@@ -142,7 +134,8 @@ export function SceneXyz3D(props)
     // go to first scene zone on load
     useEffect(() =>
     {
-        goToWaypoint(0);
+
+        goToSceneZoneByIndex(0);
 
     }, [ sceneManager ]);
 
@@ -161,20 +154,18 @@ export function SceneXyz3D(props)
 
                         <primitive object={scene}>
 
-                            {
-                                sceneManager.getSceneZones().map((object, key) => (
+                            {sceneManager.getSceneZones().map((object, key) => (
+                                <SceneZone
+                                    onScroll={setScroll}
+                                    onDisplayPopup={props.onDisplayPopup}
+                                    setPopupContent={props.setPopupContent}
+                                    goToSceneZone={goToSceneZoneByName}
+                                    playAnimation={playAnimation}
 
-                                    <SceneZone
-                                        onScroll={setScroll}
-                                        onDisplayPopup={props.onDisplayPopup}
-                                        setPopupContent={props.setPopupContent}
-                                        goToSceneZone={goToSceneZone}
-                                        playAnimation={playAnimation}
-
-                                        object={object}
-                                        key={key}
-                                    />
-                                ))}
+                                    object={object}
+                                    key={key}
+                                />
+                            ))}
 
                         </primitive>
 
