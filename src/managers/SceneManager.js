@@ -205,8 +205,8 @@ export class SceneManager
                 const cameraTargetPosition = new Vector3();
                 cameraTargetPosition.copy(cameraAnchorDirection).add(cameraAnchorPosition);
 
-
-                element.cameraTargetPosition = cameraTargetPosition;
+                sceneZone.cameraTargetPosition = cameraTargetPosition;
+                sceneZone.cameraTarget.setFromCenterAndSize(cameraTargetPosition, new Vector3(1, 1, 1));
             }
 
         });
