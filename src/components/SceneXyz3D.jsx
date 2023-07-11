@@ -141,7 +141,7 @@ export function SceneXyz3D(props)
             playAnimation(actionName, THREE.LoopRepeat);
         });
 
-    }, [ scene, animations, controlsRef ]);
+    }, [ animations, controlsRef ]);
 
     // go to first scene zone on load
     useEffect(() =>
@@ -158,15 +158,15 @@ export function SceneXyz3D(props)
             <ScrollControls enabled={true} pages={sceneManager?.waypoints.length - 1} >
 
                 <Controls innerRef={controlsRef} />
-                {
-                    sceneManager &&
-                    controlsRef &&
-                    <SceneZoneWrapper setScroll={setScroll}>
 
+                <SceneZoneWrapper setScroll={setScroll}>
 
-                        <primitive object={scene}>
+                    <primitive object={scene}>
 
-                            {sceneManager.getSceneZones().map((object, key) => (
+                        {
+                            controlsRef.current &&
+                            sceneManager &&
+                            sceneManager.getSceneZones().map((object, key) => (
                                 <SceneZone
                                     onScroll={setScroll}
                                     setShowPopup={props.setShowPopup}
@@ -177,13 +177,14 @@ export function SceneXyz3D(props)
                                     object={object}
                                     key={key}
                                 />
-                            ))}
+                            ))
+                        }
 
-                        </primitive>
+                    </primitive>
 
-                        {props.children}
-                    </SceneZoneWrapper>
-                }
+                    {props.children}
+                </SceneZoneWrapper>
+
             </ScrollControls>
 
         </>
