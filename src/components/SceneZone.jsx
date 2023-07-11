@@ -1,24 +1,31 @@
-import { Bounds } from '@react-three/drei';
-import React, { useRef, useState, useEffect } from 'react';
-import { render } from 'react-dom';
-import * as THREE from 'three';
+import React, { useState, useEffect } from 'react';
 
 export function SceneZone(props)
 {
-    const sceneManager = props.sceneManager;
     const sceneData = props.object;
+
+    const [ hovered, setHovered ] = useState(false);
+
+    useEffect(() =>
+    {
+        document.body.style.cursor = hovered ? "pointer" : "auto";
+    }, [ hovered ])
+
 
     const handleInteraction = (event) =>
     {
+        event.stopPropagation();
+
         const type = event.object.userData.interactableType;
         const data = event.object.userData.interactableData;
 
-        console.log("handleInteraction", event.object.userData);
+        playSelectAnimation(event.object);
+
         switch (type)
         {
 
             case "Popup HTML":
-                props.onDisplayPopup(true);
+                props.setShowPopup(true);
                 props.setPopupContent(data);
                 break;
 
@@ -27,8 +34,7 @@ export function SceneZone(props)
                 break;
 
             case "Go To Scene Zone":
-                const sceneZone = sceneManager.getSceneZone(data);
-                props.goToSceneZone(sceneZone);
+                props.goToSceneZone(data);
                 break;
 
             default:
@@ -38,19 +44,62 @@ export function SceneZone(props)
         }
     }
 
+    // on hover callback for playing any hover animations found inside the userData varaiable under hoverAnimations
+    const handlePointerEnter = (event) =>
+    {
+        setHovered(true);
+        const onHoverAnimations = event.object.userData.OnPointerEnterAnimations || null;
+        if (onHoverAnimations != null)
+        {
+            onHoverAnimations.forEach((actionName) =>
+            {
+                props.playAnimation(actionName);
+            });
+        }
+    }
+
+    const handlePointerExit = (event) =>
+    {
+        setHovered(false);
+        const onPointerExit = event.object.userData.OnPointerExitAnimations || null;
+        if (onPointerExit != null)
+        {
+            onPointerExit.forEach((actionName) =>
+            {
+                props.playAnimation(actionName);
+            });
+        }
+    }
+
+    const playSelectAnimation = (object) =>
+    {
+        const actions = object.userData.OnSelectAnimations || null;
+
+        if (actions != null)
+        {
+            actions.forEach((actionName) =>
+            {
+                props.playAnimation(actionName);
+            });
+        }
+    }
+
+
     return (
         <>
-            {sceneData.objects.interactables.map((object, key) =>
-            {
-                return <primitive object={object} key={key} onClick={handleInteraction} />;
-            })}
+            {sceneData.objects.interactables.map((object, key) => (
+                <primitive
+                    object={object}
+                    key={key}
+                    onClick={handleInteraction}
+                    onPointerEnter={handlePointerEnter}
+                    onPointerLeave={handlePointerExit}
+                />
+            ))}
 
-            {sceneData.objects.backgrounds.map((object, key) =>
-            {
-                return <primitive object={object} key={key} />;
-            })}
-
-
+            {sceneData.objects.backgrounds.map((object, key) => (
+                <primitive object={object} key={key} />
+            ))}
         </>
     );
 
