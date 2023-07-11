@@ -25,7 +25,7 @@ export function SceneZone(props)
         {
 
             case "Popup HTML":
-                props.onDisplayPopup(true);
+                props.setShowPopup(true);
                 props.setPopupContent(data);
                 break;
 

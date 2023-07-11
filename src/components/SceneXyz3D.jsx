@@ -48,6 +48,13 @@ export function SceneXyz3D(props)
         setIsBusy(true);
 
         const sceneZone = sceneManager.waypoints[ index ];
+
+        if (sceneZone == null)
+        {
+            console.log("Scene zone not found, index: ", index);
+            return;
+        }
+
         goToSceneZone(sceneZone);
 
     }
@@ -60,6 +67,12 @@ export function SceneXyz3D(props)
 
         const sceneZone = sceneManager.getSceneZone(name);
 
+        if (sceneZone == null)
+        {
+            console.log("Scene zone not found: ", name);
+            return;
+        }
+
         goToSceneZone(sceneZone);
 
     }
@@ -68,7 +81,6 @@ export function SceneXyz3D(props)
     {
         if (sceneZone == null)
         {
-            console.log("Scene zone not found: ", name);
             return;
         }
 
@@ -157,7 +169,7 @@ export function SceneXyz3D(props)
                             {sceneManager.getSceneZones().map((object, key) => (
                                 <SceneZone
                                     onScroll={setScroll}
-                                    onDisplayPopup={props.onDisplayPopup}
+                                    setShowPopup={props.setShowPopup}
                                     setPopupContent={props.setPopupContent}
                                     goToSceneZone={goToSceneZoneByName}
                                     playAnimation={playAnimation}

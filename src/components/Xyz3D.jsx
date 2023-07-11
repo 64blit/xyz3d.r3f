@@ -8,9 +8,8 @@ import EnvironmentXyz3D from './EnvironmentXyz3D.jsx';
 
 export function Xyz3D()
 {
-    const [ displayPopup, setDisplayPopup ] = useState(false);
+    const [ showPopup, setShowPopup ] = useState(false);
     const [ popupContent, setPopupContent ] = useState(null);
-
 
     return (
         <>
@@ -27,7 +26,7 @@ export function Xyz3D()
                         {/* The 3D Scene */}
                         <SceneXyz3D
                             path={"assets/scene.glb"}
-                            onDisplayPopup={setDisplayPopup}
+                            setShowPopup={setShowPopup}
                             setPopupContent={setPopupContent}
                         />
 
@@ -40,7 +39,7 @@ export function Xyz3D()
             </div>
 
             {/* The container for HTML content */}
-            {displayPopup && <HtmlOverlay content={popupContent} setDisplayPopup={setDisplayPopup} />}
+            {showPopup && <HtmlOverlay content={popupContent} setShowPopup={setShowPopup} />}
 
         </>
     );

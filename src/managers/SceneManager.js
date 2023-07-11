@@ -37,6 +37,10 @@ export class SceneManager
                 if (userData && 'zone' in userData)
                 {
                     sceneZone = this.getSceneZone(userData.zone)
+                    if (sceneZone == null)
+                    {
+                        sceneZone = this.createSceneZone(userData.zone);
+                    }
                 }
 
                 this.addObject(sceneZone, node);
@@ -103,18 +107,8 @@ export class SceneManager
         return this.sceneZones;
     }
 
-    getSceneZone(sceneZoneName)
+    createSceneZone(sceneZoneName)
     {
-        for (let i = 0; i < this.sceneZones.length; i++)
-        {
-            const sceneZone = this.sceneZones[ i ];
-            if (sceneZone.name === sceneZoneName)
-            {
-                return sceneZone;
-            }
-        }
-
-        // Creates the zone if it doesn't exist
         const newSceneZone = {
             name: sceneZoneName,
 
@@ -133,6 +127,20 @@ export class SceneManager
         this.sceneZones.push(newSceneZone);
 
         return newSceneZone;
+    }
+
+    getSceneZone(sceneZoneName)
+    {
+        for (let i = 0; i < this.sceneZones.length; i++)
+        {
+            const sceneZone = this.sceneZones[ i ];
+            if (sceneZone.name === sceneZoneName)
+            {
+                return sceneZone;
+            }
+        }
+
+        return null;
     }
 
 
@@ -315,7 +323,6 @@ export class SceneManager
             sceneZone.cameraAnchor.position.x = this.controls.camera.position.x;
             sceneZone.cameraAnchor.position.y = this.controls.camera.position.y;
             sceneZone.cameraAnchor.position.z = this.controls.camera.position.z;
-            console.log(sceneZone.cameraAnchor.position)
 
             this.waypoints[ sceneZone.index ].cameraAnchor.position.x = this.controls.camera.position.x;
             this.waypoints[ sceneZone.index ].cameraAnchor.position.y = this.controls.camera.position.y;
