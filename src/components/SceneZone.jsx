@@ -10,7 +10,7 @@ export function SceneZone(props)
     const [ hovered, setHovered ] = useState(true);
 
     //  Debugging box around the entire zone, set isDebugging to true to see it
-    const [ isDebugging, setIsDebugging ] = useState(true);
+    const [ isDebugging, setIsDebugging ] = useState(false);
     const zoneRef = useRef();
     const boxMeshRef = useRef();
     const cameraViewBoxRef = useRef();
