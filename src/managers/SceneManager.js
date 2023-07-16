@@ -244,12 +244,16 @@ export class SceneManager
         });
     }
 
-    addBackground(sceneZone, backgroundObject)
+    addBackground(sceneZone, object)
     {
 
         if (sceneZone)
         {
-            sceneZone.objects.backgrounds.push(backgroundObject);
+
+            const worldPosition = new Vector3();
+            object.getWorldPosition(worldPosition);
+
+            sceneZone.objects.backgrounds.push({ object, worldPosition });
         }
     }
 
@@ -290,7 +294,10 @@ export class SceneManager
 
         if (sceneZone)
         {
-            sceneZone.objects.interactables.push(object);
+            const worldPosition = new Vector3();
+            object.getWorldPosition(worldPosition);
+
+            sceneZone.objects.interactables.push({ object, worldPosition });
         }
     }
 
@@ -362,11 +369,6 @@ export class SceneManager
         boxSize = Math.max(...boxSize);
 
         let cameraDist = (offset * boxSize) / (2 * Math.atan((Math.PI * this.controls.camera.fov) / 360))
-
-        if (this.controls.camera.aspect < 1)
-        {
-            cameraDist *= 1.5
-        }
 
         return cameraDist
     }

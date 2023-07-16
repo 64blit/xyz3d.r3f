@@ -1,14 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import { Box, useHelper } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
+import React, { useState, useEffect, useRef } from 'react';
+import { Box3, BoxHelper, Vector3 } from 'three';
 
 export function SceneZone(props)
 {
     const sceneData = props.object;
 
-    const [ hovered, setHovered ] = useState(false);
+    const [ hovered, setHovered ] = useState(true);
+
+    //  Debugging box around the entire zone, set isDebugging to true to see it
+    const [ isDebugging, setIsDebugging ] = useState(true);
+    const zoneRef = useRef();
+    const boxMeshRef = useRef();
+    const cameraViewBoxRef = useRef();
+
+    useFrame(() =>
+    {
+        if (!isDebugging) return;
+        if (!zoneRef.current) return;
+
+        const box = new Box3();
+        box.setFromObject(zoneRef.current);
+        const size = box.getSize(new Vector3());
+        boxMeshRef.current.position.copy(box.getCenter(new Vector3()));
+        boxMeshRef.current.scale.set(...size);
+
+        const cameraSize = sceneData.cameraTarget.getSize(new Vector3());
+        cameraViewBoxRef.current.position.copy(sceneData.cameraTargetPosition);
+        cameraViewBoxRef.current.scale.set(...cameraSize);
+
+
+    });
 
     useEffect(() =>
     {
         document.body.style.cursor = hovered ? "pointer" : "auto";
+
     }, [ hovered ])
 
 
@@ -84,24 +112,39 @@ export function SceneZone(props)
         }
     }
 
-
     return (
         <>
-            {sceneData.objects.interactables.map((object, key) => (
-                <primitive
-                    object={object}
-                    key={key}
-                    onClick={handleInteraction}
-                    onPointerEnter={handlePointerEnter}
-                    onPointerLeave={handlePointerExit}
-                />
-            ))}
+            <group ref={zoneRef}>
+                {sceneData.objects.interactables.map((element, key) => (
 
-            {sceneData.objects.backgrounds.map((object, key) => (
-                <primitive object={object} key={key} />
-            ))}
+                    <primitive
+                        object={element.object}
+                        position={element.worldPosition}
+                        key={key}
+                        onClick={handleInteraction}
+                        onPointerEnter={handlePointerEnter}
+                        onPointerLeave={handlePointerExit}
+                    />
+                ))}
+
+                {sceneData.objects.backgrounds.map((element, key) => (
+                    <primitive
+                        object={element.object}
+                        position={element.worldPosition}
+                        key={key}
+                    />
+                ))}
+
+            </group>
+            <mesh ref={boxMeshRef} visible={isDebugging}>
+                <boxGeometry args={[ 1, 1, 1 ]} />
+                <meshBasicMaterial wireframe color="cyan" />
+            </mesh>
+
+            <mesh ref={cameraViewBoxRef} visible={isDebugging}>
+                <boxGeometry args={[ 1, 1, 1 ]} />
+                <meshBasicMaterial wireframe color="red" />
+            </mesh>
         </>
     );
-
 }
-
