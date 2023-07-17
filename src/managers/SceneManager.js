@@ -120,7 +120,6 @@ export class SceneManager
             objects: {
                 count: 0,
                 interactables: [],
-                backgrounds: []
             }
         };
 
@@ -172,9 +171,6 @@ export class SceneManager
 
         switch (object.userData.type)
         {
-            case 'background':
-                this.addBackground(sceneZone, object);
-                break;
             case 'interactable':
                 this.addInteractable(sceneZone, object);
                 break;
@@ -242,19 +238,6 @@ export class SceneManager
 
 
         });
-    }
-
-    addBackground(sceneZone, object)
-    {
-
-        if (sceneZone)
-        {
-
-            const worldPosition = new Vector3();
-            object.getWorldPosition(worldPosition);
-
-            sceneZone.objects.backgrounds.push({ object, worldPosition });
-        }
     }
 
     addCameraAnchor(sceneZone, anchorObject)

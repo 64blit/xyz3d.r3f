@@ -66,7 +66,6 @@ export function SceneZone(props)
                 break;
 
             default:
-                console.log("Unknown interactable type", type);
                 break;
 
         }
@@ -126,16 +125,8 @@ export function SceneZone(props)
                         onPointerLeave={handlePointerExit}
                     />
                 ))}
-
-                {sceneData.objects.backgrounds.map((element, key) => (
-                    <primitive
-                        object={element.object}
-                        position={element.worldPosition}
-                        key={key}
-                    />
-                ))}
-
             </group>
+
             <mesh ref={boxMeshRef} visible={isDebugging}>
                 <boxGeometry args={[ 1, 1, 1 ]} />
                 <meshBasicMaterial wireframe color="cyan" />
