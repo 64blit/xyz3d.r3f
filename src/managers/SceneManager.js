@@ -314,6 +314,10 @@ export class SceneManager
 
         });
 
+        const waypoint = this.waypoints.find(waypoint => waypoint.index === 0);
+
+        this.orbitCameraTo(waypoint.cameraAnchor.position, waypoint.cameraTargetPosition, 1, false);
+
     }
 
 
