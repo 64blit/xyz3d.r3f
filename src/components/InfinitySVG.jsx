@@ -1,4 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+
+// Define the CSS style with the animation
+const svgAnimationStyle = `
+    svg .path {
+        stroke-dasharray: 320;
+        animation: dash 2s linear;
+    }
+    @keyframes dash {
+        from {
+            stroke-dashoffset: 320;
+        }
+        to {
+            stroke-dashoffset: 0;
+        }
+    }
+`;
 
 const InfinitySVG = ({ progress }) =>
 {
@@ -6,27 +22,23 @@ const InfinitySVG = ({ progress }) =>
         strokeDashoffset: `${320 - (progress * 320)}`,
     };
 
-    return (
-        <div className="flex items-center justify-center h-screen">
-            <style>
-                {`
-                svg .path {
-                    stroke-dasharray: 320;
-                    stroke-dashoffset: ${320 - (progress * 320)};
-                    animation: dash 1s linear;
-                }
-                @keyframes dash {
-                    from {
-                    stroke-dashoffset: 320;
-                    }
-                    to {
-                    stroke-dashoffset: ${320 - (progress * 320)};
-                    }
-                }
-                `}
-            </style>
+    useEffect(() =>
+    {
+        // Add the animation style to the document when the component mounts
+        const styleTag = document.createElement('style');
+        styleTag.innerHTML = svgAnimationStyle;
+        document.head.appendChild(styleTag);
 
-            <svg className="w-48 h-48 text-white" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        // Clean up the added style when the component unmounts
+        return () =>
+        {
+            document.head.removeChild(styleTag);
+        };
+    }, []);
+
+    return (
+        <div className="flex h-[100%] w-[100%] items-center justify-center flex-col">
+            <svg className="flex pl-10 content-center items-center justify-center w-48 h-48  text-white" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <path
                     className="path"
                     id="linePath"
@@ -37,6 +49,9 @@ const InfinitySVG = ({ progress }) =>
                     style={strokeStyles}
                 ></path>
             </svg>
+            <div className="text-white text-center font-mono">
+                {Math.floor(progress)}
+            </div>
         </div>
     );
 };

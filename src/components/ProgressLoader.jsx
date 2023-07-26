@@ -1,10 +1,6 @@
-import
-{
-    Html,
-    useProgress
-} from "@react-three/drei";
+import React from "react";
+import { Html, useProgress } from "@react-three/drei";
 import InfinitySVG from "./InfinitySVG";
-
 
 export function ProgressLoader()
 {
@@ -18,4 +14,3 @@ export function ProgressLoader()
         </>
     );
 }
-
