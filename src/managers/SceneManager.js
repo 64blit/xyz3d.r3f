@@ -7,14 +7,15 @@ export class SceneManager
     constructor(scene, controls)
     {
         this.scene = scene;
+        this.controls = controls;
 
         this.sceneZones = [];
         this.waypoints = [];
+
         this.loopingAnimations = [];
-        this.controls = controls;
+
 
         this.fillZones(scene);
-
         this.fixZones();
         this.fixWaypoints();
     }
@@ -84,22 +85,6 @@ export class SceneManager
             object.userData.OnSelectAnimations = actionNames;
         }
 
-
-        if ('CameraAnimations' in object.userData)
-        {
-            const actionNames = object.userData.CameraAnimations.replace(/\s/g, '').split(',');
-
-            if (typeof (object.userData.OnSelectAnimations) == Array)
-            {
-                object.userData.CameraAnimations.push(...actionNames);
-            } else
-            {
-                object.userData.CameraAnimations = actionNames;
-            }
-        }
-
-
-
     }
 
     getSceneZones()
@@ -160,7 +145,24 @@ export class SceneManager
     addObject(sceneZone, object)
     {
 
-        if (sceneZone)
+        let isCameraAnchor = false;
+
+        switch (object.userData.type)
+        {
+            case 'interactable':
+
+                this.addInteractable(sceneZone, object);
+
+                break;
+            case 'cameraAnchor':
+                isCameraAnchor = true;
+                this.addCameraAnchor(sceneZone, object);
+                break;
+            default:
+                break;
+        }
+
+        if (sceneZone && !isCameraAnchor)
         {
             const target = new Vector3();
             sceneZone.cameraTarget.expandByObject(object);
@@ -169,26 +171,13 @@ export class SceneManager
             sceneZone.objects.count++;
         }
 
-        switch (object.userData.type)
-        {
-            case 'interactable':
-                this.addInteractable(sceneZone, object);
-                break;
-            case 'cameraAnchor':
-                this.addCameraAnchor(sceneZone, object);
-                break;
-            default:
-                break;
-        }
-
-
     }
 
     fixEmptyZones()
     {
         this.sceneZones.forEach((sceneZone) =>
         {
-            if (sceneZone.objects.count === 1)
+            if (sceneZone.objects.count === 0)
             {
                 // sets the sceneZone.cameraTargetPosition to a point in the direction of the cameraAnchor's rotation
                 const cameraAnchor = sceneZone.cameraAnchor;
@@ -297,7 +286,7 @@ export class SceneManager
         // Move the camera anchor to make sure all scene zone content is in the camera frustum 
         this.sceneZones.forEach(sceneZone =>
         {
-            if (sceneZone.objects.count === 1 || sceneZone.cameraAnchor === null)
+            if (sceneZone.objects.count === 0 || sceneZone.cameraAnchor === null)
             {
                 return;
             }
@@ -314,11 +303,14 @@ export class SceneManager
             sceneZone.cameraAnchor.position.y = this.controls.camera.position.y;
             sceneZone.cameraAnchor.position.z = this.controls.camera.position.z;
 
-            this.waypoints[ sceneZone.index ].cameraAnchor.position.x = this.controls.camera.position.x;
-            this.waypoints[ sceneZone.index ].cameraAnchor.position.y = this.controls.camera.position.y;
-            this.waypoints[ sceneZone.index ].cameraAnchor.position.z = this.controls.camera.position.z;
+            // a one liner that gets the waypoint with the .index value equal to the sceneZone.index
+            const waypoint = this.waypoints.find(waypoint => waypoint.index === sceneZone.index);
 
-            this.waypoints[ sceneZone.index ].cameraTargetPosition = sceneZone.cameraTargetPosition;
+            waypoint.cameraAnchor.position.x = this.controls.camera.position.x;
+            waypoint.cameraAnchor.position.y = this.controls.camera.position.y;
+            waypoint.cameraAnchor.position.z = this.controls.camera.position.z;
+
+            waypoint.cameraTargetPosition = sceneZone.cameraTargetPosition;
 
         });
 
