@@ -112,6 +112,11 @@ export function SceneXyz3D(props)
         const currentZone = sceneManager.waypoints[ currentZoneIndex ];
         const nextZone = sceneManager.waypoints[ nextZoneIndex ];
 
+        if (currentZone == null || nextZone == null)
+        {
+            return;
+        }
+
         const percent = scaledScrollOffset % 1; // Interpolation factor, between 0 and 1 (0 for currentZone, 1 for nextZone)
 
         controlsRef.current?.lerpLookAt(
