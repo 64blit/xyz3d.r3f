@@ -295,7 +295,7 @@ export class SceneManager
             const target = sceneZone.cameraTargetPosition;
             const targetBox = sceneZone.cameraTarget;
 
-            const framingDistance = this.getFramingDistance(targetBox, 1);
+            const framingDistance = this.getFramingDistance(targetBox, 1.5);
             this.orbitCameraTo(position, target, framingDistance, false);
             this.controls.update(0);
 
@@ -340,7 +340,7 @@ export class SceneManager
     }
 
     // A function to make sure the threejs camera displays the entire bounding box
-    getFramingDistance(sceneBox, offset = 1)
+    getFramingDistance(sceneBox, offset = 1.5)
     {
         // the size of the sceneBox
         let boxSize = new Vector3()
