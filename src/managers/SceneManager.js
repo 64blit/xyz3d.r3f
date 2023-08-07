@@ -295,7 +295,9 @@ export class SceneManager
             const target = sceneZone.cameraTargetPosition;
             const targetBox = sceneZone.cameraTarget;
 
-            const framingDistance = this.getFramingDistance(targetBox, 1.5);
+            // if the aspect ratio of the screen is portrait, we set a larger framing offset
+            const offset = window.innerWidth > window.innerHeight ? .25 : 1.65;
+            const framingDistance = this.getFramingDistance(targetBox, offset);
             this.orbitCameraTo(position, target, framingDistance, false);
             this.controls.update(0);
 
@@ -340,14 +342,14 @@ export class SceneManager
     }
 
     // A function to make sure the threejs camera displays the entire bounding box
-    getFramingDistance(sceneBox, offset = 1.5)
+    getFramingDistance(sceneBox, offset = 1)
     {
         // the size of the sceneBox
         let boxSize = new Vector3()
         sceneBox.getSize(boxSize);
-        boxSize = Math.max(...boxSize);
+        boxSize = Math.max(...boxSize) * offset;
 
-        let cameraDist = (offset * boxSize) / (2 * Math.atan((Math.PI * this.controls.camera.fov) / 360))
+        let cameraDist = boxSize / (Math.atan((Math.PI * this.controls.camera.fov) / 180))
 
         return cameraDist
     }
