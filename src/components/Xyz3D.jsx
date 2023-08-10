@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { SceneXyz3D } from './SceneXyz3D.jsx';
 import { HtmlOverlay } from './HtmlOverlay.jsx';
 import { ProgressLoader } from './ProgressLoader.jsx';
-import EnvironmentXyz3D from './EnvironmentXyz3D.jsx';
+import { Environment, Sky } from '@react-three/drei';
 
 
 export function Xyz3D()
@@ -31,8 +31,8 @@ export function Xyz3D()
                         />
 
                         {/* The environment light and background (ie. skybox) */}
-                        <EnvironmentXyz3D files={"assets/4k.hdr"} frames={1} resolution={512} background />
-
+                        <Environment files={"assets/4k.hdr"} frames={1} resolution={512} background />
+                        
                     </Suspense>
                 </Canvas>
 
