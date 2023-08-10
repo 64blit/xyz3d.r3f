@@ -1,5 +1,5 @@
 
-import React, { useRef, useState, useEffect, componentDidMount } from 'react';
+import React, { useRef, useState, useEffect, componentDidMount, useImperativeHandle } from 'react';
 import { ScrollControls, useAnimations, useGLTF } from "@react-three/drei";
 
 import { useFrame, useThree } from '@react-three/fiber';
@@ -8,20 +8,23 @@ import { SceneManager } from '../managers/SceneManager.js';
 import { Controls } from './Controls.jsx';
 import { SceneZone } from './SceneZone.jsx';
 import * as THREE from 'three';
-import { SceneZoneWrapper } from './SceneZoneWrapper.jsx';
 
 
-export function SceneXyz3D(props)
+export const SceneXyz3D = React.forwardRef((props, ref) =>
 {
     const { camera } = useThree();
     const { scene, animations } = useGLTF(props.path);
-    const { ref, mixer, names, actions, clips } = useAnimations(animations, scene);
-
+    const { mixer, names, actions, clips } = useAnimations(animations, scene);
 
     const [ sceneManager, setSceneManager ] = useState(null);
-    const [ scroll, setScroll ] = useState(null);
     const [ isBusy, setIsBusy ] = useState(false);
     const controlsRef = useRef(null);
+
+    useImperativeHandle(ref, () => ({
+        goToSceneZoneByIndex,
+        goToSceneZoneByName,
+        getSceneManager,
+    }));
 
     // play animation by name
     const playAnimation = (name, loopType = THREE.LoopOnce) =>
@@ -40,10 +43,14 @@ export function SceneXyz3D(props)
 
 
     }
+    const getSceneManager = () =>
+    {
+        return sceneManager;
+    }
 
     const goToSceneZoneByIndex = (index) =>
     {
-        if (scroll == null || camera == null || sceneManager == null || controlsRef.current == null) return;
+        if (camera == null || sceneManager == null || controlsRef.current == null) return;
 
         setIsBusy(true);
 
@@ -61,7 +68,7 @@ export function SceneXyz3D(props)
 
     const goToSceneZoneByName = (name) =>
     {
-        if (scroll == null || camera == null || sceneManager == null) return;
+        if (camera == null || sceneManager == null) return;
 
         setIsBusy(true);
 
@@ -84,11 +91,6 @@ export function SceneXyz3D(props)
             return;
         }
 
-        const newScrollOffset = sceneZone.index / (sceneManager.sceneZones.length - 1);
-
-        const scrollTarget = scroll.el;
-        const scrollTop = (scrollTarget.scrollHeight - scrollTarget.clientHeight) * (newScrollOffset);
-        scrollTarget.scrollTo({ top: scrollTop, behavior: "smooth" });
 
         const position = sceneZone.cameraAnchor.position;
         const target = sceneZone.cameraTargetPosition;
@@ -100,39 +102,6 @@ export function SceneXyz3D(props)
     }
 
 
-
-    const scrollHandler = () =>
-    {
-        if (isBusy || scroll == null || camera == null || sceneManager == null) return;
-
-        const scaledScrollOffset = scroll.offset * (sceneManager.waypoints.length - 1);
-
-        const currentZoneIndex = Math.floor(scaledScrollOffset);
-        const nextZoneIndex = Math.ceil(scaledScrollOffset);
-        const currentZone = sceneManager.waypoints[ currentZoneIndex ];
-        const nextZone = sceneManager.waypoints[ nextZoneIndex ];
-
-        if (currentZone == null || nextZone == null)
-        {
-            return;
-        }
-
-        const percent = scaledScrollOffset % 1; // Interpolation factor, between 0 and 1 (0 for currentZone, 1 for nextZone)
-
-        controlsRef.current?.lerpLookAt(
-            ...currentZone.cameraAnchor.position,
-            ...currentZone.cameraTargetPosition,
-            ...nextZone.cameraAnchor.position,
-            ...nextZone.cameraTargetPosition,
-            percent,
-            true
-        );
-    };
-
-    useFrame(() =>
-    {
-        scrollHandler();
-    });
 
     // set up scene manager
     useEffect(() =>
@@ -152,7 +121,10 @@ export function SceneXyz3D(props)
     useEffect(() =>
     {
 
+        if (camera == null || sceneManager == null) return;
+
         goToSceneZoneByIndex(0);
+        props.setIsInitialized(true);
 
     }, [ sceneManager ]);
 
@@ -160,39 +132,33 @@ export function SceneXyz3D(props)
     return (
         <>
 
-            <ScrollControls enabled={true} pages={sceneManager?.waypoints.length - 1} >
+            <Controls innerRef={controlsRef} />
 
-                <Controls innerRef={controlsRef} />
 
-                <SceneZoneWrapper setScroll={setScroll}>
+            <primitive object={scene}>
 
-                    <primitive object={scene}>
+                {
+                    controlsRef.current &&
+                    sceneManager &&
+                    sceneManager.getSceneZones().map((object, key) => (
+                        <SceneZone
+                            setShowPopup={props.setShowPopup}
+                            setPopupContent={props.setPopupContent}
+                            goToSceneZone={goToSceneZoneByName}
+                            playAnimation={playAnimation}
 
-                        {
-                            controlsRef.current &&
-                            sceneManager &&
-                            sceneManager.getSceneZones().map((object, key) => (
-                                <SceneZone
-                                    onScroll={setScroll}
-                                    setShowPopup={props.setShowPopup}
-                                    setPopupContent={props.setPopupContent}
-                                    goToSceneZone={goToSceneZoneByName}
-                                    playAnimation={playAnimation}
+                            object={object}
+                            key={key}
+                        />
+                    ))
+                }
 
-                                    object={object}
-                                    key={key}
-                                />
-                            ))
-                        }
+                {props.children}
+            </primitive>
 
-                    </primitive>
 
-                    {props.children}
-                </SceneZoneWrapper>
-
-            </ScrollControls>
 
         </>
     );
 
-}
+});
