@@ -13,6 +13,7 @@ export function Xyz3D()
     const [ popupContent, setPopupContent ] = useState(null);
     const [ isInitialized, setIsInitialized ] = useState(false);
     const [ isDebugging, setIsDebugging ] = useState(false);
+    const sceneRef = React.useRef(null);
 
     // if the user presses the "D" key, toggle debugging mode
     React.useEffect(() =>
@@ -30,7 +31,6 @@ export function Xyz3D()
     }, [ isDebugging ]);
 
 
-    const xyzRef = React.useRef(null);
 
     return (
         <>
@@ -46,7 +46,7 @@ export function Xyz3D()
 
                         {/* 3D Scene */}
                         <SceneXyz3D
-                            ref={xyzRef}
+                            ref={sceneRef}
                             path={"assets/scene.glb"}
                             setShowPopup={setShowPopup}
                             setPopupContent={setPopupContent}
@@ -63,7 +63,7 @@ export function Xyz3D()
             </div>
 
             {/* Navbar */}
-            {isInitialized && <NavBar xyzRef={xyzRef.current} />}
+            {isInitialized && <NavBar xyzRef={sceneRef.current} />}
 
             {/* HTML popup container */}
             {showPopup && <HtmlOverlay content={popupContent} setShowPopup={setShowPopup} />}
