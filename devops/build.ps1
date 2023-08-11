@@ -14,6 +14,11 @@ Write-Host "Building the project..."
 Write-Host $build_path
 Write-Host $preview_dest
 
+# delete the preview destination
+Write-Host "Deleting preview destination..."
+Remove-Item -Path $preview_dest\* -Recurse -Force
+Remove-Item -Path $r3f_dest\* -Recurse -Force
+
 # run yarn build from the working directory of D:\_SPACE\Web\xyz3d.r3f\
 cd "D:\_SPACE\Web\xyz3d.r3f\"
 vite build --sourcemap "inline"
