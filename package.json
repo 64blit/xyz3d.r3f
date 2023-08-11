@@ -12,6 +12,7 @@
     "tailwindcss": "^3.3.2",
     "three": "^0.150.1"
   },
+  "license": "CC0-1.0",
   "devDependencies": {
     "@vitejs/plugin-react": "^3.1.0",
     "autoprefixer": "^10.4.14",
@@ -21,7 +22,7 @@
   "scripts": {
     "dev": "vite --host",
     "sandbox": "APP_ENV=sandbox vite",
-    "build": "vite build",
+    "build": "\\devops\\build.ps1 ",
     "preview": "vite preview"
   }
 }
