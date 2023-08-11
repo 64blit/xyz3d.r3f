@@ -10,6 +10,24 @@ export function Xyz3D()
 {
     const [ showPopup, setShowPopup ] = useState(false);
     const [ popupContent, setPopupContent ] = useState(null);
+    const [ isDebugging, setIsDebugging ] = useState(false);
+
+    // if the user presses the "D" key, toggle debugging mode
+    React.useEffect(() =>
+    {
+        const handleKeyDown = (event) =>
+        {
+            if (event.key === "d")
+            {
+                setIsDebugging(!isDebugging);
+                console.log("Debugging mode: ", !isDebugging)
+            }
+        }
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [ isDebugging ]);
+
+
 
     return (
         <>
@@ -27,12 +45,13 @@ export function Xyz3D()
                         <SceneXyz3D
                             path={"assets/scene.glb"}
                             setShowPopup={setShowPopup}
+                            isDebugging={isDebugging}
                             setPopupContent={setPopupContent}
                         />
 
                         {/* The environment light and background (ie. skybox) */}
                         <Environment files={"assets/4k.hdr"} frames={1} resolution={512} background />
-                        
+
                     </Suspense>
                 </Canvas>
 
