@@ -15,7 +15,7 @@ Write-Host $build_path
 Write-Host $preview_dest
 
 # delete the preview destination
-Write-Host "Deleting preview destination..."
+Write-Host "Deleting destination..."
 Remove-Item -Path $preview_dest\* -Recurse -Force
 Remove-Item -Path $r3f_dest\* -Recurse -Force
 
