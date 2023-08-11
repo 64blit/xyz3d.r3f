@@ -3,21 +3,20 @@ import { useFrame } from '@react-three/fiber';
 import React, { useState, useEffect, useRef } from 'react';
 import { Box3, BoxHelper, Vector3 } from 'three';
 
+
 export function SceneZone(props)
 {
     const sceneData = props.object;
 
     const [ hovered, setHovered ] = useState(false);
 
-    //  Debugging box around the entire zone, set isDebugging to true to see it
-    const [ isDebugging, setIsDebugging ] = useState(false);
     const zoneRef = useRef();
     const boxMeshRef = useRef();
     const cameraViewBoxRef = useRef();
 
     useFrame(() =>
     {
-        if (!isDebugging) return;
+        if (!props.isDebugging) return;
         if (!zoneRef.current) return;
 
         const box = new Box3();
@@ -127,12 +126,12 @@ export function SceneZone(props)
                 ))}
             </group>
 
-            <mesh ref={boxMeshRef} visible={isDebugging}>
+            <mesh ref={boxMeshRef} visible={props.isDebugging}>
                 <boxGeometry args={[ 1, 1, 1 ]} />
                 <meshBasicMaterial wireframe color="cyan" />
             </mesh>
 
-            <mesh ref={cameraViewBoxRef} visible={isDebugging}>
+            <mesh ref={cameraViewBoxRef} visible={props.isDebugging}>
                 <boxGeometry args={[ 1, 1, 1 ]} />
                 <meshBasicMaterial wireframe color="red" />
             </mesh>

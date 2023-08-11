@@ -11,8 +11,23 @@ export function Xyz3D()
 {
     const [ showPopup, setShowPopup ] = useState(false);
     const [ popupContent, setPopupContent ] = useState(null);
-
     const [ isInitialized, setIsInitialized ] = useState(false);
+    const [ isDebugging, setIsDebugging ] = useState(false);
+    // if the user presses the "D" key, toggle debugging mode
+    React.useEffect(() =>
+    {
+        const handleKeyDown = (event) =>
+        {
+            if (event.key === "d")
+            {
+                setIsDebugging(!isDebugging);
+                console.log("Debugging mode: ", !isDebugging)
+            }
+        }
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [ isDebugging ]);
+
 
     const xyzRef = React.useRef(null);
 
@@ -35,6 +50,7 @@ export function Xyz3D()
                             setShowPopup={setShowPopup}
                             setPopupContent={setPopupContent}
                             setIsInitialized={setIsInitialized}
+                            isDebugging={isDebugging}
                         />
 
                         {/* The environment light and background (ie. skybox) */}

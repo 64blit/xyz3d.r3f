@@ -146,6 +146,7 @@ export const SceneXyz3D = React.forwardRef((props, ref) =>
                             setPopupContent={props.setPopupContent}
                             goToSceneZone={goToSceneZoneByName}
                             playAnimation={playAnimation}
+                            isDebugging={props.isDebugging}
 
                             object={object}
                             key={key}
