@@ -13,6 +13,7 @@ export function Xyz3D()
     const [ popupContent, setPopupContent ] = useState(null);
     const [ isInitialized, setIsInitialized ] = useState(false);
     const [ isDebugging, setIsDebugging ] = useState(false);
+
     // if the user presses the "D" key, toggle debugging mode
     React.useEffect(() =>
     {
@@ -37,13 +38,13 @@ export function Xyz3D()
             {/* Wrapper div to cover the screen */}
             <div className="absolute inset-0 bg-black">
 
-                {/* The 3D rendering canvas */}
+                {/* 3D rendering canvas */}
                 <Canvas>
 
-                    {/* The loading screen */}
+                    {/* Loading screen */}
                     <Suspense fallback={<ProgressLoader />}>
 
-                        {/* The 3D Scene */}
+                        {/* 3D Scene */}
                         <SceneXyz3D
                             ref={xyzRef}
                             path={"assets/scene.glb"}
@@ -53,7 +54,7 @@ export function Xyz3D()
                             isDebugging={isDebugging}
                         />
 
-                        {/* The environment light and background (ie. skybox) */}
+                        {/* Skybox */}
                         <Environment files={"assets/4k.hdr"} frames={1} resolution={512} background />
 
                     </Suspense>
@@ -61,10 +62,10 @@ export function Xyz3D()
 
             </div>
 
-            {/* The navbar */}
+            {/* Navbar */}
             {isInitialized && <NavBar xyzRef={xyzRef.current} />}
 
-            {/* The container for HTML content */}
+            {/* HTML popup container */}
             {showPopup && <HtmlOverlay content={popupContent} setShowPopup={setShowPopup} />}
 
         </>
