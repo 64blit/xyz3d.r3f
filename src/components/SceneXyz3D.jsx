@@ -178,6 +178,7 @@ export function SceneXyz3D(props)
                                     setPopupContent={props.setPopupContent}
                                     goToSceneZone={goToSceneZoneByName}
                                     playAnimation={playAnimation}
+                                    isDebugging={props.isDebugging}
 
                                     object={object}
                                     key={key}
