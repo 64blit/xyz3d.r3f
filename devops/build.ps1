@@ -13,12 +13,10 @@ Write-Host "Building the project..."
 
 Write-Host $build_path
 Write-Host $preview_dest
-# Set debugging state to true
-$env:REACT_APP_DEBUG = "true"
-yarn build
 
-# Set debugging state to false after build
-$env:REACT_APP_DEBUG = "false"
+# run yarn build from the working directory of D:\_SPACE\Web\xyz3d.r3f\
+cd "D:\_SPACE\Web\xyz3d.r3f\"
+vite build --sourcemap "inline"
 
 # Copy the dist folder contents to the preview destination
 Write-Host "Copying dist folder contents to preview destination..."
@@ -28,4 +26,5 @@ Copy-Item -Path $build_path\* -Destination $preview_dest -Recurse -Force
 Write-Host "Copying src folder contents to r3f_dest..."
 Copy-Item -Path $src_path\* -Destination $r3f_dest -Recurse -Force -Exclude "node_modules", "dist",  ".vscode",  "devops",  ".git"
 
+# Pause the script
 Write-Host "Done!"
