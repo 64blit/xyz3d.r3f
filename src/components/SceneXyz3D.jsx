@@ -1,93 +1,78 @@
-
-import React, { useRef, useState, useEffect, componentDidMount } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { ScrollControls, useAnimations, useGLTF } from "@react-three/drei";
-
 import { useFrame, useThree } from '@react-three/fiber';
-
 import { SceneManager } from '../managers/SceneManager.js';
 import { Controls } from './Controls.jsx';
 import { SceneZone } from './SceneZone.jsx';
 import * as THREE from 'three';
 import { SceneZoneWrapper } from './SceneZoneWrapper.jsx';
 
-
+// React component for the 3D scene
 export function SceneXyz3D(props)
 {
     const { camera } = useThree();
     const { scene, animations } = useGLTF(props.path);
     const { ref, mixer, names, actions, clips } = useAnimations(animations, scene);
 
-
     const [ sceneManager, setSceneManager ] = useState(null);
     const [ scroll, setScroll ] = useState(null);
     const [ isBusy, setIsBusy ] = useState(false);
     const controlsRef = useRef(null);
 
-    // play animation by name
+    // Function to play animation by name
     const playAnimation = (name, loopType = THREE.LoopOnce) =>
     {
-
-        if (actions[ name ] && actions[ name ].isRunning() == false)
+        if (actions[ name ] && !actions[ name ].isRunning())
         {
-
-            console.log("Playing animation: ", name)
-
             actions[ name ].setLoop(loopType);
             actions[ name ].clampWhenFinished = true;
             actions[ name ].reset();
             actions[ name ].play();
         }
-
-
     }
 
+    // Function to navigate to a scene zone by index
     const goToSceneZoneByIndex = (index) =>
     {
-        if (scroll == null || camera == null || sceneManager == null || controlsRef.current == null) return;
+        if (!scroll || !camera || !sceneManager || !controlsRef.current) return;
 
         setIsBusy(true);
 
         const sceneZone = sceneManager.waypoints[ index ];
-
-        if (sceneZone == null)
+        if (!sceneZone)
         {
             console.log("Scene zone not found, index: ", index);
             return;
         }
 
         goToSceneZone(sceneZone);
-
     }
 
+    // Function to navigate to a scene zone by name
     const goToSceneZoneByName = (name) =>
     {
-        if (scroll == null || camera == null || sceneManager == null) return;
+        if (!scroll || !camera || !sceneManager) return;
 
         setIsBusy(true);
 
         const sceneZone = sceneManager.getSceneZone(name);
-
-        if (sceneZone == null)
+        if (!sceneZone)
         {
             console.log("Scene zone not found: ", name);
             return;
         }
 
         goToSceneZone(sceneZone);
-
     }
 
+    // Function to smoothly navigate to a scene zone
     const goToSceneZone = (sceneZone) =>
     {
-        if (sceneZone == null)
-        {
-            return;
-        }
+        if (!sceneZone) return;
 
         const newScrollOffset = sceneZone.index / (sceneManager.sceneZones.length - 1);
-
         const scrollTarget = scroll.el;
-        const scrollTop = (scrollTarget.scrollHeight - scrollTarget.clientHeight) * (newScrollOffset);
+        const scrollTop = (scrollTarget.scrollHeight - scrollTarget.clientHeight) * newScrollOffset;
         scrollTarget.scrollTo({ top: scrollTop, behavior: "smooth" });
 
         const position = sceneZone.cameraAnchor.position;
@@ -99,25 +84,20 @@ export function SceneXyz3D(props)
         });
     }
 
-
-
+    // Function to handle scrolling
     const scrollHandler = () =>
     {
-        if (isBusy || scroll == null || camera == null || sceneManager == null) return;
+        if (isBusy || !scroll || !camera || !sceneManager) return;
 
         const scaledScrollOffset = scroll.offset * (sceneManager.waypoints.length - 1);
-
         const currentZoneIndex = Math.floor(scaledScrollOffset);
         const nextZoneIndex = Math.ceil(scaledScrollOffset);
         const currentZone = sceneManager.waypoints[ currentZoneIndex ];
         const nextZone = sceneManager.waypoints[ nextZoneIndex ];
 
-        if (currentZone == null || nextZone == null)
-        {
-            return;
-        }
+        if (!currentZone || !nextZone) return;
 
-        const percent = scaledScrollOffset % 1; // Interpolation factor, between 0 and 1 (0 for currentZone, 1 for nextZone)
+        const percent = scaledScrollOffset % 1;
 
         controlsRef.current?.lerpLookAt(
             ...currentZone.cameraAnchor.position,
@@ -134,13 +114,13 @@ export function SceneXyz3D(props)
         scrollHandler();
     });
 
-    // set up scene manager
+    // Set up the scene manager
     useEffect(() =>
     {
         const manager = new SceneManager(scene, controlsRef.current);
         setSceneManager(manager);
 
-        // play all looping animations
+        // Play all looping animations
         manager.getLoopingAnimations().forEach((actionName) =>
         {
             playAnimation(actionName, THREE.LoopRepeat);
@@ -148,28 +128,20 @@ export function SceneXyz3D(props)
 
     }, [ animations, controlsRef ]);
 
-    // go to first scene zone on load
+    // Go to the first scene zone on load
     useEffect(() =>
     {
-
         goToSceneZoneByIndex(0);
-
     }, [ sceneManager ]);
-
 
     return (
         <>
-
-            <ScrollControls enabled={true} pages={sceneManager?.waypoints.length - 1} >
-
+            <ScrollControls enabled={true} pages={sceneManager?.waypoints.length - 1}>
                 <Controls innerRef={controlsRef} />
 
                 <SceneZoneWrapper setScroll={setScroll}>
-
                     <primitive object={scene}>
-
-                        {
-                            controlsRef.current &&
+                        {controlsRef.current &&
                             sceneManager &&
                             sceneManager.getSceneZones().map((object, key) => (
                                 <SceneZone
@@ -183,17 +155,12 @@ export function SceneXyz3D(props)
                                     object={object}
                                     key={key}
                                 />
-                            ))
-                        }
-
+                            ))}
                     </primitive>
 
                     {props.children}
                 </SceneZoneWrapper>
-
             </ScrollControls>
-
         </>
     );
-
 }
