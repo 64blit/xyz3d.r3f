@@ -22,7 +22,7 @@
   "scripts": {
     "dev": "vite --host",
     "sandbox": "APP_ENV=sandbox vite",
-    "build": "\\devops\\build.ps1 ",
+    "build": "vite build",
     "preview": "vite preview"
   }
 }
