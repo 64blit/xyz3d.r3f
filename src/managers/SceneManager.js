@@ -18,8 +18,6 @@ export class SceneManager
         this.populateSceneZones(scene);
         this.fixWaypoints();
         this.fixZones();
-
-        console.log("zones ", this.sceneZones)
     }
 
     // Populate scene zones and objects within zones
@@ -32,10 +30,10 @@ export class SceneManager
         {
             child.traverse((node) =>
             {
-                
+
                 // Extract animation data and update arrays
                 this.extractAnimationsFromUserData(node);
-                
+
                 const userDataCopy = Object.assign({}, node.userData);
 
                 let sceneZone = null;
@@ -71,8 +69,6 @@ export class SceneManager
             {
                 const animations = objectUserData[ userDataKey ].replace(/\s/g, '').split(',');
                 objectUserData[ userDataKey ] = animations;
-
-                console.log(objectUserData);
                 if (!('zone' in objectUserData))
                 {
                     //  Adds a special animations zone to the objectUserData if it doesn't exist
@@ -266,7 +262,6 @@ export class SceneManager
 
             sceneZone.objects.interactables.push({ object, worldPosition });
         }
-        console.log(sceneZone);
     }
 
     // Get looping animation data
