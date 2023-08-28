@@ -1,12 +1,12 @@
 # Set the path of the dist folder
-$build_path = "D:\_SPACE\Web\xyz3d.r3f\dist"
+$build_path = "C:\Users\edmun\OneDrive\Documents\_SPACE\Web\xyz3d.r3f\dist"
 
 # Set the path of the src folder
-$src_path = "D:\_SPACE\Web\xyz3d.r3f\"
+$src_path = "C:\Users\edmun\OneDrive\Documents\_SPACE\Web\xyz3d.r3f\"
 
 # Set the destination paths
-$preview_dest = "D:\_SPACE\Blender\WebCrafterPro-blender-plugin\Templates\orbit\preview"
-$r3f_dest = "D:\_SPACE\Blender\WebCrafterPro-blender-plugin\Templates\orbit\source"
+$preview_dest = "C:\Users\edmun\OneDrive\Documents\_SPACE\Blender\WebCrafterPro-blender-plugin\Templates\orbit\preview"
+$r3f_dest = "C:\Users\edmun\OneDrive\Documents\_SPACE\Blender\WebCrafterPro-blender-plugin\Templates\orbit\source"
 
 # Build the project using yarn
 Write-Host "Building the project..."
@@ -19,8 +19,8 @@ Write-Host "Deleting destination..."
 Remove-Item -Path $preview_dest\* -Recurse -Force
 Remove-Item -Path $r3f_dest\* -Recurse -Force
 
-# run yarn build from the working directory of D:\_SPACE\Web\xyz3d.r3f\
-cd "D:\_SPACE\Web\xyz3d.r3f\"
+# run yarn build from the working directory of C:\Users\edmun\OneDrive\Documents\_SPACE\Web\xyz3d.r3f\
+cd "C:\Users\edmun\OneDrive\Documents\_SPACE\Web\xyz3d.r3f\"
 vite build --sourcemap "inline"
 
 # Copy the dist folder contents to the preview destination
