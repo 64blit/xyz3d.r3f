@@ -1,107 +1,108 @@
+// Import necessary dependencies
 import { Bounds, meshBounds } from "@react-three/drei";
 import { Box3, Vector3 } from "three";
 
-
+// Define a class called SceneManager
 export class SceneManager
 {
     constructor(scene, controls)
     {
+        // Initialize scene, controls, and data arrays
         this.scene = scene;
         this.controls = controls;
-
         this.sceneZones = [];
         this.waypoints = [];
-
         this.loopingAnimations = [];
 
-
-        this.fillZones(scene);
-        this.fixZones();
+        // Call initialization methods
+        this.populateSceneZones(scene);
         this.fixWaypoints();
+        this.fixZones();
     }
 
-    fillZones(scene)
+    // Populate scene zones and objects within zones
+    populateSceneZones(scene)
     {
-
         const children = [ ...scene.children ];
 
+        // Traverse through each child node in the scene
         children.forEach((child) =>
         {
             child.traverse((node) =>
             {
-                const userData = Object.assign({}, node.userData);
 
-                this.addAnimations(node)
+                // Extract animation data and update arrays
+                this.extractAnimationsFromUserData(node);
+
+                const userDataCopy = Object.assign({}, node.userData);
 
                 let sceneZone = null;
 
-                if (userData && 'zone' in userData)
+                // Check if the node has a 'zone' in its user data
+                if (userDataCopy && 'zone' in userDataCopy)
                 {
-                    sceneZone = this.getSceneZone(userData.zone)
-                    if (sceneZone == null)
-                    {
-                        sceneZone = this.createSceneZone(userData.zone);
-                    }
+                    sceneZone = this.getOrCreateSceneZone(userDataCopy.zone);
                 }
 
+                // Add the object to the appropriate scene zone
                 this.addObject(sceneZone, node);
-
             });
         });
 
+        // Sort scene zones and waypoints based on index
         this.sceneZones.sort((a, b) => a.index - b.index);
         this.waypoints.sort((a, b) => a.index - b.index);
-
-
-
     }
 
-    addAnimations(object)
+    // Extract animation data from user data
+    extractAnimationsFromUserData(object)
     {
         if ('LoopingAnimations' in object.userData)
         {
-            // console.log(object.userData);
-
-            object.userData.LoopingAnimations = object.userData.LoopingAnimations.replace(/\s/g, '').split(',');
-
-            this.loopingAnimations.push(...object.userData.LoopingAnimations);
+            const loopingAnimations = object.userData.LoopingAnimations.replace(/\s/g, '').split(',');
+            this.loopingAnimations.push(...loopingAnimations);
         }
-        if ('OnPointerEnterAnimations' in object.userData)
+
+        const extractAnimations = (userDataKey, objectUserData) =>
         {
-            // console.log(object.userData);
-            const actionNames = object.userData.OnPointerEnterAnimations.replace(/\s/g, '').split(',');
-            object.userData.OnPointerEnterAnimations = actionNames;
-        }
-        if ('OnPointerExitAnimations' in object.userData)
-        {
-            // console.log(object.userData);
-            const actionNames = object.userData.OnPointerExitAnimations.replace(/\s/g, '').split(',');
-            object.userData.OnPointerExitAnimations = actionNames;
+            if (userDataKey in objectUserData)
+            {
+                const animations = objectUserData[ userDataKey ].replace(/\s/g, '').split(',');
+                objectUserData[ userDataKey ] = animations;
+                if (!('zone' in objectUserData))
+                {
+                    //  Adds a special animations zone to the objectUserData if it doesn't exist
+                    objectUserData[ "zone" ] = "xyz3d_animations";
+                    objectUserData[ "type" ] = "interactable";
+                }
+            }
+        };
 
-        }
-        if ('OnSelectAnimations' in object.userData)
-        {
-            const actionNames = object.userData.OnSelectAnimations.replace(/\s/g, '').split(',');
-            object.userData.OnSelectAnimations = actionNames;
-        }
-
+        extractAnimations('OnPointerEnterAnimations', object.userData);
+        extractAnimations('OnPointerExitAnimations', object.userData);
+        extractAnimations('OnSelectAnimations', object.userData);
     }
 
-    getSceneZones()
+    // Get or create a scene zone based on name
+    getOrCreateSceneZone(sceneZoneName)
     {
-        return this.sceneZones;
+        let sceneZone = this.sceneZones.find((zone) => zone.name === sceneZoneName);
+        if (!sceneZone)
+        {
+            sceneZone = this.createSceneZone(sceneZoneName);
+        }
+        return sceneZone;
     }
 
+    // Create a new scene zone
     createSceneZone(sceneZoneName)
     {
         const newSceneZone = {
             name: sceneZoneName,
-
             index: -1,
             cameraAnchor: null,
             cameraTarget: new Box3(),
             cameraTargetPosition: new Vector3(),
-
             objects: {
                 count: 0,
                 interactables: [],
@@ -109,8 +110,12 @@ export class SceneManager
         };
 
         this.sceneZones.push(newSceneZone);
-
         return newSceneZone;
+    }
+
+    getSceneZones()
+    {
+        return this.sceneZones;
     }
 
     getSceneZone(sceneZoneName)
@@ -144,15 +149,12 @@ export class SceneManager
 
     addObject(sceneZone, object)
     {
-
         let isCameraAnchor = false;
 
         switch (object.userData.type)
         {
             case 'interactable':
-
                 this.addInteractable(sceneZone, object);
-
                 break;
             case 'cameraAnchor':
                 isCameraAnchor = true;
@@ -162,6 +164,7 @@ export class SceneManager
                 break;
         }
 
+        // Add the object to the scene zone's camera target
         if (sceneZone && !isCameraAnchor)
         {
             const target = new Vector3();
@@ -170,33 +173,30 @@ export class SceneManager
             sceneZone.cameraTargetPosition = target;
             sceneZone.objects.count++;
         }
-
     }
 
+    // Fix empty scene zones by adjusting camera targets
     fixEmptyZones()
     {
         this.sceneZones.forEach((sceneZone) =>
         {
             if (sceneZone.objects.count === 0)
             {
-                // sets the sceneZone.cameraTargetPosition to a point in the direction of the cameraAnchor's rotation
+                // Calculate camera target position based on camera anchor rotation
                 const cameraAnchor = sceneZone.cameraAnchor;
                 const cameraAnchorPosition = cameraAnchor.position;
                 const cameraAnchorRotation = cameraAnchor.quaternion;
                 const cameraAnchorDirection = new Vector3(0, 0, -1);
-
                 cameraAnchorDirection.applyQuaternion(cameraAnchorRotation);
-
                 const cameraTargetPosition = new Vector3();
                 cameraTargetPosition.copy(cameraAnchorDirection).add(cameraAnchorPosition);
-
                 sceneZone.cameraTargetPosition = cameraTargetPosition;
                 sceneZone.cameraTarget.setFromCenterAndSize(cameraTargetPosition, new Vector3(1, 1, 1));
             }
-
         });
     }
 
+    // Fix waypoints based on scene zones and camera anchors
     fixWaypoints()
     {
         this.waypoints.forEach((element) =>
@@ -204,31 +204,24 @@ export class SceneManager
             const sceneZone = this.getSceneZoneByIndex(element.index);
             if (sceneZone)
             {
-                // uses the objects in the sceneZone to set the cameraTargetPosition
+                // Use camera target position from scene zone
                 element.cameraTargetPosition = sceneZone.cameraTargetPosition;
-
             } else
             {
-
-                // Uses the direction of the camera anchor to point the camera
+                // Use camera anchor direction to point the camera
                 const cameraAnchor = element.cameraAnchor;
                 const cameraAnchorPosition = cameraAnchor.position;
                 const cameraAnchorRotation = cameraAnchor.quaternion;
                 const cameraAnchorDirection = new Vector3(0, 0, -1);
-
                 cameraAnchorDirection.applyQuaternion(cameraAnchorRotation);
-
                 const cameraTargetPosition = new Vector3();
                 cameraTargetPosition.copy(cameraAnchorDirection).add(cameraAnchorPosition);
-
                 element.cameraTargetPosition = cameraTargetPosition;
-
             }
-
-
         });
     }
 
+    // Add a camera anchor to a scene zone
     addCameraAnchor(sceneZone, anchorObject)
     {
         const cameraAnchorIndex = anchorObject.userData.cameraAnchorIndex;
@@ -246,12 +239,11 @@ export class SceneManager
             cameraTarget: new Box3(),
             cameraTargetPosition: new Vector3()
         });
-
     }
 
+    // Add an interactable object to a scene zone
     addInteractable(sceneZone, object)
     {
-
         object.children.forEach((child) =>
         {
             child.traverse((node) =>
@@ -260,8 +252,7 @@ export class SceneManager
                 node.userData.type = object.userData.type;
                 node.userData.interactableType = object.userData.interactableType;
                 node.userData.interactableData = object.userData.interactableData;
-            })
-
+            });
         });
 
         if (sceneZone)
@@ -273,19 +264,21 @@ export class SceneManager
         }
     }
 
+    // Get looping animation data
     getLoopingAnimations()
     {
-
         return this.loopingAnimations;
     }
 
+    // Fix scene zones by adjusting camera positions and targets
     fixZones()
     {
         this.fixEmptyZones();
 
-        // Move the camera anchor to make sure all scene zone content is in the camera frustum 
+        // Move the camera anchor to ensure all scene zone content is in the camera frustum
         this.sceneZones.forEach(sceneZone =>
         {
+
             if (sceneZone.objects.count === 0 || sceneZone.cameraAnchor === null)
             {
                 return;
@@ -295,7 +288,7 @@ export class SceneManager
             const target = sceneZone.cameraTargetPosition;
             const targetBox = sceneZone.cameraTarget;
 
-            const framingDistance = this.getFramingDistance(targetBox, 1.0);
+            const framingDistance = this.calculateFramingDistance(targetBox, 1.0);
             this.orbitCameraTo(position, target, framingDistance, false);
             this.controls.update(0);
 
@@ -303,7 +296,7 @@ export class SceneManager
             sceneZone.cameraAnchor.position.y = this.controls.camera.position.y;
             sceneZone.cameraAnchor.position.z = this.controls.camera.position.z;
 
-            // a one liner that gets the waypoint with the .index value equal to the sceneZone.index
+            // Find the waypoint with index equal to sceneZone.index
             const waypoint = this.waypoints.find(waypoint => waypoint.index === sceneZone.index);
 
             waypoint.cameraAnchor.position.x = this.controls.camera.position.x;
@@ -311,51 +304,56 @@ export class SceneManager
             waypoint.cameraAnchor.position.z = this.controls.camera.position.z;
 
             waypoint.cameraTargetPosition = sceneZone.cameraTargetPosition;
-
         });
 
+        // Update the camera position based on the first waypoint
         const waypoint = this.waypoints.find(waypoint => waypoint.index === 0);
-        if (!waypoint) { return; }
+        if (!waypoint)
+        {
+            return;
+        }
         this.orbitCameraTo(waypoint.cameraAnchor.position, waypoint.cameraTargetPosition, 1, false);
-
     }
 
-
+    // Orbit the camera to a specified position and look target
     orbitCameraTo(positionTarget, lookTarget, camDist, damp = false)
     {
-        // Keep the camera further than the distnace to the anchor point
+        // Ensure the camera is positioned further than the distance to the anchor point
         if (camDist < positionTarget.distanceTo(lookTarget))
         {
-            camDist = positionTarget.distanceTo(lookTarget)
+            camDist = positionTarget.distanceTo(lookTarget);
         }
 
-        const newPositionTarget = positionTarget.clone().sub(lookTarget).setLength(camDist).add(lookTarget)
+        // Calculate the new position target for the camera
+        const newPositionTarget = positionTarget.clone().sub(lookTarget).setLength(camDist).add(lookTarget);
 
         if (!this.controls)
         {
-            return
+            return;
         }
 
-        return this.controls.setLookAt(...newPositionTarget, ...lookTarget, damp)
+        // Set the camera position and look target
+        return this.controls.setLookAt(...newPositionTarget, ...lookTarget, damp);
     }
 
-    getFramingDistance(sceneBox, offset)
+    // Calculate the framing distance for camera
+    calculateFramingDistance(sceneBox, offset)
     {
-        // The size of the sceneBox
+        // Calculate the size of the sceneBox
         let boxSize = new Vector3();
         sceneBox.getSize(boxSize);
         boxSize = boxSize.length();
 
-        // Calculate the half vertical FOV
+        // Calculate the half vertical field of view (FOV)
         const halfFOVVertical = (Math.PI * this.controls.camera.fov) / 360;
 
         // Calculate the half horizontal FOV using the aspect ratio
         const halfFOVHorizontal = Math.atan(Math.tan(halfFOVVertical) * this.controls.camera.aspect);
 
-        // Calculate the required distance for the camera
+        // Calculate the required camera distance for proper framing
         const requiredCameraDist = boxSize / (2 * Math.tan(halfFOVHorizontal));
 
+        // Apply offset to the calculated distance
         return requiredCameraDist * offset;
     }
-
 }
