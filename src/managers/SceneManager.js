@@ -72,7 +72,7 @@ export class SceneManager
                 if (!('zone' in objectUserData))
                 {
                     //  Adds a special animations zone to the objectUserData if it doesn't exist
-                    objectUserData[ "zone" ] = "xyz3d_animations";
+                    objectUserData[ "zone" ] = "_default_animations_zone";
                     objectUserData[ "type" ] = "interactable";
                 }
             }

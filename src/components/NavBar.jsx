@@ -10,12 +10,12 @@ export function NavBar(props)
         const sceneManager = props.xyzRef.getSceneManager();
 
         setSceneManagerInitialized(true);
-        setSceneZones(sceneManager.sceneZones);
+        // remove the scenezone named "_default_animations_zone"
+        setSceneZones(sceneManager.sceneZones.filter((sceneZone) => sceneZone.name != "_default_animations_zone"));
     }, []);
 
     const navigateTo = (name) => (event) =>
     {
-        console.log("navigateTo: ", name);
         event.preventDefault();
         props.xyzRef.goToSceneZoneByName(name);
     }
