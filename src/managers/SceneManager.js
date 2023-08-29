@@ -288,7 +288,7 @@ export class SceneManager
             const target = sceneZone.cameraTargetPosition;
             const targetBox = sceneZone.cameraTarget;
 
-            const framingDistance = this.calculateFramingDistance(targetBox, 1.0);
+            const framingDistance = this.calculateFramingDistance(targetBox, 1.15); // 1.15 adds a 15% padding to the scene zone content
             this.orbitCameraTo(position, target, framingDistance, false);
             this.controls.update(0);
 
@@ -343,6 +343,11 @@ export class SceneManager
         let boxSize = new Vector3();
         sceneBox.getSize(boxSize);
         boxSize = boxSize.length();
+
+        if (this.controls.camera.aspect > 1)
+        {
+            boxSize = boxSize * this.controls.camera.aspect;
+        }
 
         // Calculate the half vertical field of view (FOV)
         const halfFOVVertical = (Math.PI * this.controls.camera.fov) / 360;
