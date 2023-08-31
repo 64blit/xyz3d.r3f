@@ -75,7 +75,19 @@ export class SceneManager
                     objectUserData[ "zone" ] = "_default_animations_zone";
                     objectUserData[ "type" ] = "interactable";
                 }
+
+
+                //  Adds the same animations to any children of the object
+                const userDataCopy = Object.assign({}, object.userData);
+
+                object.traverse((node) =>
+                {
+                    node.userData = userDataCopy;
+                });
+
             }
+
+
         };
 
         extractAnimations('OnPointerEnterAnimations', object.userData);
