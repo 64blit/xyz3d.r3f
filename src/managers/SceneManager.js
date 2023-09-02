@@ -264,16 +264,6 @@ export class SceneManager
     // Add an interactable object to a scene zone
     addInteractable(sceneZone, object)
     {
-        object.children.forEach((child) =>
-        {
-            child.traverse((node) =>
-            {
-                node.userData.name = node.name;
-                node.userData.type = object.userData.type;
-                node.userData.interactableType = object.userData.interactableType;
-                node.userData.interactableData = object.userData.interactableData;
-            });
-        });
 
         if (sceneZone)
         {
@@ -282,6 +272,22 @@ export class SceneManager
 
             sceneZone.objects.interactables.push({ object, worldPosition });
         }
+
+        object.children.forEach((child) =>
+        {
+            child.traverse((node) =>
+            {
+                node.userData.name = node.name;
+                node.userData.type = object.userData.type;
+                node.userData.interactableType = object.userData.interactableType;
+                node.userData.interactableData = object.userData.interactableData;
+
+                if (!("zone" in object.userData))
+                {
+                    node.userData[ "zone" ] = "_default_interactable_zone";
+                }
+            });
+        });
     }
 
     // Get looping animation data
