@@ -67,7 +67,15 @@ export class SceneManager
         {
             if (userDataKey in objectUserData)
             {
-                const animations = objectUserData[ userDataKey ].replace(/\s/g, '').split(',');
+                const animations = objectUserData[ userDataKey ];
+
+
+                if (typeof animations === 'string')
+                {
+                    animations = animations.replace(/\s/g, '').split(',')
+                }
+
+
                 objectUserData[ userDataKey ] = animations;
                 if (!('zone' in objectUserData))
                 {
