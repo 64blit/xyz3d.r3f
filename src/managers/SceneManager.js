@@ -67,12 +67,12 @@ export class SceneManager
         {
             if (userDataKey in objectUserData)
             {
-                const animations = objectUserData[ userDataKey ];
+                let animations = objectUserData[ userDataKey ];
 
 
                 if (typeof animations === 'string')
                 {
-                    animations = animations.replace(/\s/g, '').split(',')
+                    animations = animations.replace(/\s/g, '').split(',');
                 }
 
                 objectUserData[ userDataKey ] = animations;
