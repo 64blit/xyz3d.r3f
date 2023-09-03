@@ -265,13 +265,16 @@ export class SceneManager
     addInteractable(sceneZone, object)
     {
 
-        if (sceneZone)
-        {
-            const worldPosition = new Vector3();
-            object.getWorldPosition(worldPosition);
+        const worldPosition = new Vector3();
+        object.getWorldPosition(worldPosition);
 
-            sceneZone.objects.interactables.push({ object, worldPosition });
+        // Add the object to a default scene zone if it does not exist
+        if (!sceneZone){
+            sceneZone = this.getOrCreateSceneZone("_default_interactable_zone");
+            sceneZone.cameraAnchor = object;
         }
+
+        sceneZone.objects.interactables.push({ object, worldPosition });
 
         object.children.forEach((child) =>
         {
@@ -288,6 +291,11 @@ export class SceneManager
                 }
             });
         });
+
+        if (!("zone" in object.userData))
+        {
+            object.userData[ "zone" ] = "_default_interactable_zone";
+        }
     }
 
     // Get looping animation data
