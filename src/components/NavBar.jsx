@@ -10,8 +10,19 @@ export function NavBar(props)
         const sceneManager = props.xyzRef.getSceneManager();
 
         setSceneManagerInitialized(true);
+        let filteredZones = [];
+
         // remove the scenezone named "_default_animations_zone" or "_default_interactable_zone"
-        const filteredZones = sceneManager.sceneZones.filter((sceneZone) => sceneZone.name != "_default_animations_zone" || sceneZone.name != "_default_interactable_zone");
+        for (let i = 0; i < sceneManager.sceneZones.length; i++)
+        {
+            const sceneZone = sceneManager.sceneZones[ i ];
+
+            if (sceneZone.name != "_default_animations_zone" && sceneZone.name != "_default_interactable_zone")
+            {
+                filteredZones.push(sceneZone);
+            }
+        }
+
         setSceneZones(filteredZones);
     }, []);
 
