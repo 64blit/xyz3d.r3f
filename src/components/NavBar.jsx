@@ -33,7 +33,7 @@ export function NavBar(props)
     }
 
     return (
-        <nav className="fixed top-0 right-0 flex flex-row justify-between p-4 bg-transparent text-white">
+        <nav className="fixed top-0 right-0 flex flex-row justify-between p-4 bg-transparent text-black">
             <style>
                 {`
                     /* Import and define the custom font */
@@ -48,12 +48,12 @@ export function NavBar(props)
                     }
                 `}
             </style>
-            <div className="flex flex-row space-x-4 h-12 min-w-[20rem]">
+            <div className="flex flex-row space-x-4 h-12 rounded-none border-x-2 border-black">
                 {sceneManagerInitialized &&
                     sceneZones?.map((sceneZone, index) => (
-                        <a href="#" onClick={navigateTo(sceneZone.name)} className="hover:text-gray-600 content-center nav-link text-3xl" key={index}>
+                        <div onClick={navigateTo(sceneZone.name)} className="hover:text-gray-600 content-center nav-link text-3xl cursor-pointer p-3 rounded-none border-y-2 border-black" key={index}>
                             {sceneZone.name}
-                        </a>
+                        </div>
                     ))}
             </div>
         </nav>
