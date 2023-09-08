@@ -80,8 +80,9 @@ export class SceneManager
                 {
                     //  Adds a special animations zone to the objectUserData if it doesn't exist
                     objectUserData[ "zone" ] = "_default_animations_zone";
-                    objectUserData[ "type" ] = "interactable";
                 }
+
+                objectUserData[ "type" ] = "interactable";
 
                 //  Adds the same animations to any children of the object
                 const userDataCopy = Object.assign({}, object.userData);
