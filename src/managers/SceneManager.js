@@ -81,9 +81,9 @@ export class SceneManager
                 {
                     //  Adds a special animations zone to the objectUserData if it doesn't exist
                     objectUserData[ "zone" ] = "_default_animations_zone";
-                    objectUserData[ "type" ] = "interactable";
                 }
 
+                objectUserData[ "type" ] = "interactable";
 
                 //  Adds the same animations to any children of the object
                 const userDataCopy = Object.assign({}, object.userData);
@@ -269,7 +269,8 @@ export class SceneManager
         object.getWorldPosition(worldPosition);
 
         // Add the object to a default scene zone if it does not exist
-        if (!sceneZone){
+        if (!sceneZone)
+        {
             sceneZone = this.getOrCreateSceneZone("_default_interactable_zone");
             sceneZone.cameraAnchor = object;
         }
