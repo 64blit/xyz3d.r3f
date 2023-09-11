@@ -5,6 +5,7 @@ import { HtmlOverlay } from './HtmlOverlay.jsx';
 import { ProgressLoader } from './ProgressLoader.jsx';
 import { Environment } from '@react-three/drei';
 import { NavBar } from './NavBar.jsx';
+import { ErrorBoundary } from 'react-error-boundary';
 
 
 export function Xyz3D()
@@ -54,8 +55,11 @@ export function Xyz3D()
                             isDebugging={isDebugging}
                         />
 
-                        {/* Skybox */}
-                        <Environment files={"https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_43d_clear_puresky_1k.hdr"} frames={1} resolution={512} background />
+                        {/* Skybox with an ambient light fallback */}
+
+                        <ErrorBoundary fallback={<ambientLight intensity={10} />}>
+                            <Environment files={"https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_43d_clear_puresky_1k.hdr"} frames={1} resolution={512} background />
+                        </ErrorBoundary>
 
                     </Suspense>
                 </Canvas>

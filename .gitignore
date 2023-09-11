@@ -39,3 +39,4 @@ report.*.json
 
 # .vscode Debugging
 .vscode/*-debug-profile
+yarn.lock
