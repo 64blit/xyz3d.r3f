@@ -4,7 +4,7 @@ import InfinitySVG from "./InfinitySVG";
 
 export function ProgressLoader()
 {
-    const { active, progress, errors, item, loaded, total } = useProgress();
+    const { progress} = useProgress();
 
     return (
         <>

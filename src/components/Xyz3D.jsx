@@ -3,7 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import { SceneXyz3D } from './SceneXyz3D.jsx';
 import { HtmlOverlay } from './HtmlOverlay.jsx';
 import { ProgressLoader } from './ProgressLoader.jsx';
-import { Environment, Sky } from '@react-three/drei';
+import { Environment } from '@react-three/drei';
 import { NavBar } from './NavBar.jsx';
 
 
@@ -55,7 +55,7 @@ export function Xyz3D()
                         />
 
                         {/* Skybox */}
-                        <Environment files={"assets/4k.hdr"} frames={1} resolution={512} background />
+                        <Environment files={"https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_43d_clear_puresky_1k.hdr"} frames={1} resolution={512} background />
 
                     </Suspense>
                 </Canvas>

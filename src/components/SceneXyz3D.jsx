@@ -1,8 +1,8 @@
 
-import React, { useRef, useState, useEffect, componentDidMount, useImperativeHandle } from 'react';
-import { ScrollControls, useAnimations, useGLTF } from "@react-three/drei";
+import React, { useRef, useState, useEffect, useImperativeHandle } from 'react';
+import { useAnimations, useGLTF } from "@react-three/drei";
 
-import { useFrame, useThree } from '@react-three/fiber';
+import { useThree } from '@react-three/fiber';
 
 import { SceneManager } from '../managers/SceneManager.js';
 import { Controls } from './Controls.jsx';
@@ -14,10 +14,9 @@ export const SceneXyz3D = React.forwardRef((props, ref) =>
 {
     const { camera } = useThree();
     const { scene, animations } = useGLTF(props.path);
-    const { mixer, names, actions, clips } = useAnimations(animations, scene);
+    const { actions } = useAnimations(animations, scene);
 
     const [ sceneManager, setSceneManager ] = useState(null);
-    const [ isBusy, setIsBusy ] = useState(false);
     const controlsRef = useRef(null);
 
     useImperativeHandle(ref, () => ({
@@ -52,7 +51,6 @@ export const SceneXyz3D = React.forwardRef((props, ref) =>
     {
         if (camera == null || sceneManager == null || controlsRef.current == null) return;
 
-        setIsBusy(true);
 
         const sceneZone = sceneManager.waypoints[ index ];
 
@@ -70,7 +68,6 @@ export const SceneXyz3D = React.forwardRef((props, ref) =>
     {
         if (camera == null || sceneManager == null) return;
 
-        setIsBusy(true);
 
         const sceneZone = sceneManager.getSceneZone(name);
 
@@ -95,10 +92,7 @@ export const SceneXyz3D = React.forwardRef((props, ref) =>
         const position = sceneZone.cameraAnchor.position;
         const target = sceneZone.cameraTargetPosition;
 
-        controlsRef.current?.setLookAt(...position, ...target, true).then(() =>
-        {
-            setIsBusy(false);
-        });
+        controlsRef.current?.setLookAt(...position, ...target, true);
     }
 
 

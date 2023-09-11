@@ -1,7 +1,6 @@
-import { Box, useHelper } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import React, { useState, useEffect, useRef } from 'react';
-import { Box3, BoxHelper, Vector3 } from 'three';
+import { Box3, Vector3 } from 'three';
 
 
 export function SceneZone(props)
@@ -28,7 +27,6 @@ export function SceneZone(props)
         const cameraSize = sceneData.cameraTarget.getSize(new Vector3());
         cameraViewBoxRef.current.position.copy(sceneData.cameraTargetPosition);
         cameraViewBoxRef.current.scale.set(...cameraSize);
-
 
     });
 
