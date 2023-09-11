@@ -113,10 +113,11 @@ export function SceneZone(props)
         <>
             <group ref={zoneRef}>
                 {sceneData.objects.interactables.map((element, key) => (
-
                     <primitive
                         object={element.object}
                         position={element.worldPosition}
+                        scale={element.scale}
+                        rotation={element.rotation}
                         key={key}
                         onClick={handleInteraction}
                         onPointerEnter={handlePointerEnter}

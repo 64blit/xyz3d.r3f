@@ -131,6 +131,9 @@ export function SceneXyz3D(props)
     // Go to the first scene zone on load
     useEffect(() =>
     {
+        camera.position.set(0, 0, 0);
+        camera.updateProjectionMatrix();
+        
         goToSceneZoneByIndex(0);
     }, [ sceneManager ]);
 
