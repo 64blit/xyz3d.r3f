@@ -1,5 +1,5 @@
 import CameraControls from 'camera-controls'
-import React } from 'react'
+import React from 'react'
 import { extend, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three';
 
