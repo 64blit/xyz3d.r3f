@@ -36,10 +36,10 @@ Remove-Item -Path $preview_dest\assets\scene.glb
 Remove-Item -Path $r3f_dest\public\assets\scene.glb
 
 # delete any lock files in the desitions
-Remove-Item -Path $preview_dest\yarn.lock
-Remove-Item -Path $r3f_dest\yarn.lock
-Remove-Item -Path $preview_dest\package-lock.json
-Remove-Item -Path $r3f_dest\package-lock.json
+Remove-Item -Path $preview_dest\yarn.lock -ErrorAction SilentlyContinue
+Remove-Item -Path $r3f_dest\yarn.lock -ErrorAction SilentlyContinue
+Remove-Item -Path $preview_dest\package-lock.json -ErrorAction SilentlyContinue
+Remove-Item -Path $r3f_dest\package-lock.json -ErrorAction SilentlyContinue
 
 # Pause the script
 Write-Host "Done!"
