@@ -87,7 +87,7 @@ export function SceneXyz3D(props)
     // Function to handle scrolling
     const scrollHandler = () =>
     {
-        if (isBusy || !scroll || !camera || !sceneManager) return;
+        if (isBusy || !scroll || !camera || !sceneManager || !controlsRef.current) return;
 
         const scaledScrollOffset = scroll.offset * (sceneManager.waypoints.length - 1);
         const currentZoneIndex = Math.floor(scaledScrollOffset);
@@ -99,14 +99,11 @@ export function SceneXyz3D(props)
 
         const percent = scaledScrollOffset % 1;
 
-        controlsRef.current?.lerpLookAt(
-            ...currentZone.cameraAnchor.position,
-            ...currentZone.cameraTargetPosition,
-            ...nextZone.cameraAnchor.position,
-            ...nextZone.cameraTargetPosition,
-            percent,
-            true
-        );
+        // Use slerp to interpolate camera position and target
+        const cameraPosition = currentZone.cameraAnchor.position.clone().lerp(nextZone.cameraAnchor.position, percent);
+        const cameraTarget = currentZone.cameraTargetPosition.clone().lerp(nextZone.cameraTargetPosition, percent);
+
+        controlsRef.current.setLookAt(...cameraPosition, ...cameraTarget, true);
     };
 
     useFrame(() =>
@@ -133,7 +130,7 @@ export function SceneXyz3D(props)
     {
         camera.position.set(0, 0, 0);
         camera.updateProjectionMatrix();
-        
+
         goToSceneZoneByIndex(0);
     }, [ sceneManager ]);
 
