@@ -2,7 +2,7 @@
 import React, { useRef, useState, useEffect, useImperativeHandle } from 'react';
 import { useAnimations, useGLTF } from "@react-three/drei";
 
-import { useThree } from '@react-three/fiber';
+import { useThree, useFrame } from '@react-three/fiber';
 
 import { SceneManager } from '../managers/SceneManager.js';
 import { Controls } from './Controls.jsx';
@@ -16,7 +16,10 @@ export const SceneXyz3D = React.forwardRef((props, ref) =>
     const { scene, animations } = useGLTF(props.path);
     const { actions } = useAnimations(animations, scene);
 
+    const [ zoomObject, setZoomObject ] = useState(null);
+    const [ isPointerDown, setPointerDown ] = useState(false);
     const [ sceneManager, setSceneManager ] = useState(null);
+
     const controlsRef = useRef(null);
 
     useImperativeHandle(ref, () => ({
@@ -96,6 +99,49 @@ export const SceneXyz3D = React.forwardRef((props, ref) =>
     }
 
 
+    // Function to handle zooming
+    const zoomHandler = (scene, pointer, raycaster) =>
+    {
+        if (!isPointerDown) return;
+        if (zoomObject) return;
+
+        raycaster.setFromCamera(pointer, controlsRef.current.camera);
+
+        // Calculate objects intersecting the picking ray
+        const intersects = raycaster.intersectObjects(scene.children);
+        if (intersects.length < 0) return;
+
+        intersects.sort((a, b) => a.distance - b.distance);
+
+        controlsRef.current?.fitToBox(intersects[ 0 ].object, true);
+        setZoomObject(intersects[ 0 ].object);
+    }
+
+
+    // UseFrame hook for animations and interactions
+    useFrame(({ scene, pointer, raycaster }) =>
+    {
+        if (!camera || !sceneManager || !controlsRef.current) return;
+        zoomHandler(scene, pointer, raycaster);
+    });
+
+    // Event handler for pointer down
+    const onPointerDown = (event) =>
+    {
+        setPointerDown(true);
+        setZoomObject(null);
+
+        event.stopPropagation();
+    }
+
+    // Event handler for pointer up
+    const onPointerUp = (event) =>
+    {
+        setPointerDown(false);
+        setZoomObject(null);
+
+        event.stopPropagation();
+    }
 
     // set up scene manager
     useEffect(() =>
@@ -129,8 +175,13 @@ export const SceneXyz3D = React.forwardRef((props, ref) =>
             <Controls innerRef={controlsRef} />
 
 
-            <primitive object={scene}>
-
+            <primitive
+                object={scene}
+                onDoubleClick={onPointerDown}
+                onPointerUp={onPointerUp}
+                onPointerDown={onPointerUp}
+                onPointerMissed={onPointerUp}
+            >
                 {
                     controlsRef.current &&
                     sceneManager &&
@@ -157,3 +208,4 @@ export const SceneXyz3D = React.forwardRef((props, ref) =>
     );
 
 });
+
