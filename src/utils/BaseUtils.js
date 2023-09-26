@@ -85,3 +85,9 @@ export function clamp(num, min = 0, max = 100)
 {
     return Math.min(Math.max(num, min), max);
 }
+
+export function basicLerp(v0, v1, t)
+{
+    let val = v0 * (1 - t) + v1 * t
+    return val
+}
