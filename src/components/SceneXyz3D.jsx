@@ -113,7 +113,7 @@ export function SceneXyz3D(props)
     // Function to handle scrolling
     const scrollHandler = () =>
     {
-        if (isPointerDown) return;
+        if (isPointerDown && scroll.delta < .0004) return;
 
         const scaledScrollOffset = scroll.offset * (sceneManager.waypoints.length - 1);
         const currentZoneIndex = Math.floor(scaledScrollOffset);
@@ -168,9 +168,6 @@ export function SceneXyz3D(props)
         setZoomObject(null);
 
         event.stopPropagation();
-
-        // Optionally capture the target
-        event.target.setPointerCapture(event.pointerId);
     }
 
     // Event handler for pointer up
@@ -179,7 +176,6 @@ export function SceneXyz3D(props)
         setPointerDown(false);
         setZoomObject(null);
 
-        event.target.releasePointerCapture(event.pointerId);
         event.stopPropagation();
     }
 
@@ -190,8 +186,9 @@ export function SceneXyz3D(props)
                 <SceneZoneWrapper setScroll={setScroll}>
                     <primitive
                         object={scene}
-                        onPointerDown={onPointerDown}
+                        onDoubleClick={onPointerDown}
                         onPointerUp={onPointerUp}
+                        onPointerDown={onPointerUp}
                         onPointerMissed={onPointerUp}
                     >
                         {controlsRef.current && sceneManager &&
