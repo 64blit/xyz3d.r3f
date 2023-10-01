@@ -35,7 +35,7 @@ export const SceneXyz3D = React.forwardRef((props, ref) =>
         if (actions[ name ] && actions[ name ].isRunning() == false)
         {
 
-            console.log("Playing animation: ", name)
+            // console.log("Playing animation: ", name)
 
             actions[ name ].setLoop(loopType);
             actions[ name ].clampWhenFinished = true;
