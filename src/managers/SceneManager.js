@@ -75,6 +75,7 @@ export class SceneManager
                     animations = animations.replace(/\s/g, '').split(',');
                 }
 
+
                 objectUserData[ userDataKey ] = animations;
                 if (!('zone' in objectUserData))
                 {
@@ -93,6 +94,8 @@ export class SceneManager
                 });
 
             }
+
+
         };
 
         extractAnimations('OnPointerEnterAnimations', object.userData);
@@ -295,6 +298,7 @@ export class SceneManager
             object.userData[ "zone" ] = "_default_interactable_zone";
         }
     }
+
     // Get looping animation data
     getLoopingAnimations()
     {
@@ -305,6 +309,7 @@ export class SceneManager
     fixZones()
     {
         this.fixEmptyZones();
+        const padding = .05;
 
         // Move the camera anchor to ensure all scene zone content is in the camera frustum
         this.sceneZones.forEach(sceneZone =>
@@ -319,8 +324,12 @@ export class SceneManager
             const target = sceneZone.cameraTargetPosition;
             const targetBox = sceneZone.cameraTarget;
 
-            const framingDistance = this.calculateFramingDistance(targetBox, 1.15); // 1.15 adds a 15% padding to the scene zone content
-            this.orbitCameraTo(position, target, framingDistance, false);
+            // Move the camera position and rotation to the camera anchor
+            this.orbitCameraTo(position, target, 0, false);
+
+            // override the framing distance with the fitToBox method
+            this.controls.update(0);
+            this.controls.fitToBox(targetBox, false, { paddingLeft: padding, paddingRight: padding, paddingTop: padding, paddingBottom: padding });
             this.controls.update(0);
 
             sceneZone.cameraAnchor.position.x = this.controls.camera.position.x;
@@ -339,15 +348,18 @@ export class SceneManager
 
         // Update the camera position based on the first waypoint
         const waypoint = this.waypoints.find(waypoint => waypoint.index === 0);
+
         if (!waypoint)
         {
             return;
         }
+
         this.orbitCameraTo(waypoint.cameraAnchor.position, waypoint.cameraTargetPosition, 1, false);
+
     }
 
     // Orbit the camera to a specified position and look target
-    orbitCameraTo(positionTarget, lookTarget, camDist, damp = false)
+    orbitCameraTo(positionTarget, lookTarget, camDist, damp = false, box = null)
     {
         // Ensure the camera is positioned further than the distance to the anchor point
         if (camDist < positionTarget.distanceTo(lookTarget))
@@ -364,32 +376,7 @@ export class SceneManager
         }
 
         // Set the camera position and look target
-        return this.controls.setLookAt(...newPositionTarget, ...lookTarget, damp);
+        this.controls.setLookAt(...newPositionTarget, ...lookTarget, damp);
     }
 
-    // Calculate the framing distance for camera
-    calculateFramingDistance(sceneBox, offset)
-    {
-        // Calculate the size of the sceneBox
-        let boxSize = new Vector3();
-        sceneBox.getSize(boxSize);
-        boxSize = boxSize.length();
-
-        if (this.controls.camera.aspect > 1)
-        {
-            boxSize = boxSize * this.controls.camera.aspect;
-        }
-
-        // Calculate the half vertical field of view (FOV)
-        const halfFOVVertical = (Math.PI * this.controls.camera.fov) / 360;
-
-        // Calculate the half horizontal FOV using the aspect ratio
-        const halfFOVHorizontal = Math.atan(Math.tan(halfFOVVertical) * this.controls.camera.aspect);
-
-        // Calculate the required camera distance for proper framing
-        const requiredCameraDist = boxSize / (2 * Math.tan(halfFOVHorizontal));
-
-        // Apply offset to the calculated distance
-        return requiredCameraDist * offset;
-    }
 }
