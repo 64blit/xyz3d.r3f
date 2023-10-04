@@ -24,8 +24,8 @@ export function SceneZone(props)
         boxMeshRef.current.position.copy(box.getCenter(new Vector3()));
         boxMeshRef.current.scale.set(...size);
 
-        const cameraSize = sceneData.cameraTarget.getSize(new Vector3());
-        cameraViewBoxRef.current.position.copy(sceneData.cameraTargetPosition);
+        const cameraSize = sceneData.camera.target.getSize(new Vector3());
+        cameraViewBoxRef.current.position.copy(sceneData.camera.targetPosition);
         cameraViewBoxRef.current.scale.set(...cameraSize);
 
     });
