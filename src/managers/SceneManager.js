@@ -120,9 +120,11 @@ export class SceneManager
         const newSceneZone = {
             name: sceneZoneName,
             index: -1,
-            cameraAnchor: null,
-            cameraTarget: new Box3(),
-            cameraTargetPosition: new Vector3(),
+            camera: {
+                anchor: null,
+                target: new Box3(),
+                targetPosition: new Vector3(),
+            },
             objects: {
                 count: 0,
                 interactables: [],
@@ -188,9 +190,9 @@ export class SceneManager
         if (sceneZone && !isCameraAnchor)
         {
             const target = new Vector3();
-            sceneZone.cameraTarget.expandByObject(object);
-            sceneZone.cameraTarget.getCenter(target);
-            sceneZone.cameraTargetPosition = target;
+            sceneZone.camera.target.expandByObject(object);
+            sceneZone.camera.target.getCenter(target);
+            sceneZone.camera.targetPosition = target;
             sceneZone.objects.count++;
         }
     }
@@ -203,15 +205,15 @@ export class SceneManager
             if (sceneZone.objects.count === 0)
             {
                 // Calculate camera target position based on camera anchor rotation
-                const cameraAnchor = sceneZone.cameraAnchor;
+                const cameraAnchor = sceneZone.camera.anchor;
                 const cameraAnchorPosition = cameraAnchor.position;
                 const cameraAnchorRotation = cameraAnchor.quaternion;
                 const cameraAnchorDirection = new Vector3(0, 0, -1);
                 cameraAnchorDirection.applyQuaternion(cameraAnchorRotation);
                 const cameraTargetPosition = new Vector3();
                 cameraTargetPosition.copy(cameraAnchorDirection).add(cameraAnchorPosition);
-                sceneZone.cameraTargetPosition = cameraTargetPosition;
-                sceneZone.cameraTarget.setFromCenterAndSize(cameraTargetPosition, new Vector3(1, 1, 1));
+                sceneZone.camera.targetPosition = cameraTargetPosition;
+                sceneZone.camera.target.setFromCenterAndSize(cameraTargetPosition, new Vector3(1, 1, 1));
             }
         });
     }
@@ -225,18 +227,18 @@ export class SceneManager
             if (sceneZone)
             {
                 // Use camera target position from scene zone
-                element.cameraTargetPosition = sceneZone.cameraTargetPosition;
+                element.camera.targetPosition = sceneZone.camera.targetPosition;
             } else
             {
                 // Use camera anchor direction to point the camera
-                const cameraAnchor = element.cameraAnchor;
+                const cameraAnchor = element.camera.anchor;
                 const cameraAnchorPosition = cameraAnchor.position;
                 const cameraAnchorRotation = cameraAnchor.quaternion;
                 const cameraAnchorDirection = new Vector3(0, 0, -1);
                 cameraAnchorDirection.applyQuaternion(cameraAnchorRotation);
                 const cameraTargetPosition = new Vector3();
                 cameraTargetPosition.copy(cameraAnchorDirection).add(cameraAnchorPosition);
-                element.cameraTargetPosition = cameraTargetPosition;
+                element.camera.targetPosition = cameraTargetPosition;
             }
         });
     }
@@ -250,14 +252,16 @@ export class SceneManager
         if (sceneZone)
         {
             sceneZone.index = cameraAnchorIndex;
-            sceneZone.cameraAnchor = anchorObject;
+            sceneZone.camera.anchor = anchorObject;
         }
 
         this.waypoints.push({
             index: cameraAnchorIndex,
-            cameraAnchor: anchorObject,
-            cameraTarget: new Box3(),
-            cameraTargetPosition: new Vector3()
+            camera: {
+                anchor: anchorObject,
+                target: new Box3(),
+                targetPosition: new Vector3(),
+            }
         });
     }
 
@@ -272,7 +276,7 @@ export class SceneManager
         if (!sceneZone)
         {
             sceneZone = this.getOrCreateSceneZone("_default_interactable_zone");
-            sceneZone.cameraAnchor = object;
+            sceneZone.camera.anchor = object;
         }
 
         sceneZone.objects.interactables.push({ object, worldPosition });
@@ -315,35 +319,37 @@ export class SceneManager
         this.sceneZones.forEach(sceneZone =>
         {
 
-            if (sceneZone.objects.count === 0 || sceneZone.cameraAnchor === null)
+            if (sceneZone.objects.count === 0 || sceneZone.camera.anchor === null)
             {
                 return;
             }
 
-            const position = sceneZone.cameraAnchor.position;
-            const target = sceneZone.cameraTargetPosition;
-            const targetBox = sceneZone.cameraTarget;
+            const position = sceneZone.camera.anchor.position;
+            const target = sceneZone.camera.targetPosition;
+            const targetBox = sceneZone.camera.target;
+
+            const framingDistance = this.getFramingDistance(targetBox, 1);
 
             // Move the camera position and rotation to the camera anchor
-            this.orbitCameraTo(position, target, 0, false);
-
+            this.orbitCameraTo(position, target, framingDistance, false);
             // override the framing distance with the fitToBox method
             this.controls.update(0);
-            this.controls.fitToBox(targetBox, false, { paddingLeft: padding, paddingRight: padding, paddingTop: padding, paddingBottom: padding });
-            this.controls.update(0);
 
-            sceneZone.cameraAnchor.position.x = this.controls.camera.position.x;
-            sceneZone.cameraAnchor.position.y = this.controls.camera.position.y;
-            sceneZone.cameraAnchor.position.z = this.controls.camera.position.z;
+            // this.controls.fitToBox(targetBox, false, { paddingLeft: padding, paddingRight: padding, paddingTop: padding, paddingBottom: padding });
+            // this.controls.update(0);
+
+            sceneZone.camera.anchor.position.x = this.controls.camera.position.x;
+            sceneZone.camera.anchor.position.y = this.controls.camera.position.y;
+            sceneZone.camera.anchor.position.z = this.controls.camera.position.z;
 
             // Find the waypoint with index equal to sceneZone.index
             const waypoint = this.waypoints.find(waypoint => waypoint.index === sceneZone.index);
 
-            waypoint.cameraAnchor.position.x = this.controls.camera.position.x;
-            waypoint.cameraAnchor.position.y = this.controls.camera.position.y;
-            waypoint.cameraAnchor.position.z = this.controls.camera.position.z;
+            waypoint.camera.anchor.position.x = this.controls.camera.position.x;
+            waypoint.camera.anchor.position.y = this.controls.camera.position.y;
+            waypoint.camera.anchor.position.z = this.controls.camera.position.z;
 
-            waypoint.cameraTargetPosition = sceneZone.cameraTargetPosition;
+            waypoint.camera.targetPosition = sceneZone.camera.targetPosition;
         });
 
         // Update the camera position based on the first waypoint
@@ -354,7 +360,7 @@ export class SceneManager
             return;
         }
 
-        this.orbitCameraTo(waypoint.cameraAnchor.position, waypoint.cameraTargetPosition, 1, false);
+        this.orbitCameraTo(waypoint.camera.anchor.position, waypoint.camera.targetPosition, 1, false);
 
     }
 
@@ -377,6 +383,32 @@ export class SceneManager
 
         // Set the camera position and look target
         this.controls.setLookAt(...newPositionTarget, ...lookTarget, damp);
+    }
+
+    // Calculate the framing distance for camera
+    getFramingDistance(sceneBox, offset)
+    {
+        // Calculate the size of the sceneBox
+        let boxSize = new Vector3();
+        sceneBox.getSize(boxSize);
+        boxSize = boxSize.length();
+
+        if (this.controls.camera.aspect > 1)
+        {
+            boxSize = boxSize * this.controls.camera.aspect;
+        }
+
+        // Calculate the half vertical field of view (FOV)
+        const halfFOVVertical = (Math.PI * this.controls.camera.fov) / 360;
+
+        // Calculate the half horizontal FOV using the aspect ratio
+        const halfFOVHorizontal = Math.atan(Math.tan(halfFOVVertical) * this.controls.camera.aspect);
+
+        // Calculate the required camera distance for proper framing
+        const requiredCameraDist = boxSize / (2 * Math.tan(halfFOVHorizontal));
+
+        // Apply offset to the calculated distance
+        return requiredCameraDist * offset;
     }
 
 }
