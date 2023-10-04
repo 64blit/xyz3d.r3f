@@ -10,7 +10,7 @@ const generateKey = (pre) =>
 export function NavBar(props)
 {
     const [ sceneManagerInitialized, setSceneManagerInitialized ] = useState(false);
-    const [ sceneZones, setSceneZones ] = useState(null);
+    const [ sceneZones, setSceneZones ] = useState([]);
     const [ navStyles, setNavStyles ] = useState(null);
 
     useEffect(() =>
@@ -47,9 +47,10 @@ export function NavBar(props)
     }
 
     return (
-        <nav className="fixed top-0 right-0 flex flex-row p-4 w-screen">
+        <>
+            {sceneZones.length > 1 && <nav className="fixed top-0 right-0 flex flex-row p-4 w-screen">
 
-            <div className="flex justify-end w-full max-w-full">
+                <div className="flex justify-end w-full max-w-full">
                     <ul className="hidden md:flex md:flex-row-reverse items-center text-[18px] font-semibold  w-full max-w-full">
                         {sceneManagerInitialized &&
                             sceneZones?.map((sceneZone, index) => (
@@ -73,7 +74,7 @@ export function NavBar(props)
                                 {sceneManagerInitialized &&
                                     sceneZones?.map((sceneZone, index) => (
                                         <a href="#" key={generateKey(index)}>
-                                            <li onClick={navigateTo(sceneZone.name)}  className="text-stone-600 p-5 transition duration-500 ease-in-out  hover:bg-black hover:text-white hover:scale-125 font-medium mx-4 my-1 hover:underline hover:italic"> {sceneZone.name}
+                                            <li onClick={navigateTo(sceneZone.name)} className="text-stone-600 p-5 transition duration-500 ease-in-out  hover:bg-black hover:text-white hover:scale-125 font-medium mx-4 my-1 hover:underline hover:italic"> {sceneZone.name}
                                             </li>
                                         </a>
                                     ))}
@@ -81,9 +82,10 @@ export function NavBar(props)
                             </ul>
                         </div>
                     </button>
-                
 
-            </div>
-        </nav>
+
+                </div>
+            </nav>}
+        </>
     );
 }
