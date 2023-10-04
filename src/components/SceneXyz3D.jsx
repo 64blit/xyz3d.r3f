@@ -80,11 +80,11 @@ export function SceneXyz3D(props)
 
         scrollTarget.scrollTo({ top: scrollTop, behavior: "smooth" });
 
-        const position = sceneZone.cameraAnchor?.position;
+        const position = sceneZone.camera.anchor?.position;
 
         if (!position) return;
 
-        const target = sceneZone.cameraTargetPosition;
+        const target = sceneZone.camera.targetPosition;
 
         controlsRef.current?.setLookAt(...position, ...target, true).then(() =>
         {
@@ -126,10 +126,19 @@ export function SceneXyz3D(props)
         const percent = scaledScrollOffset % 1;
 
         // Use slerp to interpolate camera position and target
-        const cameraPosition = currentZone.cameraAnchor.position.clone().lerp(nextZone.cameraAnchor.position, percent);
-        const cameraTarget = currentZone.cameraTargetPosition.clone().lerp(nextZone.cameraTargetPosition, percent);
+        const cameraPosition = currentZone.camera.anchor.position.clone().lerp(nextZone.camera.anchor.position, percent);
+        const cameraTarget = currentZone.camera.targetPosition.clone().lerp(nextZone.camera.targetPosition, percent);
 
         controlsRef.current.setLookAt(...cameraPosition, ...cameraTarget, true);
+
+        if ("fov" in currentZone.camera.anchor)
+        {
+            controlsRef.current.camera.fov = basicLerp(currentZone.camera.anchor.fov, nextZone.camera.anchor.fov, percent);
+            controlsRef.current.camera.near = basicLerp(currentZone.camera.anchor.near, nextZone.camera.anchor.near, percent);
+            controlsRef.current.camera.far = basicLerp(currentZone.camera.anchor.far, nextZone.camera.anchor.far, percent);
+            controlsRef.current.camera.updateProjectionMatrix();
+        }
+
     };
 
     // UseFrame hook for animations and interactions
