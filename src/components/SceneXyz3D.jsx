@@ -9,6 +9,9 @@ import { Controls } from './Controls.jsx';
 import { SceneZone } from './SceneZone.jsx';
 import * as THREE from 'three';
 
+import { gsap } from "gsap";
+
+// import { perf } from "";
 
 export const SceneXyz3D = React.forwardRef((props, ref) =>
 {
@@ -86,16 +89,22 @@ export const SceneXyz3D = React.forwardRef((props, ref) =>
 
     const goToSceneZone = (sceneZone) =>
     {
-        if (sceneZone == null)
-        {
-            return;
-        }
+        if (sceneZone == null) return;
 
 
-        const position = sceneZone.cameraAnchor.position;
-        const target = sceneZone.cameraTargetPosition;
+        const position = sceneZone.camera.anchor.position;
+        const target = sceneZone.camera.targetPosition;
 
         controlsRef.current?.setLookAt(...position, ...target, true);
+
+        if (! "fov" in sceneZone.camera.anchor) return
+
+        const tl = gsap.timeline();
+        tl.fromTo(controlsRef.current?.camera, { fov: controlsRef.current?.camera.fov }, { fov: sceneZone.camera.anchor.fov, duration: 1, onUpdate: () => controlsRef.current?.camera.updateProjectionMatrix() });
+        tl.fromTo(controlsRef.current?.camera, { near: controlsRef.current?.camera.near }, { near: sceneZone.camera.anchor.near, duration: 1 });
+        tl.fromTo(controlsRef.current?.camera, { far: controlsRef.current?.camera.far }, { far: sceneZone.camera.anchor.far, duration: 1 });
+
+        tl.play();
     }
 
 
