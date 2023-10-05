@@ -102,9 +102,8 @@ export function SceneXyz3D(props)
 
         // Calculate objects intersecting the picking ray
         const intersects = raycaster.intersectObjects(scene.children);
-        if (intersects.length < 0) return;
 
-        intersects.sort((a, b) => a.distance - b.distance);
+        if (intersects.length <= 0) return;
 
         controlsRef.current?.fitToBox(intersects[ 0 ].object, true);
         setZoomObject(intersects[ 0 ].object);
