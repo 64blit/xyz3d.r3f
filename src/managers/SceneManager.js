@@ -199,9 +199,13 @@ export class SceneManager
             sceneZone.objects.count++;
         }
 
+        if ("collidable" in object.userData)
+        {
+            this.collidables.push(object);
+        }
+
         if (object.name.includes("collidable"))
         {
-            console.log("collidable added, ", object.name)
             this.collidables.push(object);
         }
     }
