@@ -1,7 +1,7 @@
 module.exports = {
   root: true,
   parser: "@typescript-eslint/parser",
-  plugins: ["@typescript-eslint"],
+  plugins: [ "@typescript-eslint" ],
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
@@ -23,6 +23,11 @@ module.exports = {
     // Next.js adds React to scope by default, though we'll probably import it in every file anyway
     "react/react-in-jsx-scope": "off",
     "@typescript-eslint/ban-ts-comment": "off",
+    "react/no-unknown-property": ['warn', { ignore: ['css', 'tsx' ] } ],
+    // allow possible react null objects
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off"
   },
   settings: {
     react: {
@@ -31,7 +36,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: [".eslintrc.js"],
+      files: [ ".eslintrc.js" ],
       env: {
         node: true,
       },

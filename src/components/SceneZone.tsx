@@ -9,26 +9,25 @@ export function SceneZone(props)
 
     const [ hovered, setHovered ] = useState(false);
 
-    const zoneRef = useRef();
-    const boxMeshRef = useRef();
-    const cameraViewBoxRef = useRef();
+    const zoneRef = useRef(null);
+    const boxMeshRef = useRef(null);
+    const cameraViewBoxRef = useRef(null);
 
     useFrame(() =>
     {
         if (!props.isDebugging) return;
         if (!zoneRef.current) return;
+        if (!boxMeshRef.current) return;
 
-        const box = new Box3();
-        box.setFromObject(zoneRef.current);
-        const size = box.getSize(new Vector3());
-        boxMeshRef.current.position.copy(box.getCenter(new Vector3()));
-        boxMeshRef.current.scale.set(...size);
+        // const box = new Box3();
+        // box.setFromObject(zoneRef.current);
+        // const size = box.getSize(new Vector3());
+        // boxMeshRef.current?.position.copy(box.getCenter(new Vector3()));
+        // boxMeshRef.current?.scale.set(...size);
 
-        const cameraSize = sceneData.cameraTarget.getSize(new Vector3());
-        cameraViewBoxRef.current.position.copy(sceneData.cameraTargetPosition);
-        cameraViewBoxRef.current.scale.set(...cameraSize);
-
-
+        // const cameraSize = sceneData.cameraTarget.getSize(new Vector3());
+        // cameraViewBoxRef.current?.position.copy(sceneData.cameraTargetPosition);
+        // cameraViewBoxRef.current?.scale.set(...cameraSize);
     });
 
     useEffect(() =>

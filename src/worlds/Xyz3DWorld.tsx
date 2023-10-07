@@ -7,8 +7,6 @@ import { HtmlOverlay } from "../components/HtmlOverlay";
 import { useThree } from "@react-three/fiber";
 import { SceneZoneWrapper } from "components/SceneZoneWrapper";
 
-import { Perf } from 'r3f-perf'
-
 export default function Xyz3DWorld()
 {
 
@@ -45,7 +43,7 @@ export default function Xyz3DWorld()
           isDebugging={isDebugging}
         />
 
-        <ErrorBoundary fallback={<ambientLight intensity={10} />}>
+        <ErrorBoundary fallback={<ambientLight />}>
 
           <HDRI
             src="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_43d_clear_puresky_1k.hdr"
