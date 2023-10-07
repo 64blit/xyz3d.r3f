@@ -7,7 +7,6 @@ import { SceneZone } from './SceneZone.jsx';
 import * as THREE from 'three';
 import { SceneZoneWrapper } from './SceneZoneWrapper.jsx';
 import { basicLerp, map } from '../utils/BaseUtils.js';
-import { gsap } from 'gsap';
 
 export function SceneXyz3D(props)
 {
@@ -107,6 +106,7 @@ export function SceneXyz3D(props)
         if (intersects.length <= 0) return;
 
         controlsRef.current?.fitToBox(intersects[ 0 ].object, true);
+
         setZoomObject(intersects[ 0 ].object);
     }
 
@@ -123,7 +123,7 @@ export function SceneXyz3D(props)
 
         if (!currentZone || !nextZone) return;
 
-        const percent = scaledScrollOffset % 1;
+        const percent = (scaledScrollOffset % 1) * 1.15;
 
         // Use slerp to interpolate camera position and target
         const cameraPosition = currentZone.camera.anchor.position.clone().lerp(nextZone.camera.anchor.position, percent);
@@ -134,9 +134,11 @@ export function SceneXyz3D(props)
         if ("fov" in currentZone.camera.anchor)
         {
             controlsRef.current.camera.fov = basicLerp(currentZone.camera.anchor.fov, nextZone.camera.anchor.fov, percent);
+            controlsRef.current.update(0);
             controlsRef.current.camera.near = basicLerp(currentZone.camera.anchor.near, nextZone.camera.anchor.near, percent);
+            controlsRef.current.update(0);
             controlsRef.current.camera.far = basicLerp(currentZone.camera.anchor.far, nextZone.camera.anchor.far, percent);
-            controlsRef.current.camera.updateProjectionMatrix();
+            controlsRef.current.update(0);
         }
 
     };
