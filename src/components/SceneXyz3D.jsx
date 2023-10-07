@@ -6,7 +6,6 @@ import { Controls } from './Controls.jsx';
 import { SceneZone } from './SceneZone.jsx';
 import * as THREE from 'three';
 import { SceneZoneWrapper } from './SceneZoneWrapper.jsx';
-import { basicLerp, map } from '../utils/BaseUtils.js';
 import { gsap } from 'gsap';
 
 export function SceneXyz3D(props)
@@ -131,13 +130,14 @@ export function SceneXyz3D(props)
 
         controlsRef.current.setLookAt(...cameraPosition, ...cameraTarget, true);
 
-        if ("fov" in currentZone.camera.anchor)
-        {
-            controlsRef.current.camera.fov = basicLerp(currentZone.camera.anchor.fov, nextZone.camera.anchor.fov, percent);
-            controlsRef.current.camera.near = basicLerp(currentZone.camera.anchor.near, nextZone.camera.anchor.near, percent);
-            controlsRef.current.camera.far = basicLerp(currentZone.camera.anchor.far, nextZone.camera.anchor.far, percent);
-            controlsRef.current.camera.updateProjectionMatrix();
-        }
+        if (! "fov" in sceneZone.camera.anchor) return
+
+        const tl = gsap.timeline();
+        tl.fromTo(controlsRef.current?.camera, { fov: controlsRef.current?.camera.fov }, { fov: sceneZone.camera.anchor.fov, duration: 1, onUpdate: () => controlsRef.current?.camera.updateProjectionMatrix() });
+        tl.fromTo(controlsRef.current?.camera, { near: controlsRef.current?.camera.near }, { near: sceneZone.camera.anchor.near, duration: 1 });
+        tl.fromTo(controlsRef.current?.camera, { far: controlsRef.current?.camera.far }, { far: sceneZone.camera.anchor.far, duration: 1 });
+
+        tl.play();
 
     };
 
