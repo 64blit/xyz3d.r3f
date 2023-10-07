@@ -7,6 +7,7 @@ import { SceneZone } from './SceneZone.jsx';
 import * as THREE from 'three';
 import { SceneZoneWrapper } from './SceneZoneWrapper.jsx';
 import { basicLerp, map } from '../utils/BaseUtils.js';
+import { gsap } from 'gsap';
 
 export function SceneXyz3D(props)
 {

@@ -6,6 +6,7 @@
     "autoprefixer": "^10.4.14",
     "camera-controls": "^2.4.1",
     "gltfjsx": "^6.1.4",
+    "gsap": "^3.12.2",
     "next": "^13.4.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
