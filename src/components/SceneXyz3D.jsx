@@ -11,8 +11,6 @@ import * as THREE from 'three';
 
 import { gsap } from "gsap";
 
-// import { perf } from "";
-
 export const SceneXyz3D = React.forwardRef((props, ref) =>
 {
     const { camera } = useThree();
