@@ -10,7 +10,8 @@ function FallbackMessage()
     );
 }
 
-export class ErrorBoundary extends React.Component
+
+export class ErrorBoundary extends React.Component<any, any>
 {
     constructor(props)
     {
