@@ -23,11 +23,17 @@ module.exports = {
     // Next.js adds React to scope by default, though we'll probably import it in every file anyway
     "react/react-in-jsx-scope": "off",
     "@typescript-eslint/ban-ts-comment": "off",
-    "react/no-unknown-property": ['warn', { ignore: ['css', 'tsx' ] } ],
-    // allow possible react null objects
-    "@typescript-eslint/no-non-null-assertion": "off",
-    "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/explicit-module-boundary-types": "off"
+    // we don't need this validation for now
+    "@typescript-eslint/no-unused-vars": "off",
+    //console logs are fine
+    "no-console": "off",
+    "react/no-unknown-property": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "react/no-unescaped-entities": "off"
+  },
+  env: {
+    node: true,
+    browser: true,
   },
   settings: {
     react: {

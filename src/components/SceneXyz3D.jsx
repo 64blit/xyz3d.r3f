@@ -12,14 +12,11 @@ export default function SceneXyz3D({
     path,
     setShowPopup,
     setPopupContent,
-    isDebugging,
-    setIsInitialized,
-    children
+    isDebugging
 })
 {
     const { scene, animations } = useGLTF(path);
     const { ref, mixer, names, actions, clips } = useAnimations(animations, scene);
-    const { camera } = useThree();
 
     const [ sceneManager, setSceneManager ] = useState(null);
     const [ interactables, setInteractables ] = useState(null);
@@ -99,7 +96,6 @@ export default function SceneXyz3D({
         <primitive object={scene}>
             {interactables}
             {collidables}
-            {children}
         </primitive>
     );
 }
