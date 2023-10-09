@@ -9,6 +9,7 @@ module.exports = {
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
     "prettier/@typescript-eslint",
+    "plugin:@next/next/recommended",
   ],
   rules: {
     // sometimes required for workarounds, perhaps change both of these to warn in the future

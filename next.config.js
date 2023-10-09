@@ -7,14 +7,14 @@ const webpack = require('webpack');
 const nextConfig = {
     output: 'export',
     // Optional: Change the output directory `out` -> `dist`
-    distDir: 'dist',
+    // distDir: 'dist',
 
-    experimental: false,
+    experimental: {},
     webpack: (config, { isServer }) =>
     {
         // Add the module you want to exclude to the externals list
         config.externals = {
-            'critters': 'critters',
+            // 'critters': 'critters',
             // '@react-three/cannon': 'window.r3fc',
         };
 

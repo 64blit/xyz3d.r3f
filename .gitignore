@@ -1,4 +1,4 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# See https: //help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
 /node_modules
@@ -186,3 +186,49 @@ dist/static/webpack/webpack.bdca930794450b73.hot-update.js
 dist/static/webpack/webpack.d90f6231a26e4e0c.hot-update.js
 dist/static/webpack/webpack.ddbd9b6a8baac071.hot-update.js
 dist/trace
+dist/BUILD_ID
+dist/cache/.tsbuildinfo
+dist/cache/eslint/.cache_8rh6i2
+dist/cache/webpack/client-production/index.pack.old
+dist/export-detail.json
+dist/prerender-manifest.js
+dist/required-server-files.json
+dist/routes-manifest.json
+dist/server/chunks/126.js
+dist/server/chunks/133.js
+dist/server/chunks/157.js
+dist/server/chunks/27.js
+dist/server/chunks/356.js
+dist/server/chunks/439.js
+dist/server/chunks/450.js
+dist/server/chunks/480.js
+dist/server/chunks/499.js
+dist/server/chunks/969.js
+dist/server/chunks/font-manifest.json
+dist/server/font-manifest.json
+dist/server/pages/_app.js.nft.json
+dist/server/pages/_document.js.nft.json
+dist/server/pages/_error.js.nft.json
+dist/server/pages/index.js.nft.json
+dist/static/chunks/196.81c458cc41847a3c.js
+dist/static/chunks/27.9b485c7cace761c1.js
+dist/static/chunks/49334eea.d46396e808ef67ff.js
+dist/static/chunks/b0654ee3.27c8ff7b0477c353.js
+dist/static/chunks/c80c7663.9cc3c34b556e3466.js
+dist/static/chunks/fb7d5399.9784ce377bc30d44.js
+dist/static/chunks/framework-f707628ec3f247aa.js
+dist/static/chunks/main-75623049b75f64cc.js
+dist/static/chunks/pages/_app-2ebc360cd1d507ff.js
+dist/static/chunks/pages/_error-08a9db0f433628d8.js
+dist/static/chunks/pages/index-dcaf092f1b71ebb4.js
+dist/static/chunks/polyfills-c67a75d1b6f99dc8.js
+dist/static/chunks/webpack-ae28ab3f728817aa.js
+dist/static/css/158ceb21c3d5961a.css
+dist/static/t-1UTFRHD-ILwJ-TvjbO5/_buildManifest.js
+dist/static/t-1UTFRHD-ILwJ-TvjbO5/_ssgManifest.js
+dist/cache/webpack/client-production/0.pack
+dist/cache/webpack/client-production/1.pack
+dist/cache/webpack/client-production/2.pack
+dist/cache/webpack/client-production/index.pack
+dist/cache/webpack/server-production/0.pack
+dist/cache/webpack/server-production/index.pack
