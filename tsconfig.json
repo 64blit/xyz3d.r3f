@@ -32,5 +32,5 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-    , "src/worlds/Xyz3DWorld.tsx" ]
+    , "src/worlds/Xyz3DWorld.tsx", "src/components/SceneXyz3D.jsx" ]
 }
