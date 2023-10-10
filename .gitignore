@@ -232,3 +232,9 @@ dist/cache/webpack/client-production/2.pack
 dist/cache/webpack/client-production/index.pack
 dist/cache/webpack/server-production/0.pack
 dist/cache/webpack/server-production/index.pack
+dist/assets/index.css
+dist/assets/index.js
+dist/assets/scene.glb
+dist/Dechorian.otf
+dist/favicon.ico
+dist/index.html
