@@ -11,20 +11,20 @@ export default function Xyz3DWorld()
   const [ popupContent, setPopupContent ] = useState(null);
 
 
-  // if the user presses the "D" key, toggle debugging mode
-  // React.useEffect(() =>
-  // {
-  //   const handleKeyDown = (event) =>
-  //   {
-  //     if (event.key === "-")
-  //     {
-  //       setIsDebugging(!isDebugging);
-  //       console.log("Debugging mode: ", !isDebugging)
-  //     }
-  //   }
-  //   window.addEventListener("keydown", handleKeyDown);
-  //   return () => window.removeEventListener("keydown", handleKeyDown);
-  // }, [ isDebugging ]);
+  // if the user presses the "-" key, toggle debugging mode
+  React.useEffect(() =>
+  {
+    const handleKeyDown = (event) =>
+    {
+      if (event.key === "-")
+      {
+        setIsDebugging(!isDebugging);
+        console.log("Debugging mode: ", !isDebugging)
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [ isDebugging ]);
 
   return (
     <>
