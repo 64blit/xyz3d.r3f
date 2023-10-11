@@ -105,14 +105,10 @@ export default function SceneXyz3D({
             if (collides)
             {
                 node = <PhysicsCollidable obj={obj} key={generateKey(obj.name)} invisible={invisible} />;
-
-                // scene.remove(obj);
             }
             else if (dynamicMass > 0)
             {
                 node = <PhysicsBall obj={obj} mass={dynamicMass} invisible={invisible} key={generateKey(obj.name)} />;
-
-                // scene.remove(obj);
             }
 
             physicsNodes.push(node);
