@@ -28,7 +28,7 @@ export default function Xyz3DWorld()
 
   return (
     <>
-      <StandardReality>
+      <StandardReality physicsProps={{}} >
 
         <Suspense fallback={null}>
 
@@ -56,7 +56,7 @@ export default function Xyz3DWorld()
         </div>
         
       {showPopup && <HtmlOverlay content={popupContent} setShowPopup={setShowPopup} />} */}
-      </StandardReality>
+      </StandardReality >
     </>
   );
 }

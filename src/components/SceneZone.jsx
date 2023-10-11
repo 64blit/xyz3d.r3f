@@ -1,6 +1,7 @@
 import { Box, useHelper } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import React, { useState, useEffect, useRef } from 'react';
+import { Interactable } from 'spacesvr';
 import { Box3, BoxHelper, Vector3 } from 'three';
 
 export function SceneZone(props)
@@ -19,15 +20,15 @@ export function SceneZone(props)
         if (!zoneRef.current) return;
         if (!boxMeshRef.current) return;
 
-        // const box = new Box3();
-        // box.setFromObject(zoneRef.current);
-        // const size = box.getSize(new Vector3());
-        // boxMeshRef.current?.position.copy(box.getCenter(new Vector3()));
-        // boxMeshRef.current?.scale.set(...size);
+        const box = new Box3();
+        box.setFromObject(zoneRef.current);
+        const size = box.getSize(new Vector3());
+        boxMeshRef.current?.position.copy(box.getCenter(new Vector3()));
+        boxMeshRef.current?.scale.set(...size);
 
-        // const cameraSize = sceneData.cameraTarget.getSize(new Vector3());
-        // cameraViewBoxRef.current?.position.copy(sceneData.cameraTargetPosition);
-        // cameraViewBoxRef.current?.scale.set(...cameraSize);
+        const cameraSize = sceneData.cameraTarget.getSize(new Vector3());
+        cameraViewBoxRef.current?.position.copy(sceneData.cameraTargetPosition);
+        cameraViewBoxRef.current?.scale.set(...cameraSize);
     });
 
     useEffect(() =>
@@ -39,8 +40,7 @@ export function SceneZone(props)
 
     const handleInteraction = (event) =>
     {
-        event.stopPropagation();
-
+        console.log("Interacted with: ", event.object.userData.interactableType);
         const type = event.object.userData.interactableType;
         const data = event.object.userData.interactableData;
 
@@ -112,16 +112,20 @@ export function SceneZone(props)
         <>
             <group ref={zoneRef}>
                 {sceneData.objects.interactables.map((element, key) => (
-                    <primitive
-                        object={element.object}
-                        position={element.worldPosition}
-                        scale={element.scale}
-                        rotation={element.rotation}
-                        key={key}
+                    <Interactable
                         onClick={handleInteraction}
-                        onPointerEnter={handlePointerEnter}
-                        onPointerLeave={handlePointerExit}
-                    />
+                        onHovered={handlePointerEnter}
+                        onUnHovered={handlePointerExit}
+                        key={key}
+                    >
+                        <primitive
+                            object={element.object}
+                            position={element.worldPosition}
+                            scale={element.scale}
+                            rotation={element.rotation}
+                        />
+
+                    </Interactable>
                 ))}
             </group>
 

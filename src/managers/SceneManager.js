@@ -10,14 +10,15 @@ export class SceneManager
         // Initialize scene, controls, and data arrays
         this.scene = scene;
         this.sceneZones = [];
-        this.waypoints = [];
+
+        // Animations that play on loop
         this.loopingAnimations = [];
-        this.collidables = [];
+
+        // Physics enabled objects 
+        this.physicsObjects = [];
 
         // Call initialization methods
         this.populateSceneZones(scene);
-        this.fixWaypoints();
-        this.fixZones();
     }
 
     // Populate scene zones and objects within zones
@@ -51,7 +52,6 @@ export class SceneManager
 
         // Sort scene zones and waypoints based on index
         this.sceneZones.sort((a, b) => a.index - b.index);
-        this.waypoints.sort((a, b) => a.index - b.index);
     }
 
     // Extract animation data from user data
@@ -109,29 +109,24 @@ export class SceneManager
         let sceneZone = this.sceneZones.find((zone) => zone.name === sceneZoneName);
         if (!sceneZone)
         {
-            sceneZone = this.createSceneZone(sceneZoneName);
+            const newSceneZone = {
+                name: sceneZoneName,
+                index: -1,
+                cameraAnchor: null,
+                cameraTarget: new Box3(),
+                cameraTargetPosition: new Vector3(),
+                objects: {
+                    count: 0,
+                    interactables: [],
+                }
+            };
+
+            this.sceneZones.push(newSceneZone);
+            sceneZone = newSceneZone;
         }
         return sceneZone;
     }
 
-    // Create a new scene zone
-    createSceneZone(sceneZoneName)
-    {
-        const newSceneZone = {
-            name: sceneZoneName,
-            index: -1,
-            cameraAnchor: null,
-            cameraTarget: new Box3(),
-            cameraTargetPosition: new Vector3(),
-            objects: {
-                count: 0,
-                interactables: [],
-            }
-        };
-
-        this.sceneZones.push(newSceneZone);
-        return newSceneZone;
-    }
 
     getSceneZones()
     {
@@ -167,9 +162,9 @@ export class SceneManager
         return null;
     }
 
-    getCollidables()
+    getPhysicsObjects()
     {
-        return this.collidables;
+        return this.physicsObjects;
     }
 
     addObject(sceneZone, object)
@@ -189,8 +184,13 @@ export class SceneManager
                 break;
         }
 
+        if (isCameraAnchor)
+        {
+            return;
+        }
+
         // Add the object to the scene zone's camera target
-        if (sceneZone && !isCameraAnchor)
+        if (sceneZone)
         {
             const target = new Vector3();
             sceneZone.cameraTarget.expandByObject(object);
@@ -198,63 +198,13 @@ export class SceneManager
             sceneZone.cameraTargetPosition = target;
             sceneZone.objects.count++;
         }
-
-        if ("collidable" in object.userData)
+        
+        if ("Physics" in object.userData)
         {
-            this.collidables.push(object);
-        }
-
-        if (object.name.includes("collidable"))
-        {
-            this.collidables.push(object);
+            this.physicsObjects.push(object);
         }
     }
 
-    // Fix empty scene zones by adjusting camera targets
-    fixEmptyZones()
-    {
-        this.sceneZones.forEach((sceneZone) =>
-        {
-            if (sceneZone.objects.count === 0)
-            {
-                // Calculate camera target position based on camera anchor rotation
-                const cameraAnchor = sceneZone.cameraAnchor;
-                const cameraAnchorPosition = cameraAnchor.position;
-                const cameraAnchorRotation = cameraAnchor.quaternion;
-                const cameraAnchorDirection = new Vector3(0, 0, -1);
-                cameraAnchorDirection.applyQuaternion(cameraAnchorRotation);
-                const cameraTargetPosition = new Vector3();
-                cameraTargetPosition.copy(cameraAnchorDirection).add(cameraAnchorPosition);
-                sceneZone.cameraTargetPosition = cameraTargetPosition;
-                sceneZone.cameraTarget.setFromCenterAndSize(cameraTargetPosition, new Vector3(1, 1, 1));
-            }
-        });
-    }
-
-    // Fix waypoints based on scene zones and camera anchors
-    fixWaypoints()
-    {
-        this.waypoints.forEach((element) =>
-        {
-            const sceneZone = this.getSceneZoneByIndex(element.index);
-            if (sceneZone)
-            {
-                // Use camera target position from scene zone
-                element.cameraTargetPosition = sceneZone.cameraTargetPosition;
-            } else
-            {
-                // Use camera anchor direction to point the camera
-                const cameraAnchor = element.cameraAnchor;
-                const cameraAnchorPosition = cameraAnchor.position;
-                const cameraAnchorRotation = cameraAnchor.quaternion;
-                const cameraAnchorDirection = new Vector3(0, 0, -1);
-                cameraAnchorDirection.applyQuaternion(cameraAnchorRotation);
-                const cameraTargetPosition = new Vector3();
-                cameraTargetPosition.copy(cameraAnchorDirection).add(cameraAnchorPosition);
-                element.cameraTargetPosition = cameraTargetPosition;
-            }
-        });
-    }
 
     // Add a camera anchor to a scene zone
     addCameraAnchor(sceneZone, anchorObject)
@@ -268,12 +218,6 @@ export class SceneManager
             sceneZone.cameraAnchor = anchorObject;
         }
 
-        this.waypoints.push({
-            index: cameraAnchorIndex,
-            cameraAnchor: anchorObject,
-            cameraTarget: new Box3(),
-            cameraTargetPosition: new Vector3()
-        });
     }
 
     // Add an interactable object to a scene zone
@@ -320,39 +264,6 @@ export class SceneManager
         return this.loopingAnimations;
     }
 
-    fixZones()
-    {
-        this.fixEmptyZones();
-
-        this.sceneZones.forEach(sceneZone =>
-        {
-
-            if (sceneZone.objects.count === 0 || sceneZone.cameraAnchor === null)
-            {
-                return;
-            }
-
-            const position = sceneZone.cameraAnchor.position;
-            const target = sceneZone.cameraTargetPosition;
-            const targetBox = sceneZone.cameraTarget;
-
-            sceneZone.cameraAnchor.position = position
-            // Find the waypoint with index equal to sceneZone.index
-            const waypoint = this.waypoints.find(waypoint => waypoint.index === sceneZone.index);
-
-            waypoint.cameraAnchor.position = position
-            waypoint.cameraTargetPosition = sceneZone.cameraTargetPosition;
-        });
-
-        // Update the camera position based on the first waypoint
-        const waypoint = this.waypoints.find(waypoint => waypoint.index === 0);
-
-        if (!waypoint)
-        {
-            return;
-        }
-
-    }
 
 
 }
