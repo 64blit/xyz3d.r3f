@@ -140,6 +140,7 @@ export function SceneXyz3D(props)
             controlsRef.current.update(0);
             controlsRef.current.camera.far = basicLerp(currentZone.camera.anchor.far, nextZone.camera.anchor.far, percent);
             controlsRef.current.update(0);
+            controlsRef.current.camera.updateProjectionMatrix();
         }
 
     };
@@ -149,7 +150,7 @@ export function SceneXyz3D(props)
     {
         if (isBusy || !scroll || !camera || !sceneManager || !controlsRef.current) return;
         scrollHandler();
-        zoomHandler(scene, pointer, raycaster);
+        // zoomHandler(scene, pointer, raycaster);
     });
 
     // Set up the scene manager on component mount
