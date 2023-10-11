@@ -135,12 +135,10 @@ export function SceneXyz3D(props)
         if ("fov" in currentZone.camera.anchor)
         {
             controlsRef.current.camera.fov = basicLerp(currentZone.camera.anchor.fov, nextZone.camera.anchor.fov, percent);
-            controlsRef.current.update(0);
             controlsRef.current.camera.near = basicLerp(currentZone.camera.anchor.near, nextZone.camera.anchor.near, percent);
-            controlsRef.current.update(0);
             controlsRef.current.camera.far = basicLerp(currentZone.camera.anchor.far, nextZone.camera.anchor.far, percent);
-            controlsRef.current.update(0);
             controlsRef.current.camera.updateProjectionMatrix();
+            controlsRef.current.update(0);
         }
 
     };
