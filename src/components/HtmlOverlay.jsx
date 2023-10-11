@@ -8,7 +8,6 @@ export const HtmlOverlay = (props) =>
 
     useEffect(() =>
     {
-        console.log(opacityDivRef.current)
         if (props.showPopup)
         {
             setMainClasses("transition-all duration-1000 opacity-100 fixed top-0 left-0 w-full h-full");
