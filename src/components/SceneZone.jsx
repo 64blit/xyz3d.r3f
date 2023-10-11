@@ -1,5 +1,5 @@
 import { Box, useHelper } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import React, { useState, useEffect, useRef } from 'react';
 import { Interactable } from 'spacesvr';
 import { Box3, BoxHelper, Vector3 } from 'three';
@@ -13,6 +13,8 @@ export function SceneZone(props)
     const zoneRef = useRef(null);
     const boxMeshRef = useRef(null);
     const cameraViewBoxRef = useRef(null);
+
+    const { gl } = useThree();
 
     useFrame(() =>
     {
@@ -40,7 +42,6 @@ export function SceneZone(props)
 
     const handleInteraction = (event) =>
     {
-        console.log("Interacted with: ", event.object.userData.interactableType);
         const type = event.object.userData.interactableType;
         const data = event.object.userData.interactableData;
 
@@ -52,6 +53,9 @@ export function SceneZone(props)
             case "Popup HTML":
                 props.setShowPopup(true);
                 props.setPopupContent(data);
+
+                gl.domElement.ownerDocument.exitPointerLock();
+
                 break;
 
             case "Open Link":

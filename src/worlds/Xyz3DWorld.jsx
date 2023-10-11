@@ -2,6 +2,7 @@ import { StandardReality, HDRI } from "spacesvr";
 import React, { ReactNode, Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import SceneXyz3D from "../components/SceneXyz3D";
+import { HtmlOverlay } from "../components/HtmlOverlay";
 
 export default function Xyz3DWorld()
 {
@@ -28,7 +29,8 @@ export default function Xyz3DWorld()
 
   return (
     <>
-      <StandardReality physicsProps={{}} >
+
+      <StandardReality physicsProps={{ gravity: [ 0, -9.86, 0 ] }} >
 
         <Suspense fallback={null}>
 
@@ -50,13 +52,9 @@ export default function Xyz3DWorld()
           </ErrorBoundary>
         </Suspense>
 
-        {/* Wrapper div to cover the screen
-        <div className="absolute inset-0 bg-black">
-        
-        </div>
-        
-      {showPopup && <HtmlOverlay content={popupContent} setShowPopup={setShowPopup} />} */}
       </StandardReality >
+
+      <HtmlOverlay content={popupContent} showPopup={showPopup} setShowPopup={setShowPopup} />
     </>
   );
 }
