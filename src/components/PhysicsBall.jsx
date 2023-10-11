@@ -1,8 +1,6 @@
 import * as THREE from "three";
 import React, { useEffect, useRef, useState } from "react";
-import { useFrame, useLoader } from "@react-three/fiber";
 import { useSphere } from "@react-three/cannon";
-import { usePlayer } from "spacesvr";
 
 export function PhysicsBall({ obj, mass, invisible }) 
 {
@@ -24,6 +22,7 @@ export function PhysicsBall({ obj, mass, invisible })
         args: [ boundingSphere.radius ]
     }));
 
+
     useEffect(() =>
     {
         // Set the sphere's position to match the object's position.
@@ -31,9 +30,8 @@ export function PhysicsBall({ obj, mass, invisible })
 
     }, [ obj.position, api.position ]);
 
-
     // Wrap the object with the physics sphere and render the object inside the sphere.
     return (
-        <primitive object={obj} ref={ballRef} visible={!invisible} />
+        <primitive object={obj} scale={obj.scale} rotation={obj.rotation} ref={ballRef} visible={!invisible} />
     );
 };

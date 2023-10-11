@@ -61,6 +61,7 @@ export class SceneManager
         {
             const loopingAnimations = object.userData.LoopingAnimations.replace(/\s/g, '').split(',');
             this.loopingAnimations.push(...loopingAnimations);
+            object.userData.LoopingAnimations = loopingAnimations;
         }
 
         const extractAnimations = (userDataKey, objectUserData) =>
@@ -198,7 +199,7 @@ export class SceneManager
             sceneZone.cameraTargetPosition = target;
             sceneZone.objects.count++;
         }
-        
+
         if ("Physics" in object.userData)
         {
             this.physicsObjects.push(object);

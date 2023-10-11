@@ -38,13 +38,16 @@ export default function SceneXyz3D({
             return;
         }
 
-        if (!action.isRunning())
+        if (action.isRunning())
         {
-            action.setLoop(loopType, 1);
-            action.clampWhenFinished = true;
-            action.reset();
-            action.play();
+            return;
         }
+
+        action.setLoop(loopType);
+        action.clampWhenFinished = true;
+        action.reset();
+        action.play();
+
     };
 
 
@@ -127,6 +130,7 @@ export default function SceneXyz3D({
         const physicsNodes = getPhyicsNodes();
         setPhysicsNodes(physicsNodes);
 
+
     }, [ sceneManager ]);
 
     // Set up the scene manager on component mount
@@ -140,7 +144,10 @@ export default function SceneXyz3D({
         {
             playAnimation(actionName, THREE.LoopRepeat);
         });
+
     }, []);
+
+
     return (
         <primitive object={scene}>
             {sceneZoneNodes}
