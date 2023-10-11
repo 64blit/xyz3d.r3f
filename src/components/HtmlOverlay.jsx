@@ -1,12 +1,30 @@
-import { Suspense } from "react";
+import { Suspense, useEffect, useRef } from "react";
 
 export const HtmlOverlay = (props) =>
 {
+
+    const opacityDivRef = useRef(null);
+
+    useEffect(() =>
+    {
+        if (props.showPopup)
+        {
+            opacityDivRef.current.classList.remove("opacity-0");
+            opacityDivRef.current.classList.add("opacity-100");
+        }
+        else
+        {
+            opacityDivRef.current.classList.remove("opacity-100");
+            opacityDivRef.current.classList.add("opacity-0");
+        }
+
+    }, [ props.showPopup ]);
+
     return (
 
         <>
             {props.showPopup &&
-                <div className={"transition-all duration-1000 fixed top-0 left-0 w-full h-full opacity-0 hover:opacity-100 "}>
+                <div ref={opacityDivRef} className={"transition-all duration-1000 fixed top-0 left-0 w-full h-full opacity-0 "}>
 
                     <div className="flex flex-col items-center justify-center w-full h-full bg-black">
 
