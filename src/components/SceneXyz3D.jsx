@@ -98,7 +98,7 @@ export const SceneXyz3D = React.forwardRef((props, ref) =>
         if (("fov" in sceneZone.camera.anchor) === false) return
 
         const tl = gsap.timeline();
-        tl.fromTo(controlsRef.current?.camera, { fov: controlsRef.current?.camera.fov }, { fov: sceneZone.camera.anchor.fov, duration: 1, onUpdate: () => controlsRef.current?.update(10) });
+        tl.fromTo(controlsRef.current?.camera, { fov: controlsRef.current?.camera.fov }, { fov: sceneZone.camera.anchor.fov, duration: 1, onUpdate: () => controlsRef.current?.update(0) });
         tl.fromTo(controlsRef.current?.camera, { near: controlsRef.current?.camera.near }, { near: sceneZone.camera.anchor.near, duration: 1 });
         tl.fromTo(controlsRef.current?.camera, { far: controlsRef.current?.camera.far }, { far: sceneZone.camera.anchor.far, duration: 1 });
 
