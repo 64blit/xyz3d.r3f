@@ -4,10 +4,12 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { SceneManager } from '../managers/SceneManager';
 import { SceneZone } from './SceneZone';
 import * as THREE from 'three';
-import { Collidable } from 'spacesvr';
+import { Collidable, usePlayer } from 'spacesvr';
 import { generateKey } from '../helpers/ReactHelpers';
 import { PhysicsBall } from './PhysicsBall';
 import { PhysicsCollidable } from './PhysicsCollidable';
+import { useSpring } from '@react-spring/three'
+import { gsap } from 'gsap';
 
 
 export default function SceneXyz3D({
@@ -23,6 +25,9 @@ export default function SceneXyz3D({
     const [ sceneManager, setSceneManager ] = useState(null);
     const [ sceneZoneNodes, setSceneZoneNodes ] = useState(null);
     const [ physicsNodes, setPhysicsNodes ] = useState(null);
+
+    const playerState = usePlayer();
+
 
     const playAnimation = (name, loopType) =>
     {
@@ -42,6 +47,30 @@ export default function SceneXyz3D({
         }
     };
 
+
+    const goToSceneZone = (zoneName) =>
+    {
+        const zone = sceneManager.getSceneZone(zoneName);
+
+        if (!zone) { return; }
+
+        // Retrieve the current player position using the custom `get` method
+        const currentPlayerPosition = playerState.position.get();
+
+        // Animate position components separately
+        gsap.to(currentPlayerPosition, {
+            duration: 1,
+            x: zone.cameraAnchor.position.x,
+            y: zone.cameraAnchor.position.y,
+            z: zone.cameraAnchor.position.z,
+            onUpdate: () =>
+            {
+                // Update the player position using the custom `set` method
+                playerState.position.set(currentPlayerPosition);
+            },
+        });
+    }
+
     const getSceneZoneNodes = () =>
     {
         const zoneNodes = [];
@@ -50,6 +79,7 @@ export default function SceneXyz3D({
             const node = <SceneZone
                 setShowPopup={setShowPopup}
                 setPopupContent={setPopupContent}
+                goToSceneZone={goToSceneZone}
                 playAnimation={playAnimation}
                 isDebugging={isDebugging}
                 object={zone}

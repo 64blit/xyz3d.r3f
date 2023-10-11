@@ -6,9 +6,6 @@ import { usePlayer } from "spacesvr";
 
 export function PhysicsBall({ obj, mass }) 
 {
-    const playerState = usePlayer();
-    const [ sphereSize, setSphereSize ] = useState(1);
-
     const boundingSphere = new THREE.Sphere();
     obj.traverse((child) =>
     {
