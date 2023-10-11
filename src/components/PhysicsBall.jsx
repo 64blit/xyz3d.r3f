@@ -4,7 +4,7 @@ import { useFrame, useLoader } from "@react-three/fiber";
 import { useSphere } from "@react-three/cannon";
 import { usePlayer } from "spacesvr";
 
-export function PhysicsBall({ obj, mass }) 
+export function PhysicsBall({ obj, mass, invisible }) 
 {
     const boundingSphere = new THREE.Sphere();
     obj.traverse((child) =>
@@ -34,6 +34,6 @@ export function PhysicsBall({ obj, mass })
 
     // Wrap the object with the physics sphere and render the object inside the sphere.
     return (
-        <primitive object={obj} ref={ballRef} />
+        <primitive object={obj} ref={ballRef} visible={!invisible} />
     );
 };

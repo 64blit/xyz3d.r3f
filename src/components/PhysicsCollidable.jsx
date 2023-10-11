@@ -4,7 +4,7 @@ import { useFrame, useLoader } from "@react-three/fiber";
 import { useSphere } from "@react-three/cannon";
 import { Collidable } from "spacesvr";
 
-export function PhysicsCollidable({ obj }) 
+export function PhysicsCollidable({ obj, invisible }) 
 {
 
     // Wrap the object with the physics sphere and render the object inside the sphere.
@@ -12,7 +12,7 @@ export function PhysicsCollidable({ obj })
         <Collidable
             triLimit={1000}
             enabled={true}
-            hideCollisionMeshes={true}>
+            hideCollisionMeshes={invisible}>
             <primitive object={obj} />
         </Collidable>
     );

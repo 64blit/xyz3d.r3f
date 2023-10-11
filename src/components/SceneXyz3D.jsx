@@ -96,17 +96,23 @@ export default function SceneXyz3D({
         const physicsNodes = [];
         sceneManager.getPhysicsObjects().forEach((obj) =>
         {
-            const gravity = parseInt(obj.userData[ "Gravity" ]) || 0;
-            const collides = obj.userData[ "Collidable" ] === "true";
+            const dynamicMass = parseInt(obj.userData[ "Dynamic" ]) || 0;
+            const collides = obj.userData[ "Static" ] === "true";
+            const invisible = obj.userData[ "Invisible" ] === "true";
 
-            scene.remove(obj);
+            let node = null;
 
-
-            let node = <PhysicsCollidable obj={obj} key={generateKey(obj.name)} />;
-
-            if (gravity > 0)
+            if (collides)
             {
-                node = <PhysicsBall obj={obj} mass={gravity} key={generateKey(obj.name)} />;
+                node = <PhysicsCollidable obj={obj} key={generateKey(obj.name)} invisible={invisible} />;
+
+                // scene.remove(obj);
+            }
+            else if (dynamicMass > 0)
+            {
+                node = <PhysicsBall obj={obj} mass={dynamicMass} invisible={invisible} key={generateKey(obj.name)} />;
+
+                // scene.remove(obj);
             }
 
             physicsNodes.push(node);
