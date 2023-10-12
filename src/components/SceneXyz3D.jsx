@@ -144,10 +144,11 @@ export function SceneXyz3D(props)
     };
 
     // UseFrame hook for animations and interactions
-    useFrame(({ scene, pointer, raycaster }) =>
+    useFrame(() =>
     {
         if (isBusy || !scroll || !camera || !sceneManager || !controlsRef.current) return;
         scrollHandler();
+        // { scene, pointer, raycaster }
         // zoomHandler(scene, pointer, raycaster);
     });
 
