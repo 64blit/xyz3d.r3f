@@ -39,8 +39,6 @@ export default function Xyz3DWorld()
             />
 
           </ErrorBoundary>
-          <ambientLight intensity={5} />
-          <directionalLight intensity={1} position={[ 0, 10, 0 ]} />
         </Suspense>
 
         < TransparentFloor />
