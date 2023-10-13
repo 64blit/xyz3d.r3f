@@ -1,7 +1,7 @@
 import { Box, useHelper } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import React, { useState, useEffect, useRef } from 'react';
-import { Interactable } from 'spacesvr';
+import { Interactable, Video } from 'spacesvr';
 import { Box3, BoxHelper, Vector3 } from 'three';
 
 export function SceneZone(props)
@@ -112,6 +112,26 @@ export function SceneZone(props)
 
                     </Interactable>
                 ))}
+
+
+                {sceneData.objects.videos.map((element, key) => (
+                    <mesh
+                        object={element.object}
+                        key={key}
+                        scale={element.object.scale}
+                        position={element.worldPosition}
+                        size={1}
+                    >
+                        <Video
+                            src={element.src}
+                            framed
+                        >
+                        </Video>
+                    </mesh>
+                ))}
+
+
+
             </group>
         </>
     );

@@ -60,9 +60,9 @@ export default function SceneXyz3D({
         // Animate position components separately
         gsap.to(currentPlayerPosition, {
             duration: 1,
-            x: zone.cameraAnchor.position.x,
-            y: zone.cameraAnchor.position.y,
-            z: zone.cameraAnchor.position.z,
+            x: zonecamera.anchor.position.x,
+            y: zonecamera.anchor.position.y,
+            z: zonecamera.anchor.position.z,
             onUpdate: () =>
             {
                 // Update the player position using the custom `set` method

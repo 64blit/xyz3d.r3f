@@ -1,6 +1,6 @@
 // Import necessary dependencies
 import { Bounds, meshBounds } from "@react-three/drei";
-import { Box3, Vector3 } from "three";
+import { Box3, Quaternion, Vector3 } from "three";
 
 // Define a class called SceneManager
 export class SceneManager
@@ -113,12 +113,15 @@ export class SceneManager
             const newSceneZone = {
                 name: sceneZoneName,
                 index: -1,
-                cameraAnchor: null,
-                cameraTarget: new Box3(),
-                cameraTargetPosition: new Vector3(),
+                camera: {
+                    anchor: null,
+                    target: new Box3(),
+                    targetPosition: new Vector3(),
+                },
                 objects: {
                     count: 0,
                     interactables: [],
+                    videos: [],
                 }
             };
 
@@ -194,9 +197,9 @@ export class SceneManager
         if (sceneZone)
         {
             const target = new Vector3();
-            sceneZone.cameraTarget.expandByObject(object);
-            sceneZone.cameraTarget.getCenter(target);
-            sceneZone.cameraTargetPosition = target;
+            sceneZone.camera.target.expandByObject(object);
+            sceneZone.camera.target.getCenter(target);
+            sceneZone.camera.targetPosition = target;
             sceneZone.objects.count++;
         }
 
@@ -205,6 +208,7 @@ export class SceneManager
             object.name = object.name + "_collider";
             this.physicsObjects.push(object);
         }
+
     }
 
 
@@ -217,7 +221,7 @@ export class SceneManager
         if (sceneZone)
         {
             sceneZone.index = cameraAnchorIndex;
-            sceneZone.cameraAnchor = anchorObject;
+            sceneZone.camera.anchor = anchorObject;
         }
 
     }
@@ -230,10 +234,17 @@ export class SceneManager
         object.getWorldPosition(worldPosition);
 
         // Add the object to a default scene zone if it does not exist
-        if (!sceneZone)
+        if (!sceneZone || !("zone" in object.userData))
         {
             sceneZone = this.getOrCreateSceneZone("_default_interactable_zone");
-            sceneZone.cameraAnchor = object;
+            sceneZone.camera.anchor = object;
+            object.userData[ "zone" ] = "_default_interactable_zone";
+        }
+
+        if (object.userData.interactableType === "Video")
+        {
+            sceneZone.objects.videos.push({ object, worldPosition, src: object.userData.interactableData });
+            return;
         }
 
         sceneZone.objects.interactables.push({ object, worldPosition });
@@ -254,10 +265,6 @@ export class SceneManager
             });
         });
 
-        if (!("zone" in object.userData))
-        {
-            object.userData[ "zone" ] = "_default_interactable_zone";
-        }
     }
 
     // Get looping animation data
