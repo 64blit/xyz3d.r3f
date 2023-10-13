@@ -115,19 +115,15 @@ export function SceneZone(props)
 
 
                 {sceneData.objects.videos.map((element, key) => (
-                    <mesh
-                        object={element.object}
+                    <Video
                         key={key}
-                        scale={element.object.scale}
+                        size={Math.max(...element.object.scale)}
+                        src={element.src}
                         position={element.worldPosition}
-                        size={1}
+                        quaternion={element.worldRotation}
+                        framed
                     >
-                        <Video
-                            src={element.src}
-                            framed
-                        >
-                        </Video>
-                    </mesh>
+                    </Video>
                 ))}
 
 

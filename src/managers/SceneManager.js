@@ -233,6 +233,7 @@ export class SceneManager
         const worldPosition = new Vector3();
         object.getWorldPosition(worldPosition);
 
+
         // Add the object to a default scene zone if it does not exist
         if (!sceneZone || !("zone" in object.userData))
         {
@@ -243,7 +244,18 @@ export class SceneManager
 
         if (object.userData.interactableType === "Video")
         {
-            sceneZone.objects.videos.push({ object, worldPosition, src: object.userData.interactableData });
+            let worldRotation = new Quaternion();
+            object.getWorldQuaternion(worldRotation);
+
+            var localXRotation = new Quaternion();
+            localXRotation.setFromAxisAngle(new Vector3(-1, 0, 0), Math.PI / 2); // 90 degrees in radians
+
+            // Multiply the originalQuaternion by the localXRotation
+            worldRotation.multiply(localXRotation);
+
+            object.visible = false;
+
+            sceneZone.objects.videos.push({ object, worldPosition, worldRotation, src: object.userData.interactableData });
             return;
         }
 
