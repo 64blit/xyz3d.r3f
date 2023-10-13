@@ -30,7 +30,7 @@ export default function Xyz3DWorld()
             setPopupContent={setPopupContent}
           />
 
-          {/* <ErrorBoundary fallback={<ambientLight />}>
+          <ErrorBoundary fallback={<ambientLight />}>
 
             <HDRI
               src="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_43d_clear_puresky_1k.hdr"
@@ -38,7 +38,7 @@ export default function Xyz3DWorld()
               disableEnvironment={false} // used to disable environment map
             />
 
-          </ErrorBoundary> */}
+          </ErrorBoundary>
           <ambientLight intensity={5} />
           <directionalLight intensity={1} position={[ 0, 10, 0 ]} />
         </Suspense>
