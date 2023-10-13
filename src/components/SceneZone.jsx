@@ -11,27 +11,8 @@ export function SceneZone(props)
     const [ hovered, setHovered ] = useState(false);
 
     const zoneRef = useRef(null);
-    const boxMeshRef = useRef(null);
-    const cameraViewBoxRef = useRef(null);
 
     const { gl } = useThree();
-
-    useFrame(() =>
-    {
-        if (!props.isDebugging) return;
-        if (!zoneRef.current) return;
-        if (!boxMeshRef.current) return;
-
-        const box = new Box3();
-        box.setFromObject(zoneRef.current);
-        const size = box.getSize(new Vector3());
-        boxMeshRef.current?.position.copy(box.getCenter(new Vector3()));
-        boxMeshRef.current?.scale.set(...size);
-
-        const cameraSize = sceneData.cameraTarget.getSize(new Vector3());
-        cameraViewBoxRef.current?.position.copy(sceneData.cameraTargetPosition);
-        cameraViewBoxRef.current?.scale.set(...cameraSize);
-    });
 
     useEffect(() =>
     {
@@ -132,16 +113,6 @@ export function SceneZone(props)
                     </Interactable>
                 ))}
             </group>
-
-            <mesh ref={boxMeshRef} visible={props.isDebugging}>
-                <boxGeometry args={[ 1, 1, 1 ]} />
-                <meshBasicMaterial wireframe color="cyan" />
-            </mesh>
-
-            <mesh ref={cameraViewBoxRef} visible={props.isDebugging}>
-                <boxGeometry args={[ 1, 1, 1 ]} />
-                <meshBasicMaterial wireframe color="red" />
-            </mesh>
         </>
     );
 }

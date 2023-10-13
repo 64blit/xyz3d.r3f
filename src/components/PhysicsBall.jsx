@@ -17,15 +17,17 @@ export function PhysicsBall({ obj, mass, invisible })
     const [ ballRef, api ] = useSphere(() => ({
         mass: mass,
         position: obj.position,
+        rotation: obj.rotation.clone(),
         linearDamping: 0.9,
         angularDamping: 0.1,
-        args: [ boundingSphere.radius / 2 ]
+        args: [ boundingSphere.radius * Math.max(...obj.scale) ]
     }));
 
     useEffect(() =>
     {
         // Set the sphere's position to match the object's position.
         api.position.copy(obj.position);
+        api.rotation.copy(obj.rotation.clone());
 
     }, [ obj.position, api.position ]);
 

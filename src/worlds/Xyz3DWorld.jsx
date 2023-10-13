@@ -12,26 +12,10 @@ import { Perf, usePerf } from "r3f-perf";
 export default function Xyz3DWorld()
 {
 
-  const [ isDebugging, setIsDebugging ] = React.useState(false);
   const [ showPopup, setShowPopup ] = useState(false);
   const [ popupContent, setPopupContent ] = useState(null);
 
-  usePerf();
-
-  // if the user presses the "-" key, toggle debugging mode
-  React.useEffect(() =>
-  {
-    const handleKeyDown = (event) =>
-    {
-      if (event.key === "-")
-      {
-        setIsDebugging(!isDebugging);
-        console.log("Debugging mode: ", !isDebugging)
-      }
-    }
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [ isDebugging ]);
+  // usePerf();
 
   return (
     <>
@@ -44,7 +28,6 @@ export default function Xyz3DWorld()
             path={"assets/scene.glb"}
             setShowPopup={setShowPopup}
             setPopupContent={setPopupContent}
-            isDebugging={isDebugging}
           />
 
           {/* <ErrorBoundary fallback={<ambientLight />}>
@@ -62,7 +45,7 @@ export default function Xyz3DWorld()
 
         < TransparentFloor />
 
-        <Perf />
+        {/* <Perf /> */}
 
       </StandardReality >
 

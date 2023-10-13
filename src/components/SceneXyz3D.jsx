@@ -13,8 +13,7 @@ import { gsap } from 'gsap';
 export default function SceneXyz3D({
     path,
     setShowPopup,
-    setPopupContent,
-    isDebugging
+    setPopupContent
 })
 {
     const { scene, animations } = useGLTF(path);
@@ -82,7 +81,6 @@ export default function SceneXyz3D({
                 setPopupContent={setPopupContent}
                 goToSceneZone={goToSceneZone}
                 playAnimation={playAnimation}
-                isDebugging={isDebugging}
                 object={zone}
                 key={generateKey(zone.name)}
             />;
