@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { ScrollControls, useAnimations, useGLTF } from "@react-three/drei";
-import { useFrame, useThree } from '@react-three/fiber';
 import { SceneManager } from '../managers/SceneManager';
 import { SceneZone } from './SceneZone';
 import * as THREE from 'three';
@@ -8,7 +7,6 @@ import { Collidable, usePlayer } from 'spacesvr';
 import { generateKey } from '../helpers/ReactHelpers';
 import { PhysicsBall } from './PhysicsBall';
 import { PhysicsCollidable } from './PhysicsCollidable';
-import { useSpring } from '@react-spring/three'
 import { gsap } from 'gsap';
 
 
@@ -152,6 +150,7 @@ export default function SceneXyz3D({
         <primitive object={scene}>
             {sceneZoneNodes}
             {physicsNodes}
+
         </primitive>
     );
 }

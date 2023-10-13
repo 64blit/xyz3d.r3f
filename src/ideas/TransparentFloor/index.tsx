@@ -1,20 +1,15 @@
+import { usePlane } from "@react-three/cannon";
+import { useRef } from "react";
+
 type TransparentFloorProps = { opacity?: number };
 
-export default function TransparentFloor(props: TransparentFloorProps) {
-  const { opacity = 0.6 } = props;
-
+export default function TransparentFloor(props: TransparentFloorProps)
+{
+  const [ ref ] = usePlane(() => ({ rotation: [ -Math.PI / 2, 0, 0 ], ...props }))
   return (
-    <>
-    <group name="transparent-floor" rotation-x={-Math.PI / 2}>
-      <mesh >
-        <planeBufferGeometry args={[500, 500]} />
-        <meshStandardMaterial color="white" transparent opacity={opacity} />
-      </mesh>
-      <mesh>
-        <planeBufferGeometry args={[500, 500, 500, 500]} />
-        <meshStandardMaterial color="#ddd" wireframe />
-      </mesh> 
-    </group>
-    </>
-  );
+    <mesh ref={ref}>
+      <planeGeometry args={[ 1000, 1000, 1000, 1000 ]} />
+      <meshStandardMaterial color="#aeaeae" wireframe />
+    </mesh>
+  )
 }

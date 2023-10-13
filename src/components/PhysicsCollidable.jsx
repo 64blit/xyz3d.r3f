@@ -1,8 +1,9 @@
 import * as THREE from "three";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useFrame, useLoader } from "@react-three/fiber";
 import { useSphere } from "@react-three/cannon";
 import { Collidable } from "spacesvr";
+import { useTrimeshCollision } from "helpers/TrimeshHelper";
 
 export function PhysicsCollidable({ obj, invisible }) 
 {
@@ -12,8 +13,13 @@ export function PhysicsCollidable({ obj, invisible })
         <Collidable
             triLimit={1000}
             enabled={true}
-            hideCollisionMeshes={invisible}>
-            <primitive object={obj} />
+            hideCollisionMeshes={invisible}
+        >
+            <primitive object={obj}
+                position={obj.position}
+                rotation={obj.rotation}
+                scale={obj.scale}
+            />
         </Collidable>
     );
 };

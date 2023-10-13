@@ -3,6 +3,11 @@ import React, { ReactNode, Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import SceneXyz3D from "../components/SceneXyz3D";
 import { HtmlOverlay } from "../components/HtmlOverlay";
+import TransparentFloor from "ideas/TransparentFloor";
+
+import { Perf, usePerf } from "r3f-perf";
+
+
 
 export default function Xyz3DWorld()
 {
@@ -11,6 +16,7 @@ export default function Xyz3DWorld()
   const [ showPopup, setShowPopup ] = useState(false);
   const [ popupContent, setPopupContent ] = useState(null);
 
+  usePerf();
 
   // if the user presses the "-" key, toggle debugging mode
   React.useEffect(() =>
@@ -41,16 +47,22 @@ export default function Xyz3DWorld()
             isDebugging={isDebugging}
           />
 
-          <ErrorBoundary fallback={<ambientLight />}>
+          {/* <ErrorBoundary fallback={<ambientLight />}>
 
             <HDRI
               src="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_43d_clear_puresky_1k.hdr"
-              disableBackground={true} // used to disable visual hdr (skybox)
+              disableBackground={false} // used to disable visual hdr (skybox)
               disableEnvironment={false} // used to disable environment map
             />
 
-          </ErrorBoundary>
+          </ErrorBoundary> */}
+          <ambientLight intensity={5} />
+          <directionalLight intensity={1} position={[ 0, 10, 0 ]} />
         </Suspense>
+
+        < TransparentFloor />
+
+        <Perf />
 
       </StandardReality >
 

@@ -17,11 +17,10 @@ export function PhysicsBall({ obj, mass, invisible })
     const [ ballRef, api ] = useSphere(() => ({
         mass: mass,
         position: obj.position,
-        linearDamping: 0.8,
-        angularDamping: 0.8,
-        args: [ boundingSphere.radius ]
+        linearDamping: 0.9,
+        angularDamping: 0.1,
+        args: [ boundingSphere.radius / 2 ]
     }));
-
 
     useEffect(() =>
     {

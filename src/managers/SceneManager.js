@@ -202,6 +202,7 @@ export class SceneManager
 
         if ("Physics" in object.userData)
         {
+            object.name = object.name + "_collider";
             this.physicsObjects.push(object);
         }
     }
