@@ -21,7 +21,7 @@ Remove-Item -Path $r3f_dest\* -Recurse -Force
 
 # run yarn build from the working directory of C:\Users\edmun\OneDrive\Documents\_SPACE\Web\xyz3d.r3f\
 cd "C:\Users\edmun\OneDrive\Documents\_SPACE\Web\xyz3d.r3f\"
-vite build --sourcemap "inline"
+vite build --sourcemap false
 
 # Copy the dist folder contents to the preview destination
 Write-Host "Copying dist folder contents to preview destination..."
