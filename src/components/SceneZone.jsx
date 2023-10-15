@@ -121,6 +121,7 @@ export function SceneZone(props)
                         src={element.src}
                         position={element.worldPosition}
                         quaternion={element.worldRotation}
+                        muted={false}
                         framed
                     >
                     </Video>
