@@ -345,6 +345,9 @@ export class SceneManager
 
             const framingDistance = this.getFramingDistance(targetBox, 1);
 
+            // sets the this.controls.camera fov to 45 degrees
+            this.controls.camera.fov = sceneZone.camera.anchor.fov;
+
             // Move the camera position and rotation to the camera anchor
             this.orbitCameraTo(position, target, framingDistance, false);
             // override the framing distance with the fitToBox method
