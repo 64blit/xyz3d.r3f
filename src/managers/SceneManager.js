@@ -1,6 +1,6 @@
 // Import necessary dependencies
 import { Bounds, meshBounds } from "@react-three/drei";
-import { Box3, Vector3 } from "three";
+import { Box3, Vector3, Quaternion } from "three";
 
 // Define a class called SceneManager
 export class SceneManager
@@ -128,6 +128,7 @@ export class SceneManager
             objects: {
                 count: 0,
                 interactables: [],
+                videos: []
             }
         };
 
@@ -277,6 +278,25 @@ export class SceneManager
         {
             sceneZone = this.getOrCreateSceneZone("_default_interactable_zone");
             sceneZone.camera.anchor = object;
+            object.userData[ "zone" ] = "_default_interactable_zone";
+        }
+
+
+        if (object.userData.interactableType === "Video")
+        {
+            let worldRotation = new Quaternion();
+            object.getWorldQuaternion(worldRotation);
+
+            var localXRotation = new Quaternion();
+            localXRotation.setFromAxisAngle(new Vector3(-1, 0, 0), Math.PI / 2); // 90 degrees in radians
+
+            // Multiply the originalQuaternion by the localXRotation
+            worldRotation.multiply(localXRotation);
+
+            object.visible = false;
+
+            sceneZone.objects.videos.push({ object, worldPosition, worldRotation, src: object.userData.interactableData });
+            return;
         }
 
         sceneZone.objects.interactables.push({ object, worldPosition });
@@ -296,11 +316,6 @@ export class SceneManager
                 }
             });
         });
-
-        if (!("zone" in object.userData))
-        {
-            object.userData[ "zone" ] = "_default_interactable_zone";
-        }
     }
 
     // Get looping animation data
