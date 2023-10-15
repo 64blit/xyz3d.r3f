@@ -2,6 +2,7 @@ import { Box, useHelper } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import React, { useState, useEffect, useRef } from 'react';
 import { Box3, BoxHelper, Vector3 } from 'three';
+import { Video } from './Video';
 
 export function SceneZone(props)
 {
@@ -24,7 +25,7 @@ export function SceneZone(props)
         boxMeshRef.current.position.copy(box.getCenter(new Vector3()));
         boxMeshRef.current.scale.set(...size);
 
-        const cameraSize = sceneData.cameraTarget.getSize(new Vector3());
+        const cameraSize = sceneData.camera.target.getSize(new Vector3());
         cameraViewBoxRef.current.position.copy(sceneData.camera.targetPosition);
         cameraViewBoxRef.current.scale.set(...cameraSize);
 
@@ -124,6 +125,22 @@ export function SceneZone(props)
                         onPointerLeave={handlePointerExit}
                     />
                 ))}
+
+
+
+                {sceneData.objects.videos.map((element, key) => (
+                    <Video
+                        key={key}
+                        size={Math.max(...element.object.scale)}
+                        src={element.src}
+                        position={element.worldPosition}
+                        quaternion={element.worldRotation}
+                        muted={false}
+                        framed
+                    >
+                    </Video>
+                ))}
+
             </group>
 
             <mesh ref={boxMeshRef} visible={props.isDebugging}>

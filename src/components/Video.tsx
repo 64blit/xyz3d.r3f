@@ -89,6 +89,7 @@ export function Video(props: Props)
                 setDims(new Vector2(video.videoWidth, video.videoHeight));
                 setupAudio();
             });
+            
             document.addEventListener("click", playVideo);
             return () =>
             {

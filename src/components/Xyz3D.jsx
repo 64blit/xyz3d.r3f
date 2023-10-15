@@ -18,7 +18,7 @@ export function Xyz3D()
     {
         const handleKeyDown = (event) =>
         {
-            if (event.key === "d")
+            if (event.key === "-")
             {
                 setIsDebugging(!isDebugging);
                 console.log("Debugging mode: ", !isDebugging)
