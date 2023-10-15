@@ -1,12 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { ScrollControls, useAnimations, useGLTF } from "@react-three/drei";
 import { useFrame, useThree } from '@react-three/fiber';
-import { SceneManager } from '../managers/SceneManager.js';
-import { Controls } from './Controls.jsx';
+import { SceneManager } from '../../managers/SceneManager.js';
+import { Controls } from '../logic/Controls.jsx';
 import { SceneZone } from './SceneZone.jsx';
 import * as THREE from 'three';
 import { SceneZoneWrapper } from './SceneZoneWrapper.jsx';
-import { basicLerp, map } from '../utils/BaseUtils.js';
+import { basicLerp, map } from '../../utils/BaseUtils.js';
 
 
 export function SceneXyz3D(props)
@@ -124,7 +124,7 @@ export function SceneXyz3D(props)
 
         if (!currentZone || !nextZone) return;
 
-        const percent = (scaledScrollOffset % 1) * 1.15;
+        const percent = (scaledScrollOffset % 1);
 
         // Use slerp to interpolate camera position and target
         const cameraPosition = currentZone.camera.anchor.position.clone().lerp(nextZone.camera.anchor.position, percent);

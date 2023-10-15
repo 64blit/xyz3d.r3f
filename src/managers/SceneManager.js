@@ -345,6 +345,9 @@ export class SceneManager
             const target = sceneZone.camera.targetPosition;
             const targetBox = sceneZone.camera.target;
 
+            // copy scene zone camera fov and settings to the contrs.camera object
+            this.controls.camera.fov = sceneZone.camera.anchor.fov;
+
             // Move the camera position and rotation to the camera anchor
             this.orbitCameraTo(position, target, 0, false);
 

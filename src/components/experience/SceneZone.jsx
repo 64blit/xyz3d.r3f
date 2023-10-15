@@ -2,7 +2,7 @@ import { Box, useHelper } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import React, { useState, useEffect, useRef } from 'react';
 import { Box3, BoxHelper, Vector3 } from 'three';
-import { Video } from './Video';
+import { Video } from '../logic/Video';
 
 export function SceneZone(props)
 {

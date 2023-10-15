@@ -1,8 +1,8 @@
 import React, { useState, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { SceneXyz3D } from './SceneXyz3D.jsx';
-import { HtmlOverlay } from './HtmlOverlay.jsx';
-import { ProgressLoader } from './ProgressLoader.jsx';
+import { SceneXyz3D } from './experience/SceneXyz3D.jsx';
+import { HtmlOverlay } from './helpers/HtmlOverlay.jsx';
+import { ProgressLoader } from './helpers/ProgressLoader.jsx';
 import { Environment } from '@react-three/drei';
 import { ErrorBoundary } from 'react-error-boundary';
 
@@ -58,7 +58,6 @@ export function Xyz3D()
 
 
                     </Suspense>
-
 
 
                 </Canvas>
