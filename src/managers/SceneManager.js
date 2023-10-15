@@ -350,8 +350,8 @@ export class SceneManager
             // override the framing distance with the fitToBox method
             this.controls.update(0);
 
-            // this.controls.fitToBox(targetBox, false, { paddingLeft: padding, paddingRight: padding, paddingTop: padding, paddingBottom: padding });
-            // this.controls.update(0);
+            this.controls.fitToBox(targetBox, false, { paddingLeft: padding, paddingRight: padding, paddingTop: padding, paddingBottom: padding });
+            this.controls.update(0);
 
             sceneZone.camera.anchor.position.x = this.controls.camera.position.x;
             sceneZone.camera.anchor.position.y = this.controls.camera.position.y;

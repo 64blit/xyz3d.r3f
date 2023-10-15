@@ -5,6 +5,20 @@ export const HtmlOverlay = (props) =>
     const [ loading, setLoading ] = useState(true);
     const iframeRef = useRef();
 
+    // register an escape key listener that sets props.setShowPopup(false) when pressed
+    useEffect(() =>
+    {
+        const handleKeyDown = (event) =>
+        {
+            if (event.key === "Escape")
+            {
+                props.setShowPopup(false);
+            }
+        }
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
+
     useEffect(() =>
     {
         try
