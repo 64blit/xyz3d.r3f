@@ -5,8 +5,8 @@ import { SceneZone } from './SceneZone';
 import * as THREE from 'three';
 import { Collidable, usePlayer } from 'spacesvr';
 import { generateKey } from '../helpers/ReactHelpers';
-import { PhysicsBall } from './PhysicsBall';
-import { PhysicsCollidable } from './PhysicsCollidable';
+import { PhysicsBall } from '../ideas/PhysicsBall';
+import { PhysicsCollidable } from '../ideas/PhysicsCollidable';
 import { gsap } from 'gsap';
 
 

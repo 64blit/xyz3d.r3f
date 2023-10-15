@@ -32,5 +32,5 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-    , "src/worlds/Xyz3DWorld.jsx", "src/components/SceneXyz3D.jsx", "src/pages/_app.jsx", "src/pages/index.jsx", "src/components/PhysicsBall.jsx" ]
+    , "src/worlds/Xyz3DWorld.jsx", "src/components/SceneXyz3D.jsx", "src/pages/_app.jsx", "src/pages/index.jsx", "src/ideas/PhysicsBall.jsx" ]
 }
