@@ -29,7 +29,6 @@ export function Xyz3D()
     }, [ isDebugging ]);
 
 
-
     return (
         <>
 

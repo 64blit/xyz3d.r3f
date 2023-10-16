@@ -193,7 +193,7 @@ export function SceneXyz3D(props)
 
     return (
         <>
-            <ScrollControls enabled={true} pages={sceneManager?.waypoints.length - 1} >
+            <ScrollControls enabled={true} pages={sceneManager?.waypoints.length - 1}>
                 <Controls innerRef={controlsRef} />
                 <SceneZoneWrapper setScroll={setScroll}>
                     <primitive
