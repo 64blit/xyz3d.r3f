@@ -25,12 +25,13 @@ export function SceneXyz3D(props)
     // Function to play animation by name
     const playAnimation = (name, loopType = THREE.LoopOnce) =>
     {
-        if (actions[ name ] && !actions[ name ].isRunning())
+        const action = actions[ name ];
+        if (action && !action.isRunning())
         {
-            actions[ name ].setLoop(loopType);
-            actions[ name ].clampWhenFinished = true;
-            actions[ name ].reset();
-            actions[ name ].play();
+            action.setLoop(loopType);
+            action.clampWhenFinished = true;
+            action.reset();
+            action.play();
         }
     }
 
