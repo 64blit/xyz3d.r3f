@@ -39,8 +39,6 @@ export default function Xyz3DWorld()
           </ErrorBoundary>
         </Suspense>
 
-        < TransparentFloor />
-
         {/* <Perf /> */}
 
       </StandardReality >
