@@ -2,7 +2,7 @@ import { StandardReality, HDRI } from "spacesvr";
 import React, { ReactNode, Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import SceneXyz3D from "../components/SceneXyz3D";
-import { HtmlOverlay } from "../components/HtmlOverlay";
+import { HtmlOverlay } from "../helpers/HtmlOverlay";
 import TransparentFloor from "ideas/TransparentFloor";
 // import { Perf, usePerf } from "r3f-perf";
 
