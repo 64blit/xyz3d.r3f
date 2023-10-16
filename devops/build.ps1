@@ -29,7 +29,7 @@ Copy-Item -Path $build_path\* -Destination $preview_dest -Recurse -Force
 
 # Copy files and folders from src path to r3f_dest, excluding node_modules and dist
 Write-Host "Copying src folder contents to r3f_dest..."
-Copy-Item -Path $src_path\* -Destination $r3f_dest -Recurse -Force -Exclude "node_modules", "dist", ".vscode", "devops", ".git"
+Copy-Item -Path $src_path\* -Destination $r3f_dest -Recurse -Force -Exclude "node_modules", "dist", ".next", ".vscode", "devops", ".git"
 
 # Remove the scene.glb file from the destination
 Remove-Item -Path $preview_dest\assets\scene.glb
