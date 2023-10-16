@@ -64,7 +64,7 @@ export function Xyz3D()
             </div>
 
             {/* The container for HTML content */}
-            {showPopup && <HtmlOverlay content={popupContent} setShowPopup={setShowPopup} />}
+            <HtmlOverlay content={popupContent} showPopup={showPopup} setShowPopup={setShowPopup} />
 
         </>
     );
