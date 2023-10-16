@@ -9,7 +9,7 @@ export default function App({ Component, pageProps })
   return (
     <>
       <Head>
-        <title>WebCrafter</title>
+        <title></title>
 
       </Head>
 
