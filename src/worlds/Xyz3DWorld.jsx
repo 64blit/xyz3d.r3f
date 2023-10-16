@@ -4,9 +4,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import SceneXyz3D from "../components/SceneXyz3D";
 import { HtmlOverlay } from "../components/HtmlOverlay";
 import TransparentFloor from "ideas/TransparentFloor";
-
-import { Perf, usePerf } from "r3f-perf";
-
+// import { Perf, usePerf } from "r3f-perf";
 
 
 export default function Xyz3DWorld()
