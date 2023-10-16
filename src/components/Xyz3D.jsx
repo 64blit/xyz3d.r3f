@@ -70,7 +70,7 @@ export function Xyz3D()
             {isInitialized && <NavBar xyzRef={sceneRef.current} />}
 
             {/* HTML popup container */}
-            {showPopup && <HtmlOverlay content={popupContent} setShowPopup={setShowPopup} />}
+            <HtmlOverlay content={popupContent} showPopup={showPopup} setShowPopup={setShowPopup} />
 
         </>
     );
