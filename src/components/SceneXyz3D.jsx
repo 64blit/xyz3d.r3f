@@ -26,7 +26,7 @@ export default function SceneXyz3D({
     const playerState = usePlayer();
 
 
-    const playAnimation = (name, loopType) =>
+    const playAnimation = (name, loopType = THREE.LoopOnce) =>
     {
         const action = actions[ name ];
 
