@@ -3,6 +3,7 @@
     "@react-three/drei": "^9.57.0",
     "@react-three/fiber": "^8.11.9",
     "@react-three/postprocessing": "^2.14.11",
+    "@react-three/rapier": "^1.1.2",
     "autoprefixer": "^10.4.14",
     "camera-controls": "^2.4.1",
     "gltfjsx": "^6.1.4",
