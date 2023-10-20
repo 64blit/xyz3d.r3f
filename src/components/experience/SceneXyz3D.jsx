@@ -6,7 +6,8 @@ import { Controls } from '../logic/Controls.jsx';
 import { SceneZone } from './SceneZone.jsx';
 import * as THREE from 'three';
 import { SceneZoneWrapper } from './SceneZoneWrapper.jsx';
-import { basicLerp, map } from '../../utils/BaseUtils.js';
+import { basicLerp } from '../../utils/BaseUtils.js';
+import { PhysicsObjects } from './PhyicsObjects.jsx';
 
 
 export function SceneXyz3D(props)
@@ -216,6 +217,8 @@ export function SceneXyz3D(props)
                                     key={key}
                                 />
                             ))}
+
+                        <PhysicsObjects sceneManager={sceneManager} />
                     </primitive>
                     {props.children}
                 </SceneZoneWrapper>
