@@ -1,5 +1,10 @@
 import * as THREE from 'three'
 
+export const generateKey = (pre) =>
+{
+    return `${pre}_${new Date().getTime()}`;
+}
+
 export function drawTestLine(scene, pointA, direction)
 {
     // var pointA = new THREE.Vector3( 0, 0, 0 );
