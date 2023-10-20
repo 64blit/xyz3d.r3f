@@ -17,6 +17,9 @@
   },
   "devDependencies": {
     "@types/three": "^0.157.2",
+    "@types/node": "17.0.40",
+    "@types/react": "18.0.12",
+    "@types/react-dom": "18.0.5",
     "@vitejs/plugin-react": "^3.1.0",
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.24",

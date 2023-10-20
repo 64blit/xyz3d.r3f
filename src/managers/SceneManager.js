@@ -1,24 +1,32 @@
 // Import necessary dependencies
 import { Bounds, meshBounds } from "@react-three/drei";
-import { Box3, Vector3, Quaternion } from "three";
+import * as THREE from "three";
+import { AnimationManager } from "./AnimationManager";
 
 // Define a class called SceneManager
 export class SceneManager
 {
-    constructor(scene, controls)
+    constructor(scene, controls, animations, actions)
     {
         // Initialize scene, controls, and data arrays
         this.scene = scene;
         this.controls = controls;
         this.sceneZones = [];
         this.waypoints = [];
-        this.loopingAnimations = [];
         this.physicsObjects = [];
+
+        this.animationManager = new AnimationManager(animations, actions);
 
         // Call initialization methods
         this.populateSceneZones(scene);
         this.fixWaypoints();
         this.fixZones();
+    }
+
+    playAnimation(name, loopType = THREE.LoopOnce)
+    {
+        console.log(this, name, loopType);
+        this.animationManager.playAnimation(name, loopType);
     }
 
     // Populate scene zones and objects within zones
@@ -33,7 +41,7 @@ export class SceneManager
             {
 
                 // Extract animation data and update arrays
-                this.extractAnimationsFromUserData(node);
+                this.animationManager.extractAnimationsFromUserData(node);
 
                 const userDataCopy = Object.assign({}, node.userData);
 
@@ -55,55 +63,6 @@ export class SceneManager
         this.waypoints.sort((a, b) => a.index - b.index);
     }
 
-    // Extract animation data from user data
-    extractAnimationsFromUserData(object)
-    {
-        if ('LoopingAnimations' in object.userData)
-        {
-            const loopingAnimations = object.userData.LoopingAnimations.replace(/\s/g, '').split(',');
-            this.loopingAnimations.push(...loopingAnimations);
-        }
-
-        const extractAnimations = (userDataKey, objectUserData) =>
-        {
-            if (userDataKey in objectUserData)
-            {
-                let animations = objectUserData[ userDataKey ];
-
-
-                if (typeof animations === 'string')
-                {
-                    animations = animations.replace(/\s/g, '').split(',');
-                }
-
-
-                objectUserData[ userDataKey ] = animations;
-                if (!('zone' in objectUserData))
-                {
-                    //  Adds a special animations zone to the objectUserData if it doesn't exist
-                    objectUserData[ "zone" ] = "_default_animations_zone";
-                }
-
-                objectUserData[ "type" ] = "interactable";
-
-                //  Adds the same animations to any children of the object
-                const userDataCopy = Object.assign({}, object.userData);
-
-                object.traverse((node) =>
-                {
-                    node.userData = userDataCopy;
-                });
-
-            }
-
-
-        };
-
-        extractAnimations('OnPointerEnterAnimations', object.userData);
-        extractAnimations('OnPointerExitAnimations', object.userData);
-        extractAnimations('OnSelectAnimations', object.userData);
-    }
-
     // Get or create a scene zone based on name
     getOrCreateSceneZone(sceneZoneName)
     {
@@ -123,8 +82,8 @@ export class SceneManager
             index: -1,
             camera: {
                 anchor: null,
-                target: new Box3(),
-                targetPosition: new Vector3(),
+                target: new THREE.Box3(),
+                targetPosition: new THREE.Vector3(),
             },
             objects: {
                 count: 0,
@@ -179,28 +138,33 @@ export class SceneManager
     {
         let isCameraAnchor = false;
 
-        switch (object.userData.type)
-        {
-            case 'interactable':
-                this.addInteractable(sceneZone, object);
-                break;
-            case 'cameraAnchor':
-                isCameraAnchor = true;
-                this.addCameraAnchor(sceneZone, object);
-                break;
-            default:
-                break;
-        }
-
         if ("Physics" in object.userData)
         {
             this.physicsObjects.push(object);
+
+        } else // Objects cannot be physics enabled and interactable or waypoint type
+        {
+
+            switch (object.userData.type)
+            {
+                case 'interactable':
+                    this.addInteractable(sceneZone, object);
+                    break;
+                case 'cameraAnchor':
+                    isCameraAnchor = true;
+                    this.addCameraAnchor(sceneZone, object);
+                    break;
+                default:
+                    break;
+            }
+
         }
+
 
         // Add the object to the scene zone's camera target
         if (sceneZone && !isCameraAnchor)
         {
-            const target = new Vector3();
+            const target = new THREE.Vector3();
             sceneZone.camera.target.expandByObject(object);
             sceneZone.camera.target.getCenter(target);
             sceneZone.camera.targetPosition = target;
@@ -219,12 +183,12 @@ export class SceneManager
                 const cameraAnchor = sceneZone.camera.anchor;
                 const cameraAnchorPosition = cameraAnchor.position;
                 const cameraAnchorRotation = cameraAnchor.quaternion;
-                const cameraAnchorDirection = new Vector3(0, 0, -1);
+                const cameraAnchorDirection = new THREE.Vector3(0, 0, -1);
                 cameraAnchorDirection.applyQuaternion(cameraAnchorRotation);
-                const cameraTargetPosition = new Vector3();
+                const cameraTargetPosition = new THREE.Vector3();
                 cameraTargetPosition.copy(cameraAnchorDirection).add(cameraAnchorPosition);
                 sceneZone.camera.targetPosition = cameraTargetPosition;
-                sceneZone.camera.target.setFromCenterAndSize(cameraTargetPosition, new Vector3(1, 1, 1));
+                sceneZone.camera.target.setFromCenterAndSize(cameraTargetPosition, new THREE.Vector3(1, 1, 1));
             }
         });
     }
@@ -245,9 +209,9 @@ export class SceneManager
                 const cameraAnchor = element.camera.anchor;
                 const cameraAnchorPosition = cameraAnchor.position;
                 const cameraAnchorRotation = cameraAnchor.quaternion;
-                const cameraAnchorDirection = new Vector3(0, 0, -1);
+                const cameraAnchorDirection = new THREE.Vector3(0, 0, -1);
                 cameraAnchorDirection.applyQuaternion(cameraAnchorRotation);
-                const cameraTargetPosition = new Vector3();
+                const cameraTargetPosition = new THREE.Vector3();
                 cameraTargetPosition.copy(cameraAnchorDirection).add(cameraAnchorPosition);
                 element.camera.targetPosition = cameraTargetPosition;
             }
@@ -270,8 +234,8 @@ export class SceneManager
             index: cameraAnchorIndex,
             camera: {
                 anchor: anchorObject,
-                target: new Box3(),
-                targetPosition: new Vector3(),
+                target: new THREE.Box3(),
+                targetPosition: new THREE.Vector3(),
             }
         });
     }
@@ -280,7 +244,7 @@ export class SceneManager
     addInteractable(sceneZone, object)
     {
 
-        const worldPosition = new Vector3();
+        const worldPosition = new THREE.Vector3();
         object.getWorldPosition(worldPosition);
 
         // Add the object to a default scene zone if it does not exist
@@ -294,11 +258,11 @@ export class SceneManager
 
         if (object.userData.interactableType === "Video")
         {
-            let worldRotation = new Quaternion();
+            let worldRotation = new THREE.Quaternion();
             object.getWorldQuaternion(worldRotation);
 
-            var localXRotation = new Quaternion();
-            localXRotation.setFromAxisAngle(new Vector3(-1, 0, 0), Math.PI / 2); // 90 degrees in radians
+            var localXRotation = new THREE.Quaternion();
+            localXRotation.setFromAxisAngle(new THREE.Vector3(-1, 0, 0), Math.PI / 2); // 90 degrees in radians
 
             // Multiply the originalQuaternion by the localXRotation
             worldRotation.multiply(localXRotation);
@@ -312,6 +276,8 @@ export class SceneManager
 
         sceneZone.objects.interactables.push({ object, worldPosition });
 
+        // This is a hack to make the object children interactable of an interactable parent
+        // This can be possible removed with a group parent object
         object.children.forEach((child) =>
         {
             child.traverse((node) =>
@@ -333,7 +299,7 @@ export class SceneManager
     // Get looping animation data
     getLoopingAnimations()
     {
-        return this.loopingAnimations;
+        return this.animationManager.getLoopingAnimations();
     }
 
     // Fix scene zones by adjusting camera positions and targets
