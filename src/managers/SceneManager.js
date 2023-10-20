@@ -13,6 +13,7 @@ export class SceneManager
         this.sceneZones = [];
         this.waypoints = [];
         this.loopingAnimations = [];
+        this.physicsObjects = [];
 
         // Call initialization methods
         this.populateSceneZones(scene);
@@ -155,6 +156,10 @@ export class SceneManager
         return null;
     }
 
+    getPhysicsObjects()
+    {
+        return this.physicsObjects;
+    }
 
     getSceneZoneByIndex(index)
     {
@@ -185,6 +190,12 @@ export class SceneManager
                 break;
             default:
                 break;
+        }
+
+        if ("Physics" in object.userData)
+        {
+            object.name = object.name + "_collider";
+            this.physicsObjects.push(object);
         }
 
         // Add the object to the scene zone's camera target
