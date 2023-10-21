@@ -8,6 +8,7 @@ import * as THREE from 'three';
 import { SceneZoneWrapper } from './SceneZoneWrapper.jsx';
 import { basicLerp } from '../../utils/BaseUtils.js';
 import { PhysicsObjects } from './PhyicsObjects.jsx';
+import { gsap } from 'gsap';
 
 
 export function SceneXyz3D(props)
@@ -19,7 +20,7 @@ export function SceneXyz3D(props)
     const [ scroll, setScroll ] = useState(null);
     const controlsRef = useRef(null);
 
-    const sceneManager = useMemo(() => new SceneManager(scene, controlsRef.current, animations, actions), [ actions, controlsRef ]);
+    const sceneManager = useMemo(() => new SceneManager(scene, controlsRef.current, animations, actions, mixer), [ actions, controlsRef ]);
 
     // Go to the first scene zone on component mount
     useEffect(() =>
@@ -30,7 +31,6 @@ export function SceneXyz3D(props)
     // Function to navigate to a scene zone by index
     const goToSceneZoneByIndex = (index) =>
     {
-        console.log("goToSceneZoneByIndex", scroll, camera, sceneManager, controlsRef.current)
         if (!scroll) return;
 
         const sceneZone = sceneManager.waypoints[ index ];
@@ -77,17 +77,34 @@ export function SceneXyz3D(props)
         if (!position) return;
 
         const target = sceneZone.camera.targetPosition;
+        const controls = controlsRef.current;
 
-        if (controlsRef.current === undefined || controlsRef.current === null) return;
+        if (controls === undefined || controls === null) return;
 
-        controlsRef.current?.setLookAt(...position, ...target, true);
+        controls.setLookAt(...position, ...target, true);
 
-        controlsRef.current.camera.fov = basicLerp(controlsRef.current.camera.anchor.fov, sceneZone.camera.anchor.fov, position);
-        controlsRef.current.camera.near = basicLerp(controlsRef.current.camera.anchor.near, sceneZone.camera.anchor.near, position);
-        controlsRef.current.camera.far = basicLerp(controlsRef.current.camera.anchor.far, sceneZone.camera.anchor.far, position);
+        const tl = gsap.timeline();
 
-        controlsRef.current.camera.updateProjectionMatrix();
-        controlsRef.current.update(0);
+        tl.fromTo(
+            controls.camera,
+            { fov: controls.camera.fov },
+            { fov: sceneZone.camera.anchor.fov, duration: controls.smoothTime, onUpdate: () => { controls.update(0); controls.camera.updateProjectionMatrix(); } }
+        );
+
+        tl.fromTo(
+            controls.camera,
+            { near: controls.camera.near },
+            { near: sceneZone.camera.anchor.near, duration: controls.smoothTime }
+        );
+
+        tl.fromTo(
+            controls.camera,
+            { far: controls.camera.far },
+            { far: sceneZone.camera.anchor.far, duration: controls.smoothTime }
+        );
+
+
+        tl.play();
     }
 
 
@@ -109,16 +126,17 @@ export function SceneXyz3D(props)
         // Use slerp to interpolate camera position and target
         const cameraPosition = currentZone.camera.anchor.position.clone().lerp(nextZone.camera.anchor.position, percent);
         const cameraTarget = currentZone.camera.targetPosition.clone().lerp(nextZone.camera.targetPosition, percent);
+        const controls = controlsRef.current;
 
-        controlsRef.current.setLookAt(...cameraPosition, ...cameraTarget, true);
+        controls.setLookAt(...cameraPosition, ...cameraTarget, true);
 
         if ("fov" in currentZone.camera.anchor)
         {
-            controlsRef.current.camera.fov = basicLerp(currentZone.camera.anchor.fov, nextZone.camera.anchor.fov, percent);
-            controlsRef.current.camera.near = basicLerp(currentZone.camera.anchor.near, nextZone.camera.anchor.near, percent);
-            controlsRef.current.camera.far = basicLerp(currentZone.camera.anchor.far, nextZone.camera.anchor.far, percent);
-            controlsRef.current.camera.updateProjectionMatrix();
-            controlsRef.current.update(0);
+            controls.camera.fov = basicLerp(currentZone.camera.anchor.fov, nextZone.camera.anchor.fov, percent);
+            controls.camera.near = basicLerp(currentZone.camera.anchor.near, nextZone.camera.anchor.near, percent);
+            controls.camera.far = basicLerp(currentZone.camera.anchor.far, nextZone.camera.anchor.far, percent);
+            controls.camera.updateProjectionMatrix();
+            controls.update(0);
         }
 
     };
@@ -126,7 +144,6 @@ export function SceneXyz3D(props)
     // UseFrame hook for animations and interactions
     useFrame(() =>
     {
-        // if (isBusy || !scroll || !camera || !sceneManager || !controlsRef.current) return;
         scrollHandler();
     });
 

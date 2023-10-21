@@ -1,28 +1,44 @@
 import { Bounds, meshBounds } from "@react-three/drei";
-import { Box3, Vector3, Quaternion } from "three";
+import * as THREE from "three";
 
 // Define a class called SceneManager
 export class AnimationManager
 {
-    constructor(animations, actions)
+    constructor(animations, actions, mixer)
     {
         this.animations = animations;
         this.actions = actions;
+        this.mixer = mixer;
         this.loopingAnimations = [];
+
+        // Function to play animation by name
+        this.playAnimation = (name, loopType = THREE.LoopOnce) =>
+        {
+            const action = this.actions[ name ];
+
+            if (action && !action.isRunning())
+            {
+                action.setLoop(loopType);
+                action.clampWhenFinished = true;
+                action.reset();
+                action.play();
+            }
+        }
     }
 
-    // Function to play animation by name
-    playAnimation(name, loopType = THREE.LoopOnce)
+    // Function to play loop animations
+    playLoopingAnimations()
     {
-        const action = this.actions[ name ];
-
-        if (action && !action.isRunning())
+        this.loopingAnimations.forEach((animation) =>
         {
-            action.setLoop(loopType);
-            action.clampWhenFinished = true;
-            action.reset();
-            action.play();
-        }
+            console.log("Playing animation: " + animation)
+            this.playAnimation(animation, THREE.LoopRepeat);
+        });
+    }
+
+    setNewAnimationMixer(mixer)
+    {
+        this.mixer.current = mixer;
     }
 
     // Function to stop animation by name
@@ -31,16 +47,8 @@ export class AnimationManager
         return this.loopingAnimations;
     }
 
-    playLoopingAnimations()
-    {
-        this.loopingAnimations.forEach((animation) =>
-        {
-            this.playAnimation(animation, THREE.LoopRepeat);
-        });
-    }
-
     // Extract animation data from user data
-    extractAnimationsFromUserData(object)
+    parseAnimations(object)
     {
         if ('LoopingAnimations' in object.userData)
         {

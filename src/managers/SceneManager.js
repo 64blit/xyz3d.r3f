@@ -6,7 +6,7 @@ import { AnimationManager } from "./AnimationManager";
 // Define a class called SceneManager
 export class SceneManager
 {
-    constructor(scene, controls, animations, actions)
+    constructor(scene, controls, animations, actions, mixer)
     {
         // Initialize scene, controls, and data arrays
         this.scene = scene;
@@ -14,19 +14,29 @@ export class SceneManager
         this.sceneZones = [];
         this.waypoints = [];
         this.physicsObjects = [];
-
-        this.animationManager = new AnimationManager(animations, actions);
+        this.animationManager = new AnimationManager(animations, actions, mixer);
 
         // Call initialization methods
         this.populateSceneZones(scene);
         this.fixWaypoints();
         this.fixZones();
+
+        this.animationManager.playLoopingAnimations();
+
+        this.playAnimation = (name, loopType = THREE.LoopOnce) =>
+        {
+            this.animationManager.playAnimation(name, loopType);
+        }
+
+        this.setNewAnimationMixer = (mixer) =>
+        {
+            this.animationManager.setNewAnimationMixer(mixer);
+        };
     }
 
-    playAnimation(name, loopType = THREE.LoopOnce)
+    getAnimationAction(name)
     {
-        console.log(this, name, loopType);
-        this.animationManager.playAnimation(name, loopType);
+        return this.animationManager.actions[ name ];
     }
 
     // Populate scene zones and objects within zones
@@ -41,7 +51,7 @@ export class SceneManager
             {
 
                 // Extract animation data and update arrays
-                this.animationManager.extractAnimationsFromUserData(node);
+                this.animationManager.parseAnimations(node);
 
                 const userDataCopy = Object.assign({}, node.userData);
 
@@ -134,12 +144,17 @@ export class SceneManager
         return null;
     }
 
+
     addObject(sceneZone, object)
     {
         let isCameraAnchor = false;
 
         if ("Physics" in object.userData)
         {
+            const { worldPosition, worldRotation } = this.getWorldData(object);
+            object.userData[ "worldPosition" ] = worldPosition;
+            object.userData[ "worldRotation" ] = worldRotation;
+
             this.physicsObjects.push(object);
 
         } else // Objects cannot be physics enabled and interactable or waypoint type
@@ -240,12 +255,28 @@ export class SceneManager
         });
     }
 
+    getWorldData(object)
+    {
+        const worldPosition = new THREE.Vector3();
+        object.getWorldPosition(worldPosition);
+
+        let worldRotation = new THREE.Quaternion();
+        object.getWorldQuaternion(worldRotation);
+
+        var localXRotation = new THREE.Quaternion();
+        localXRotation.setFromAxisAngle(new THREE.Vector3(-1, 0, 0), Math.PI / 2);
+
+        // Multiply the originalQuaternion by the localXRotation
+        worldRotation.multiply(localXRotation);
+
+        return { worldPosition, worldRotation };
+    }
+
     // Add an interactable object to a scene zone
     addInteractable(sceneZone, object)
     {
 
-        const worldPosition = new THREE.Vector3();
-        object.getWorldPosition(worldPosition);
+        const { worldPosition, worldRotation } = this.getWorldData(object);
 
         // Add the object to a default scene zone if it does not exist
         if (!sceneZone)
@@ -258,14 +289,7 @@ export class SceneManager
 
         if (object.userData.interactableType === "Video")
         {
-            let worldRotation = new THREE.Quaternion();
-            object.getWorldQuaternion(worldRotation);
 
-            var localXRotation = new THREE.Quaternion();
-            localXRotation.setFromAxisAngle(new THREE.Vector3(-1, 0, 0), Math.PI / 2); // 90 degrees in radians
-
-            // Multiply the originalQuaternion by the localXRotation
-            worldRotation.multiply(localXRotation);
 
             object.visible = false;
 

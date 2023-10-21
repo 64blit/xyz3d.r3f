@@ -1,21 +1,107 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Physics, RigidBody } from '@react-three/rapier';
 import { generateKey } from '../../utils/BaseUtils.js';
+import { useThree, useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
 
-export function PhysicsObjects({ sceneManager, isDebugging, playAnimation })
+export function PhysicsObjects(props)
 {
     const [ hovered, setHovered ] = useState(false);
     const [ physicsNodes, setPhysicsNodes ] = useState(null);
+    const [ physicsMixers, setPhysicsMixers ] = useState([]);
 
-    React.useEffect(() =>
+    const rigidBodyRefs = props.sceneManager.getPhysicsObjects().map(() => useRef())
+
+
+    const { scene } = useThree();
+
+    useFrame((state, delta) =>
     {
-        if (sceneManager === null || sceneManager === undefined)
+        if (physicsMixers.length <= 0)
         {
             return;
         }
 
-        setPhysicsNodes(getPhyicsNodes())
-    }, [ sceneManager ]);
+        physicsMixers.forEach((mixer) =>
+        {
+            mixer.update(delta);
+        });
+
+    });
+
+    useEffect(() =>
+    {
+        if (props.sceneManager === null || props.sceneManager === undefined)
+        {
+            return;
+        }
+
+        const physicsObjects = props.sceneManager.getPhysicsObjects();
+        setPhysicsNodes(getPhyicsNodes(physicsObjects))
+    }, [ props.sceneManager ]);
+
+    useEffect(() =>
+    {
+        if (physicsNodes === null || physicsNodes === undefined)
+        {
+            return;
+        }
+
+        setupMixers(rigidBodyRefs);
+    }, [ physicsNodes ]);
+
+    const setupMixers = (nodes) =>
+    {
+
+        const mixers = [];
+
+        for (let i = 0; i < nodes.length; i++)
+        {
+            const obj = nodes[ i ].current;
+
+            // if OnSelectAnimation is in object userData then log it and the props.sceneManager
+            // will play the animation when the object is clicked
+            if (obj.userData?.OnSelectAnimations || obj.userData?.OnPointerEnterAnimations || obj.userData?.OnPointerExitAnimations || obj.userData?.LoopingAnimations)
+            {
+                const oldActionNames = [
+                    ...(obj.userData.OnSelectAnimations || []),
+                    ...(obj.userData.OnPointerEnterAnimations || []),
+                    ...(obj.userData.OnPointerExitAnimations || []),
+                    ...(obj.userData.LoopingAnimations || []),
+                ];
+
+                obj.parent = obj.clone();
+                console.log("asdasdads", obj.parent, obj.type, obj.name, obj.parent.type, obj.parent.name);
+
+                const newMixer = new THREE.AnimationMixer(obj.parent);
+
+                for (let i = 0; i < oldActionNames.length; i++)
+                {
+                    const element = oldActionNames[ i ];
+                    let action = props.sceneManager.getAnimationAction(element);
+
+                    console.log((action._propertyBindings));
+
+                    action._propertyBindings.forEach((binding) =>
+                    {
+
+                        binding.rootNode = obj.parent;
+                    });
+
+                    const newAction = newMixer.clipAction(action._clip);
+
+                    action = newAction;
+
+                }
+
+                mixers.push(newMixer);
+
+            }
+        }
+
+        setPhysicsMixers(mixers);
+
+    };
 
     useEffect(() =>
     {
@@ -32,7 +118,7 @@ export function PhysicsObjects({ sceneManager, isDebugging, playAnimation })
         {
             actions.forEach((actionName) =>
             {
-                playAnimation(actionName);
+                props.playAnimation(actionName);
             });
         }
     }
@@ -96,11 +182,10 @@ export function PhysicsObjects({ sceneManager, isDebugging, playAnimation })
     }
 
 
-    const getPhyicsNodes = () =>
+    const getPhyicsNodes = (physicsObjects) =>
     {
         let physicsNodes = [];
 
-        const physicsObjects = sceneManager.getPhysicsObjects();
 
         if (physicsObjects.length <= 0)
         {
@@ -110,8 +195,11 @@ export function PhysicsObjects({ sceneManager, isDebugging, playAnimation })
         let includeInvisible = false;
         //  add a child node to the physics node parent
         //  for each physics object in the scene
-        physicsObjects.forEach((obj) =>
+
+        for (let i = 0; i < physicsObjects.length; i++)
         {
+            const obj = physicsObjects[ i ];
+
             let node = null;
 
             const dynamicMass = parseInt(obj.userData[ "Dynamic" ]) || 0;
@@ -123,27 +211,30 @@ export function PhysicsObjects({ sceneManager, isDebugging, playAnimation })
 
             node =
                 <RigidBody
+                    key={generateKey("rb_" + obj.name)}
                     type={dynamicMass > 0 ? "dynamic" : "fixed"}
                     mass={dynamicMass}
-                    key={generateKey("rb_" + obj.name)}
-                    uuid={obj.uuid}
                     onClick={handleInteraction}
                     onPointerEnter={handlePointerEnter}
-                    onPointerLeave={handlePointerExit}>
-
-                    <primitive object={obj} visible={!invisible} />
+                    onPointerLeave={handlePointerExit}
+                    userData={obj}
+                >
+                    <primitive object={obj} visible={!invisible}
+                        ref={rigidBodyRefs[ i ]}
+                    />
 
                 </RigidBody>;
+
 
             if (dynamicMass > 0 || collides)
             {
                 physicsNodes.push(node);
             }
 
-        });
+        }
 
         return (
-            <Physics debug={isDebugging} gravity={[ 0, -9.81, 0 ]} includeInvisible={includeInvisible}>
+            <Physics debug={props.isDebugging} gravity={[ 0, -9.81, 0 ]} includeInvisible={includeInvisible}>
                 {physicsNodes}
             </Physics>
         );
