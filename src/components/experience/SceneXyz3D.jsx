@@ -21,14 +21,16 @@ export function SceneXyz3D(props)
     const controlsRef = useRef(null);
     const [ busy, setBusy ] = useState(false);
 
-    const sceneManager = useMemo(() =>
+    const [ sceneManager, setSceneManager ] = useState(null);
+
+    useEffect(() =>
     {
-        if (controlsRef.current == null)
+        if (controlsRef.current == null || sceneManager !== null)
         {
-            return null;
+            return;
         }
 
-        return new SceneManager(scene, controlsRef.current, animations, actions, mixer)
+        setSceneManager(new SceneManager(scene, controlsRef.current, animations, actions, mixer));
 
     }, [ camera, scroll, actions, controlsRef.current, animations, mixer ]);
 
