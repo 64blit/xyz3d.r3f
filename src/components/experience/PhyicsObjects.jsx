@@ -8,26 +8,34 @@ export function PhysicsObjects(props)
 {
     const [ hovered, setHovered ] = useState(false);
     const [ physicsNodes, setPhysicsNodes ] = useState(null);
-    const [ physicsMixers, setPhysicsMixers ] = useState([]);
+    const [ sourceNodes, setSourceNodes ] = useState(null);
 
-    const rigidBodyRefs = props.sceneManager.getPhysicsObjects().map(() => useRef())
+    const rigidBodyRefs = props.sceneManager.getPhysicsObjects().map(() => useRef());
 
-
-    const { scene } = useThree();
-
-    useFrame((state, delta) =>
+    useFrame(() =>
     {
-        if (physicsMixers.length <= 0)
+        rigidBodyRefs.forEach((ref) =>
         {
-            return;
-        }
 
-        physicsMixers.forEach((mixer) =>
-        {
-            mixer.update(delta);
+            if (ref.current === null || ref.current === undefined) return;
+
+            const { obj, actions } = ref.current?.userData;
+
+            if (obj === undefined || obj === null) return;
+            if (actions === undefined || actions === null || actions.length <= 0) return;
+
+            actions.forEach((action) =>
+            {
+                if (action)
+                {
+                    ref.current.setTranslation(obj.position, true);
+                    ref.current.setRotation(obj.quaternion, true);
+                }
+            });
+
         });
-
     });
+
 
     useEffect(() =>
     {
@@ -37,70 +45,49 @@ export function PhysicsObjects(props)
         }
 
         const physicsObjects = props.sceneManager.getPhysicsObjects();
-        setPhysicsNodes(getPhyicsNodes(physicsObjects))
+        setPhysicsNodes(getPhyicsNodes(physicsObjects));
+
+        setSourceNodes(physicsObjects);
     }, [ props.sceneManager ]);
 
-    useEffect(() =>
-    {
-        if (physicsNodes === null || physicsNodes === undefined)
-        {
-            return;
-        }
 
-        setupMixers(rigidBodyRefs);
-    }, [ physicsNodes ]);
-
-    const setupMixers = (nodes) =>
+    const getActions = (obj) =>
     {
 
-        const mixers = [];
-
-        for (let i = 0; i < nodes.length; i++)
+        // if OnSelectAnimation is in object userData then log it and the props.sceneManager
+        if (obj.userData?.OnSelectAnimations
+            || obj.userData?.OnPointerEnterAnimations
+            || obj.userData?.OnPointerExitAnimations
+            || obj.userData?.LoopingAnimations
+        )
         {
-            const obj = nodes[ i ].current;
 
-            // if OnSelectAnimation is in object userData then log it and the props.sceneManager
-            // will play the animation when the object is clicked
-            if (obj.userData?.OnSelectAnimations || obj.userData?.OnPointerEnterAnimations || obj.userData?.OnPointerExitAnimations || obj.userData?.LoopingAnimations)
+            const oldActionNames = [
+                ...(obj.userData.OnSelectAnimations || []),
+                ...(obj.userData.OnPointerEnterAnimations || []),
+                ...(obj.userData.OnPointerExitAnimations || []),
+                ...(obj.userData.LoopingAnimations || []),
+            ];
+
+            const actions = [];
+
+            for (let i = 0; i < oldActionNames.length; i++)
             {
-                const oldActionNames = [
-                    ...(obj.userData.OnSelectAnimations || []),
-                    ...(obj.userData.OnPointerEnterAnimations || []),
-                    ...(obj.userData.OnPointerExitAnimations || []),
-                    ...(obj.userData.LoopingAnimations || []),
-                ];
+                const element = oldActionNames[ i ];
 
-                obj.parent = obj.clone();
-                console.log("asdasdads", obj.parent, obj.type, obj.name, obj.parent.type, obj.parent.name);
+                let action = props.sceneManager.getAnimationAction(element);
 
-                const newMixer = new THREE.AnimationMixer(obj.parent);
-
-                for (let i = 0; i < oldActionNames.length; i++)
+                if (action)
                 {
-                    const element = oldActionNames[ i ];
-                    let action = props.sceneManager.getAnimationAction(element);
-
-                    console.log((action._propertyBindings));
-
-                    action._propertyBindings.forEach((binding) =>
-                    {
-
-                        binding.rootNode = obj.parent;
-                    });
-
-                    const newAction = newMixer.clipAction(action._clip);
-
-                    action = newAction;
-
+                    actions.push(action);
                 }
-
-                mixers.push(newMixer);
-
             }
+
+            return actions;
+
         }
 
-        setPhysicsMixers(mixers);
-
+        return null;
     };
 
     useEffect(() =>
@@ -193,6 +180,7 @@ export function PhysicsObjects(props)
         }
 
         let includeInvisible = false;
+
         //  add a child node to the physics node parent
         //  for each physics object in the scene
 
@@ -209,6 +197,10 @@ export function PhysicsObjects(props)
             // if any object is invisible, make sure it's still considered in the physics simulation
             includeInvisible = includeInvisible || invisible;
 
+            // obj.visible = false;
+            const actions = getActions(obj);
+            // const hasAction = actions !== null && actions.length > 0;
+
             node =
                 <RigidBody
                     key={generateKey("rb_" + obj.name)}
@@ -217,10 +209,12 @@ export function PhysicsObjects(props)
                     onClick={handleInteraction}
                     onPointerEnter={handlePointerEnter}
                     onPointerLeave={handlePointerExit}
-                    userData={obj}
+                    userData={{ obj, actions }}
+                    ref={rigidBodyRefs[ i ]}
                 >
-                    <primitive object={obj} visible={!invisible}
-                        ref={rigidBodyRefs[ i ]}
+                    <primitive
+                        object={obj.clone()}
+                        visible={!invisible}
                     />
 
                 </RigidBody>;
