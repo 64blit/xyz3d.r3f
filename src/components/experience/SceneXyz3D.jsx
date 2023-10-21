@@ -19,8 +19,17 @@ export function SceneXyz3D(props)
 
     const [ scroll, setScroll ] = useState(null);
     const controlsRef = useRef(null);
+    const [ busy, setBusy ] = useState(false);
 
-    const sceneManager = useMemo(() => new SceneManager(scene, controlsRef.current, animations, actions, mixer), [ actions, controlsRef ]);
+    const sceneManager = useMemo(() =>
+    {
+        if (controlsRef.current == null)
+        {
+            return null;
+        }
+        console.log("ALL OOG")
+        return new SceneManager(scene, controlsRef.current, animations, actions, mixer)
+    }, [ camera, scroll, actions, controlsRef.current, animations, mixer ]);
 
     // Go to the first scene zone on component mount
     useEffect(() =>
@@ -31,7 +40,8 @@ export function SceneXyz3D(props)
     // Function to navigate to a scene zone by index
     const goToSceneZoneByIndex = (index) =>
     {
-        if (!scroll) return;
+        if (busy || !scroll) return;
+        setBusy(true);
 
         const sceneZone = sceneManager.waypoints[ index ];
         if (!sceneZone)
@@ -46,7 +56,8 @@ export function SceneXyz3D(props)
     // Function to navigate to a scene zone by name
     const goToSceneZoneByName = (name) =>
     {
-        if (!scroll || !camera || !sceneManager) return;
+        if (busy || !scroll || !camera || !sceneManager) return;
+        setBusy(true);
 
         const sceneZone = sceneManager.getSceneZone(name);
         if (!sceneZone)
@@ -70,7 +81,7 @@ export function SceneXyz3D(props)
         const scrollTarget = scroll.el;
         const scrollTop = (scrollTarget.scrollHeight - scrollTarget.clientHeight) * newScrollOffset;
 
-        scrollTarget.scrollTo({ top: scrollTop, behavior: "smooth" });
+        scrollTarget.scrollTo({ top: scrollTop, behavior: 'smooth' });
 
         const position = sceneZone.camera.anchor?.position;
 
@@ -88,7 +99,7 @@ export function SceneXyz3D(props)
         tl.fromTo(
             controls.camera,
             { fov: controls.camera.fov },
-            { fov: sceneZone.camera.anchor.fov, duration: controls.smoothTime, onUpdate: () => { controls.update(0); controls.camera.updateProjectionMatrix(); } }
+            { fov: sceneZone.camera.anchor.fov, duration: controls.smoothTime, onUpdate: () => { controls.update(0); controls.camera.updateProjectionMatrix(); }, onComplete: () => { setBusy(false); } }
         );
 
         tl.fromTo(
@@ -111,7 +122,7 @@ export function SceneXyz3D(props)
     // Function to handle scrolling
     const scrollHandler = () =>
     {
-        if (!scroll || scroll.delta < .0004) return;
+        if (busy || !scroll || scroll.delta < .0004) return;
 
         const scaledScrollOffset = scroll.offset * (sceneManager.waypoints.length - 1);
         const currentZoneIndex = Math.floor(scaledScrollOffset);

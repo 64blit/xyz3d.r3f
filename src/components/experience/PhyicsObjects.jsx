@@ -17,7 +17,7 @@ export function PhysicsObjects(props)
         rigidBodyRefs.forEach((ref) =>
         {
 
-            if (ref.current === null || ref.current === undefined) return;
+            if (ref == null || ref.current === null || ref.current === undefined) return;
 
             const { obj, actions } = ref.current?.userData;
 
