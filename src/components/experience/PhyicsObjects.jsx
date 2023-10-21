@@ -191,15 +191,20 @@ export function PhysicsObjects(props)
             let node = null;
 
             const dynamicMass = parseInt(obj.userData[ "Dynamic" ]) || 0;
-            const collides = obj.userData[ "Static" ] === "true";
+            const isStatic = obj.userData[ "Static" ] === "true";
             const invisible = obj.userData[ "Invisible" ] === "true";
 
             // if any object is invisible, make sure it's still considered in the physics simulation
             includeInvisible = includeInvisible || invisible;
 
-            // obj.visible = false;
+            obj.visible = false;
             const actions = getActions(obj);
-            // const hasAction = actions !== null && actions.length > 0;
+            const hasNoActions = actions === null || actions.length < 0;
+
+            if (hasNoActions)
+            {
+                rigidBodyRefs[ i ] = null;
+            }
 
             node =
                 <RigidBody
@@ -220,7 +225,7 @@ export function PhysicsObjects(props)
                 </RigidBody>;
 
 
-            if (dynamicMass > 0 || collides)
+            if (dynamicMass > 0 || isStatic)
             {
                 physicsNodes.push(node);
             }
