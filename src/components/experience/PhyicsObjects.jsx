@@ -8,10 +8,10 @@ export function PhysicsObjects(props)
 {
     const [ hovered, setHovered ] = useState(false);
     const [ physicsNodes, setPhysicsNodes ] = useState(null);
-    const [ sourceNodes, setSourceNodes ] = useState(null);
 
     const rigidBodyRefs = props.sceneManager.getPhysicsObjects().map(() => useRef());
 
+    // per frame we copy animation data from the source object to the physics object
     useFrame(() =>
     {
         rigidBodyRefs.forEach((ref) =>
@@ -36,7 +36,7 @@ export function PhysicsObjects(props)
         });
     });
 
-
+    // setup tje physics nodes on component mount
     useEffect(() =>
     {
         if (props.sceneManager === null || props.sceneManager === undefined)
@@ -45,16 +45,27 @@ export function PhysicsObjects(props)
         }
 
         const physicsObjects = props.sceneManager.getPhysicsObjects();
-        setPhysicsNodes(getPhyicsNodes(physicsObjects));
+        const physicsReactNodes = getPhyicsNodes(physicsObjects);
+        setPhysicsNodes(physicsReactNodes);
 
-        setSourceNodes(physicsObjects);
+        // loop over rigidBodyRefs and remove all elements which are null
+        for (let i = 0; i < rigidBodyRefs.length; i++)
+        {
+            const ref = rigidBodyRefs[ i ];
+            if (ref === null)
+            {
+                rigidBodyRefs.splice(i, 1);
+                i--;
+            }
+        }
+
     }, [ props.sceneManager ]);
 
 
+    // Get all actions on the object so that we can mimic the action movement on the physics object
     const getActions = (obj) =>
     {
 
-        // if OnSelectAnimation is in object userData then log it and the props.sceneManager
         if (obj.userData?.OnSelectAnimations
             || obj.userData?.OnPointerEnterAnimations
             || obj.userData?.OnPointerExitAnimations
@@ -199,11 +210,12 @@ export function PhysicsObjects(props)
 
             obj.visible = false;
             const actions = getActions(obj);
-            const hasNoActions = actions === null || actions.length < 0;
+            let userData = { obj, actions };
 
-            if (hasNoActions)
+            if (actions === null || actions.length <= 0)
             {
                 rigidBodyRefs[ i ] = null;
+                userData = {};
             }
 
             node =
@@ -214,7 +226,7 @@ export function PhysicsObjects(props)
                     onClick={handleInteraction}
                     onPointerEnter={handlePointerEnter}
                     onPointerLeave={handlePointerExit}
-                    userData={{ obj, actions }}
+                    userData={userData}
                     ref={rigidBodyRefs[ i ]}
                 >
                     <primitive

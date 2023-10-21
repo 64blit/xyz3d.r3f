@@ -27,8 +27,9 @@ export function SceneXyz3D(props)
         {
             return null;
         }
-        console.log("ALL OOG")
+
         return new SceneManager(scene, controlsRef.current, animations, actions, mixer)
+
     }, [ camera, scroll, actions, controlsRef.current, animations, mixer ]);
 
     // Go to the first scene zone on component mount
@@ -92,7 +93,7 @@ export function SceneXyz3D(props)
 
         if (controls === undefined || controls === null) return;
 
-        controls.setLookAt(...position, ...target, true);
+        controls.setLookAt(...position, ...target, true).then(() => setBusy(false));
 
         const tl = gsap.timeline();
 
