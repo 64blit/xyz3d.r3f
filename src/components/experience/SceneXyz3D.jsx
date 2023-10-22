@@ -6,7 +6,6 @@ import { SceneManager } from '../../managers/SceneManager.js';
 import { Controls } from '../logic/Controls.jsx';
 import { SceneZone } from './SceneZone.jsx';
 import { SceneZoneWrapper } from './SceneZoneWrapper.jsx';
-import { basicLerp } from '../../utils/BaseUtils.js';
 import { PhysicsObjects } from './PhyicsObjects.jsx';
 import { InteractionManager } from '../../managers/InteractionManager.js';
 import { CameraManager } from '../../managers/CameraManager.js';
