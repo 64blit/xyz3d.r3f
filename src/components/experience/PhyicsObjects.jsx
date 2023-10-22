@@ -6,7 +6,6 @@ import * as THREE from 'three';
 
 export function PhysicsObjects(props)
 {
-    const [ hovered, setHovered ] = useState(false);
     const [ physicsNodes, setPhysicsNodes ] = useState(null);
 
     const rigidBodyRefs = props.sceneManager.getPhysicsObjects().map(() => useRef());
@@ -101,84 +100,6 @@ export function PhysicsObjects(props)
         return null;
     };
 
-    useEffect(() =>
-    {
-        document.body.style.cursor = hovered ? "pointer" : "auto";
-
-    }, [ hovered ])
-
-
-    const playSelectAnimation = (object) =>
-    {
-        const actions = object.userData.OnSelectAnimations || null;
-
-        if (actions != null)
-        {
-            actions.forEach((actionName) =>
-            {
-                props.playAnimation(actionName);
-            });
-        }
-    }
-
-    const handleInteraction = (event) =>
-    {
-        event.stopPropagation();
-
-        const type = event.object.userData.interactableType;
-        const data = event.object.userData.interactableData;
-
-        playSelectAnimation(event.object);
-
-        switch (type)
-        {
-
-            case "Popup HTML":
-                props.setShowPopup(true);
-                props.setPopupContent(data);
-                break;
-
-            case "Open Link":
-                window.open(data, "_blank");
-                break;
-
-            case "Go To Scene Zone":
-                props.goToSceneZone(data);
-                break;
-
-            default:
-                break;
-
-        }
-    }
-
-    // on hover callback for playing any hover animations found inside the userData varaiable under hoverAnimations
-    const handlePointerEnter = (event) =>
-    {
-        setHovered(true);
-        const onHoverAnimations = event.object.userData.OnPointerEnterAnimations || null;
-        if (onHoverAnimations != null)
-        {
-            onHoverAnimations.forEach((actionName) =>
-            {
-                props.playAnimation(actionName);
-            });
-        }
-    }
-
-    const handlePointerExit = (event) =>
-    {
-        setHovered(false);
-        const onPointerExit = event.object.userData.OnPointerExitAnimations || null;
-        if (onPointerExit != null)
-        {
-            onPointerExit.forEach((actionName) =>
-            {
-                props.playAnimation(actionName);
-            });
-        }
-    }
-
 
     const getPhyicsNodes = (physicsObjects) =>
     {
@@ -223,9 +144,9 @@ export function PhysicsObjects(props)
                     key={generateKey("rb_" + obj.name)}
                     type={dynamicMass > 0 ? "dynamic" : "fixed"}
                     mass={dynamicMass}
-                    onClick={handleInteraction}
-                    onPointerEnter={handlePointerEnter}
-                    onPointerLeave={handlePointerExit}
+                    onClick={props.interactionManager.handleInteraction}
+                    onPointerEnter={props.interactionManager.handlePointerEnter}
+                    onPointerLeave={props.interactionManager.handlePointerExit}
                     userData={userData}
                     ref={rigidBodyRefs[ i ]}
                 >

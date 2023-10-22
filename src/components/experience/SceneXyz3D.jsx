@@ -199,10 +199,7 @@ export function SceneXyz3D(props)
                         <PhysicsObjects
                             debug={props.isDebugging}
                             sceneManager={sceneManager}
-                            playAnimation={sceneManager.playAnimation}
-                            setShowPopup={props.setShowPopup}
-                            setPopupContent={props.setPopupContent}
-                            goToSceneZone={goToSceneZoneByName}
+                            interactionManager={interactionManager}
                             isDebugging={props.isDebugging}
                         />}
 
