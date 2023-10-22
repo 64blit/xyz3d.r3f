@@ -1,7 +1,5 @@
 import { Bounds, meshBounds } from "@react-three/drei";
 import * as THREE from "three";
-
-// Define a class called SceneManager
 export class AnimationManager
 {
     constructor(animations, actions)
