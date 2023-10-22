@@ -1,14 +1,15 @@
+import * as THREE from 'three';
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { ScrollControls, useAnimations, useGLTF } from "@react-three/drei";
 import { useFrame, useThree } from '@react-three/fiber';
 import { SceneManager } from '../../managers/SceneManager.js';
 import { Controls } from '../logic/Controls.jsx';
 import { SceneZone } from './SceneZone.jsx';
-import * as THREE from 'three';
 import { SceneZoneWrapper } from './SceneZoneWrapper.jsx';
 import { basicLerp } from '../../utils/BaseUtils.js';
 import { PhysicsObjects } from './PhyicsObjects.jsx';
 import { gsap } from 'gsap';
+import { InteractionManager } from '../../managers/InteractionManager.js';
 
 
 export function SceneXyz3D(props)
@@ -22,15 +23,22 @@ export function SceneXyz3D(props)
     const [ busy, setBusy ] = useState(false);
 
     const [ sceneManager, setSceneManager ] = useState(null);
+    const [ interactionManager, setInteractionManager ] = useState(null);
 
     useEffect(() =>
     {
-        if (controlsRef.current == null || sceneManager !== null)
+        if (controlsRef.current == null || sceneManager)
         {
             return;
         }
 
-        setSceneManager(new SceneManager(scene, controlsRef.current, animations, actions, mixer));
+        const tempSceneManager = new SceneManager(scene, controlsRef.current, animations, actions, mixer);
+
+        setSceneManager(tempSceneManager);
+
+        const interactionManager = new InteractionManager(props.setShowPopup, props.setPopupContent, goToSceneZoneByName, tempSceneManager.playAnimation);
+
+        setInteractionManager(interactionManager);
 
     }, [ camera, scroll, actions, controlsRef.current, animations, mixer ]);
 
@@ -178,10 +186,7 @@ export function SceneXyz3D(props)
                             && sceneManager
                             && sceneManager.getSceneZones().map((object, key) => (
                                 <SceneZone
-                                    setShowPopup={props.setShowPopup}
-                                    setPopupContent={props.setPopupContent}
-                                    goToSceneZone={goToSceneZoneByName}
-                                    playAnimation={sceneManager.playAnimation}
+                                    interactionManager={interactionManager}
                                     isDebugging={props.isDebugging}
                                     object={object}
                                     key={key}
