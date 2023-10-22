@@ -10,7 +10,7 @@ export function SceneZoneWrapper(props)
 
     useEffect(() =>
     {
-        props.setScroll(scroll);
+        props.onReady(scroll);
     }, [ scroll ]);
 
 

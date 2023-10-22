@@ -18,39 +18,30 @@ export function SceneXyz3D(props)
     const { scene, animations } = useGLTF(props.path);
     const { mixer, actions } = useAnimations(animations, scene);
 
-    const [ scroll, setScroll ] = useState(null);
     const controlsRef = useRef(null);
 
     const [ sceneManager, setSceneManager ] = useState(null);
     const [ interactionManager, setInteractionManager ] = useState(null);
     const [ cameraManager, setCameraManager ] = useState(null);
 
-    useEffect(() =>
+    const initializeManagers = (scroll) =>
     {
-        if (!controlsRef.current || sceneManager || !scroll)
-        {
-            return;
-        }
-
         const tempSceneManager = new SceneManager(scene, controlsRef.current, animations, actions, mixer);
 
         setSceneManager(tempSceneManager);
 
-        console.log(scroll)
-        const tempCameraManager = new CameraManager(scroll, tempSceneManager, controlsRef.current, camera);
+        const tempCameraManager = new CameraManager(tempSceneManager, controlsRef.current, camera, scroll);
 
         setCameraManager(tempCameraManager);
 
         const interactionManager = new InteractionManager(props.setShowPopup, props.setPopupContent, tempCameraManager.goToSceneZoneByName, tempSceneManager.playAnimation);
 
         setInteractionManager(interactionManager);
-
-    }, [ camera, scroll, actions, controlsRef.current, animations, mixer ]);
+    };
 
     // UseFrame hook for animations and interactions
     useFrame(() =>
     {
-        console.log(scroll.delta)
         if (!cameraManager) return;
         cameraManager.update();
     });
@@ -62,7 +53,7 @@ export function SceneXyz3D(props)
 
                 <Controls innerRef={controlsRef} />
 
-                <SceneZoneWrapper setScroll={setScroll}>
+                <SceneZoneWrapper onReady={initializeManagers}>
 
                     <primitive
                         object={scene}

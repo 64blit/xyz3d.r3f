@@ -4,19 +4,19 @@ import { gsap } from 'gsap';
 
 export class CameraManager
 {
-    constructor(scroll, sceneManager, controls, camera)
+    constructor(sceneManager, controls, camera, scroll)
     {
 
-        this.scroll = scroll;
         this.sceneManager = sceneManager;
         this.controls = controls;
         this.camera = camera;
         this.busy = false;
+        this.scroll = scroll;
 
         // Function to navigate to a scene zone by index
         this.goToSceneZoneByIndex = (index) =>
         {
-            if (this.busy || !this.scroll) return;
+            if (this.busy) return;
             this.busy = (true);
 
             const sceneZone = this.sceneManager.waypoints[ index ];
@@ -32,7 +32,7 @@ export class CameraManager
         // Function to navigate to a scene zone by name
         this.goToSceneZoneByName = (name) =>
         {
-            if (this.busy || !this.scroll || !this.camera || !this.sceneManager) return;
+            if (this.busy || !this.camera || !this.sceneManager) return;
             this.busy = (true);
 
             const sceneZone = this.sceneManager.getSceneZone(name);
@@ -48,7 +48,7 @@ export class CameraManager
         // Function to smoothly navigate to a scene zone
         this.goToSceneZone = (sceneZone) =>
         {
-            if (!sceneZone || sceneZone.index < 0)
+            if (!sceneZone || sceneZone.index < 0 || !this.scroll)
             {
                 return;
             }
@@ -97,8 +97,7 @@ export class CameraManager
         // Function to handle scrolling
         this.scrollHandler = () =>
         {
-            console.log(this.scroll.delta);
-            if (this.busy || !this.scroll || this.scroll.delta < .0004) return;
+            if (this.busy || this.scroll.delta < .0004) return;
 
             const scaledScrollOffset = this.scroll.offset * (this.sceneManager.waypoints.length - 1);
             const currentZoneIndex = Math.floor(scaledScrollOffset);
