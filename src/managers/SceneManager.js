@@ -6,7 +6,7 @@ import { AnimationManager } from "./AnimationManager";
 // Define a class called SceneManager
 export class SceneManager
 {
-    constructor(scene, controls, animations, actions, mixer)
+    constructor(scene, controls, animations, actions)
     {
         // Initialize scene, controls, and data arrays
         this.scene = scene;
@@ -14,7 +14,7 @@ export class SceneManager
         this.sceneZones = [];
         this.waypoints = [];
         this.physicsObjects = [];
-        this.animationManager = new AnimationManager(animations, actions, mixer);
+        this.animationManager = new AnimationManager(animations, actions);
 
         // Call initialization methods
         this.populateSceneZones(scene);
@@ -28,10 +28,6 @@ export class SceneManager
             this.animationManager.playAnimation(name, loopType);
         }
 
-        this.setNewAnimationMixer = (mixer) =>
-        {
-            this.animationManager.setNewAnimationMixer(mixer);
-        };
     }
 
     getAnimationAction(name)
