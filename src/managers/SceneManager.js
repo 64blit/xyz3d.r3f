@@ -330,7 +330,7 @@ export class SceneManager
     fixZones()
     {
         this.fixEmptyZones();
-        const padding = 1.05;
+        const padding = 1.15;
 
         // Move the camera anchor to ensure all scene zone content is in the camera frustum
         this.sceneZones.forEach(sceneZone =>
@@ -345,11 +345,15 @@ export class SceneManager
             const target = sceneZone.camera.targetPosition;
             const targetBox = sceneZone.camera.target;
 
-            // copy scene zone camera fov and settings to the contrs.camera object
             this.controls.camera.fov = sceneZone.camera.anchor.fov;
-            console.log(sceneZone.name, this.controls.camera.position.distanceTo(target));
+            this.controls.camera.updateProjectionMatrix();
+            this.controls.update(0);
 
-            const camDist = this.calculateFramingDistance(target, targetBox, sceneZone.camera.anchor, padding);
+            this.controls.fitToBox(targetBox, false);
+            this.controls.update(0);
+
+            let camDist = this.controls.camera.position.distanceTo(target) * padding;
+
             // Move the camera position and rotation to the camera anchor
             this.orbitCameraTo(position, target, camDist);
 
@@ -359,7 +363,6 @@ export class SceneManager
             sceneZone.camera.anchor.position.x = this.controls.camera.position.x;
             sceneZone.camera.anchor.position.y = this.controls.camera.position.y;
             sceneZone.camera.anchor.position.z = this.controls.camera.position.z;
-            console.log(sceneZone.name, this.controls.camera.position.distanceTo(target));
 
             // Find the waypoint with index equal to sceneZone.index
             const waypoint = this.waypoints.find(waypoint => waypoint.index === sceneZone.index);
@@ -384,58 +387,6 @@ export class SceneManager
     }
 
 
-
-
-    /// FIXING CAMERA FRAME DISTANCE, ITS NOT ENOUGH
-
-
-    calculateFramingDistance(target, targetBox, camera, padding = 1)
-    {
-        if (!camera)
-        {
-            camera = this.controls.camera;
-        }
-        console.log(camera)
-
-        // get the world center of the target box
-
-
-        // the world coordinates of the vertices of the target box
-        const vertices = [
-            new THREE.Vector3(targetBox.min.x, targetBox.min.y, targetBox.min.z),
-            new THREE.Vector3(targetBox.min.x, targetBox.min.y, targetBox.max.z),
-            new THREE.Vector3(targetBox.min.x, targetBox.max.y, targetBox.min.z),
-            new THREE.Vector3(targetBox.min.x, targetBox.max.y, targetBox.max.z),
-            new THREE.Vector3(targetBox.max.x, targetBox.min.y, targetBox.min.z),
-            new THREE.Vector3(targetBox.max.x, targetBox.min.y, targetBox.max.z),
-            new THREE.Vector3(targetBox.max.x, targetBox.max.y, targetBox.min.z),
-            new THREE.Vector3(targetBox.max.x, targetBox.max.y, targetBox.max.z),
-        ];
-
-        // the frustum of the camera we want to fit the target box into
-        const frustum = new THREE.Frustum();
-        frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
-
-        // the distance the camera needs to move to fit the target box into the frustum
-        let distance = 0;
-
-        // loop over vertices of box and check if all are in the frustum
-        // using the .containsPoint method of the frustum
-        // if not, increase the distance and check again
-        // repeat until all vertices are in the frustum
-        while (!vertices.every(vertex => frustum.containsPoint(vertex)))
-        {
-            distance++;
-
-            // move the camera away from the target along the line from the target to the camera
-            camera.position.sub(target).setLength(distance).add(target);
-
-            frustum.setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
-        }
-
-        return distance * padding;
-    }
-
     // Orbit the camera to a specified position and look target
     orbitCameraTo(positionTarget, lookTarget, camDist = 0, damp = false)
     {
@@ -449,7 +400,7 @@ export class SceneManager
         // Calculate the new position target for the camera
         const newPositionTarget = positionTarget.clone().sub(lookTarget).setLength(camDist).add(lookTarget);
 
-        if (!this.controls)
+        if (this.controls === null)
         {
             return;
         }
