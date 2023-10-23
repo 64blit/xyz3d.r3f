@@ -149,6 +149,7 @@ export function PhysicsObjects(props)
                     onPointerLeave={props.interactionManager.handlePointerExit}
                     userData={userData}
                     ref={rigidBodyRefs[ i ]}
+                    includeInvisible={includeInvisible}
                 >
                     <primitive
                         object={obj.clone()}

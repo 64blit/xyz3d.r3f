@@ -5,7 +5,7 @@ import { SceneManager } from '../../managers/SceneManager.js';
 import { Controls } from '../logic/Controls.jsx';
 import { SceneZone } from './SceneZone.jsx';
 import { SceneZoneWrapper } from '../helpers/SceneZoneWrapper.jsx';
-import { PhysicsObjects } from './PhyicsObjects.jsx';
+import { PhysicsObjects } from '../logic/PhyicsObjects.jsx';
 import { InteractionManager } from '../../managers/InteractionManager.js';
 import { CameraManager } from '../../managers/CameraManager.js';
 
@@ -32,9 +32,9 @@ export function SceneXyz3D(props)
 
         setCameraManager(tempCameraManager);
 
-        const interactionManager = new InteractionManager(props.setShowPopup, props.setPopupContent, tempCameraManager.goToSceneZoneByName, tempSceneManager.playAnimation);
+        const tempInteractionManager = new InteractionManager(props.setShowPopup, props.setPopupContent, tempCameraManager.goToSceneZoneByName, tempSceneManager.playAnimation);
 
-        setInteractionManager(interactionManager);
+        setInteractionManager(tempInteractionManager);
     };
 
     // UseFrame hook for animations and interactions
