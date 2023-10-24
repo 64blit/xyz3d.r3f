@@ -47,6 +47,11 @@ export class InteractionManager
         // on hover callback for playing any hover animations found inside the userData varaiable under hoverAnimations
         this.handlePointerEnter = (event) =>
         {
+            if (event.object.userData?.type !== "interactable")
+            {
+                return;
+            }
+
             document.body.style.cursor = "pointer";
 
             const onHoverAnimations = event.object.userData.OnPointerEnterAnimations || null;
@@ -61,6 +66,11 @@ export class InteractionManager
 
         this.handlePointerExit = (event) =>
         {
+            if (event.object.userData?.type !== "interactable")
+            {
+                return;
+            }
+
             document.body.style.cursor = "auto";
 
             const onPointerExit = event.object.userData.OnPointerExitAnimations || null;

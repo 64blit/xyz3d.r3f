@@ -19,6 +19,7 @@ export class AnimationManager
                 action.clampWhenFinished = true;
                 action.reset();
                 action.play();
+                // return action.promise;
             }
         }
     }
@@ -44,8 +45,19 @@ export class AnimationManager
     {
         if ('LoopingAnimations' in object.userData)
         {
-            const loopingAnimations = object.userData.LoopingAnimations.replace(/\s/g, '').split(',');
+            let loopingAnimations = object.userData.LoopingAnimations;
+
+            if (typeof loopingAnimations === 'string')
+            {
+                loopingAnimations = loopingAnimations.replace(/\s/g, '').split(',');
+            } else
+            {
+                loopingAnimations = object.userData.LoopingAnimations;
+            }
+
             this.loopingAnimations.push(...loopingAnimations);
+
+            object.userData.LoopingAnimations = loopingAnimations;
         }
 
         const extractAnimations = (userDataKey, objectUserData) =>

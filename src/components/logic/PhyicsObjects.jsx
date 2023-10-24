@@ -23,12 +23,22 @@ export function PhysicsObjects(props)
             if (obj === undefined || obj === null) return;
             if (actions === undefined || actions === null || actions.length <= 0) return;
 
+            // sync animated objects with their physics pairs by copying the animation data
             actions.forEach((action) =>
             {
-                if (action)
+                if (action !== undefined && action !== null) 
                 {
-                    ref.current.setTranslation(obj.position, true);
+                    const currentPosition = obj.position.clone();
+                    // Calculate the delta position between the current frame and the previous frame
+
+
+                    ref.current.setTranslation(currentPosition, true);
                     ref.current.setRotation(obj.quaternion, true);
+                    ref.current.mass = 0;
+                    ref.current.type = 'fixed';
+                    ref.current.isDynamic(false);
+                    ref.current.setGravityScale(0);
+
                 }
             });
 
@@ -150,9 +160,11 @@ export function PhysicsObjects(props)
                     userData={userData}
                     ref={rigidBodyRefs[ i ]}
                     includeInvisible={includeInvisible}
-                >
+                    position={obj.position}
+                    >
                     <primitive
                         object={obj.clone()}
+                        position={[0,0,0]}
                         visible={!invisible}
                     />
 
@@ -175,8 +187,8 @@ export function PhysicsObjects(props)
 
 
     return (
-        <group>
+        <>
             {physicsNodes}
-        </group>
+        </>
     );
 }
