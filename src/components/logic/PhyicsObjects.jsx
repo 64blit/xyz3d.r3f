@@ -26,7 +26,7 @@ export function PhysicsObjects(props)
             // sync animated objects with their physics pairs by copying the animation data
             actions.forEach((action) =>
             {
-                if (action !== undefined && action !== null) 
+                if (action !== undefined && action !== null && action.isRunning()) 
                 {
                     const currentPosition = obj.position.clone();
                     // Calculate the delta position between the current frame and the previous frame
@@ -34,10 +34,10 @@ export function PhysicsObjects(props)
 
                     ref.current.setTranslation(currentPosition, true);
                     ref.current.setRotation(obj.quaternion, true);
-                    ref.current.mass = 0;
-                    ref.current.type = 'fixed';
-                    ref.current.isDynamic(false);
-                    ref.current.setGravityScale(0);
+                    // ref.current.mass = 0;
+                    // ref.current.type = 'fixed';
+                    // ref.current.isDynamic(false);
+                    // ref.current.setGravityScale(0);
 
                 }
             });
@@ -161,10 +161,10 @@ export function PhysicsObjects(props)
                     ref={rigidBodyRefs[ i ]}
                     includeInvisible={includeInvisible}
                     position={obj.position}
-                    >
+                >
                     <primitive
                         object={obj.clone()}
-                        position={[0,0,0]}
+                        position={[ 0, 0, 0 ]}
                         visible={!invisible}
                     />
 

@@ -19,7 +19,14 @@ export class AnimationManager
                 action.clampWhenFinished = true;
                 action.reset();
                 action.play();
-                // return action.promise;
+                //  return a promise that resolves when the animation is finished
+                return new Promise((resolve) =>
+                {
+                    action.stop = () =>
+                    {
+                        resolve();
+                    };
+                });
             }
         }
     }
