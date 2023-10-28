@@ -9,7 +9,6 @@ import { PhysicsObjects } from '../logic/PhyicsObjects.jsx';
 import { InteractionManager } from '../../managers/InteractionManager.js';
 import { CameraManager } from '../../managers/CameraManager.js';
 import { Video } from '../logic/Video';
-import { Audio } from '../logic/Audio';
 
 
 export function SceneXyz3D(props)
@@ -27,15 +26,12 @@ export function SceneXyz3D(props)
     const initializeManagers = (scroll) =>
     {
         const tempSceneManager = new SceneManager(scene, controlsRef.current, animations, actions, mixer);
-
         setSceneManager(tempSceneManager);
 
         const tempCameraManager = new CameraManager(tempSceneManager, controlsRef.current, camera, scroll);
-
         setCameraManager(tempCameraManager);
 
-        const tempInteractionManager = new InteractionManager(props.setShowPopup, props.setPopupContent, tempCameraManager.goToSceneZoneByName, tempSceneManager.playAnimation);
-
+        const tempInteractionManager = new InteractionManager(props.setShowPopup, props.setPopupContent, tempCameraManager.goToSceneZoneByName, tempSceneManager.playAnimation, tempSceneManager.playSound);
         setInteractionManager(tempInteractionManager);
     };
 
@@ -55,13 +51,13 @@ export function SceneXyz3D(props)
 
                 <SceneZoneWrapper onReady={initializeManagers}>
 
-                    <primitive
-                        object={scene}
-                    >
+                    <primitive object={scene}>
 
                         {controlsRef.current
-                            && sceneManager
-                            && sceneManager.getSceneZones().map((object, key) => (
+                            &&
+                            sceneManager
+                            &&
+                            sceneManager.getSceneZones().map((object, key) => (
                                 <SceneZone
                                     interactionManager={interactionManager}
                                     isDebugging={props.isDebugging}
@@ -73,18 +69,18 @@ export function SceneXyz3D(props)
                     </primitive>
 
                     {sceneManager
-                        && <>
-
-                            <PhysicsObjects
-                                debug={props.isDebugging}
-                                sceneManager={sceneManager}
-                                interactionManager={interactionManager}
-                                isDebugging={props.isDebugging}
-                            />
-                        </>}
+                        &&
+                        <PhysicsObjects
+                            debug={props.isDebugging}
+                            sceneManager={sceneManager}
+                            interactionManager={interactionManager}
+                            isDebugging={props.isDebugging}
+                        />
+                    }
 
                     {sceneManager
-                        && sceneManager.videoObjects.map((element, key) => (
+                        &&
+                        sceneManager.videoObjects.map((element, key) => (
                             <Video
                                 key={key}
                                 size={Math.max(...element.object.scale)}
@@ -97,19 +93,6 @@ export function SceneXyz3D(props)
                             </Video>
                         ))
                     }
-
-                    {sceneManager
-                        && sceneManager.audioObjects.map((element, key) => (
-                            <Audio
-                                key={key}
-                                url={element.src}
-                                position={element.worldPosition}
-                                quaternion={element.worldRotation}
-                            >
-                            </Audio>
-                        ))
-                    }
-
 
 
                     {props.children}

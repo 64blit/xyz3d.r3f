@@ -2,13 +2,14 @@
 
 export class InteractionManager
 {
-    constructor(setShowPopup, setPopupContent, goToSceneZone, playAnimation)
+    constructor(setShowPopup, setPopupContent, goToSceneZone, playAnimation, playSound)
     {
         this.interactables = [];
         this.setShowPopup = setShowPopup;
         this.setPopupContent = setPopupContent;
         this.goToSceneZone = goToSceneZone;
         this.playAnimation = playAnimation;
+        this.playSound = playSound;
 
 
         this.handleInteraction = async (event) =>
@@ -55,12 +56,21 @@ export class InteractionManager
 
             document.body.style.cursor = "pointer";
 
-            const onHoverAnimations = event.object.userData.OnPointerEnterAnimations || null;
-            if (onHoverAnimations != null)
+            const actions = event.object.userData.OnPointerEnterAnimations || null;
+            if (actions != null)
             {
-                onHoverAnimations.forEach((actionName) =>
+                actions.forEach((actionName) =>
                 {
                     this.playAnimation(actionName);
+                });
+            }
+
+            const sounds = event.object.userData.OnPointerEnterSounds || null;
+            if (sounds != null)
+            {
+                sounds.forEach((soundName) =>
+                {
+                    this.playSound(soundName);
                 });
             }
         }
@@ -74,12 +84,21 @@ export class InteractionManager
 
             document.body.style.cursor = "auto";
 
-            const onPointerExit = event.object.userData.OnPointerExitAnimations || null;
-            if (onPointerExit != null)
+            const actions = event.object.userData.OnPointerExitAnimations || null;
+            if (actions != null)
             {
-                onPointerExit.forEach((actionName) =>
+                actions.forEach((actionName) =>
                 {
                     this.playAnimation(actionName);
+                });
+            }
+
+            const sounds = event.object.userData.OnPointerExitSound || null;
+            if (sounds != null)
+            {
+                sounds.forEach((soundName) =>
+                {
+                    this.playSound(soundName);
                 });
             }
         }
@@ -94,6 +113,16 @@ export class InteractionManager
                 actions.forEach((actionName) =>
                 {
                     animationPromises.push(this.playAnimation(actionName));
+                });
+            }
+
+            const sounds = object.userData.OnSelectSounds || null;
+
+            if (sounds != null)
+            {
+                sounds.forEach((soundName) =>
+                {
+                    this.playSound(soundName);
                 });
             }
 

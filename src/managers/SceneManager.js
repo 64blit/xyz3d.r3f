@@ -1,6 +1,7 @@
 // Import necessary dependencies
 import * as THREE from "three";
 import { AnimationManager } from "./AnimationManager";
+import { AudioManager } from "./AudioManager";
 
 // Define a class called SceneManager
 export class SceneManager
@@ -18,6 +19,7 @@ export class SceneManager
         this.audioObjects = [];
 
         this.animationManager = new AnimationManager(animations, actions);
+        this.audioManager = new AudioManager(this.controls.camera);
 
         // Call initialization methods
         this.populateSceneZones(scene);
@@ -25,10 +27,16 @@ export class SceneManager
         this.fixZones();
 
         this.animationManager.playLoopingAnimations();
+        this.audioManager.playLoopingSounds();
 
         this.playAnimation = (name, loopType = THREE.LoopOnce) =>
         {
             return this.animationManager.playAnimation(name, loopType);
+        }
+
+        this.playSound = (name, loop = false) =>
+        {
+            return this.audioManager.playSound(name, loop);
         }
 
     }
@@ -51,6 +59,7 @@ export class SceneManager
 
                 // Extract animation data and update arrays
                 this.animationManager.parseAnimations(node);
+                this.audioManager.parseAnimations(node);
 
                 const userDataCopy = Object.assign({}, node.userData);
 
