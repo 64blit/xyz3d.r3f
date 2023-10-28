@@ -11,14 +11,15 @@ export class InteractionManager
         this.playAnimation = playAnimation;
 
 
-        this.handleInteraction = (event) =>
+        this.handleInteraction = async (event) =>
         {
             event.stopPropagation();
 
             const type = event.object.userData.interactableType;
             const data = event.object.userData.interactableData;
 
-            this.playSelectAnimation(event.object);
+            // Play all the select animations first, then trigger the interaction
+            await this.playSelectAnimation(event.object);
 
             document.body.style.cursor = "auto";
 
@@ -83,17 +84,20 @@ export class InteractionManager
             }
         }
 
-        this.playSelectAnimation = (object) =>
+        this.playSelectAnimation = async (object) =>
         {
             const actions = object.userData.OnSelectAnimations || null;
+            const animationPromises = [];
 
             if (actions != null)
             {
                 actions.forEach((actionName) =>
                 {
-                    this.playAnimation(actionName);
+                    animationPromises.push(this.playAnimation(actionName));
                 });
             }
+
+            await Promise.all(animationPromises);
         }
 
     }

@@ -8,6 +8,8 @@ import { SceneZoneWrapper } from '../helpers/SceneZoneWrapper.jsx';
 import { PhysicsObjects } from '../logic/PhyicsObjects.jsx';
 import { InteractionManager } from '../../managers/InteractionManager.js';
 import { CameraManager } from '../../managers/CameraManager.js';
+import { Video } from '../logic/Video';
+import { Audio } from '../logic/Audio';
 
 
 export function SceneXyz3D(props)
@@ -70,13 +72,48 @@ export function SceneXyz3D(props)
 
                     </primitive>
 
-                    {sceneManager &&
-                        <PhysicsObjects
-                            debug={props.isDebugging}
-                            sceneManager={sceneManager}
-                            interactionManager={interactionManager}
-                            isDebugging={props.isDebugging}
-                        />}
+                    {sceneManager
+                        && <>
+
+                            <PhysicsObjects
+                                debug={props.isDebugging}
+                                sceneManager={sceneManager}
+                                interactionManager={interactionManager}
+                                isDebugging={props.isDebugging}
+                            />
+                        </>}
+
+                    {sceneManager
+                        && sceneManager.videoObjects.map((element, key) => (
+                            <Video
+                                key={key}
+                                size={Math.max(...element.object.scale)}
+                                src={element.src}
+                                position={element.worldPosition}
+                                quaternion={element.worldRotation}
+                                muted={false}
+                                framed
+                            >
+                            </Video>
+                        ))
+                    }
+
+                    {sceneManager
+                        && sceneManager.audioObjects.map((element, key) => (
+                            <Audio
+                                key={key}
+                                size={Math.max(...element.object.scale)}
+                                src={element.src}
+                                position={element.worldPosition}
+                                quaternion={element.worldRotation}
+                                muted={false}
+                                framed
+                            >
+                            </Audio>
+                        ))
+                    }
+
+
 
                     {props.children}
                 </SceneZoneWrapper>

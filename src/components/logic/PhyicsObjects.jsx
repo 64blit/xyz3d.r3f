@@ -31,13 +31,8 @@ export function PhysicsObjects(props)
                     const currentPosition = obj.position.clone();
                     // Calculate the delta position between the current frame and the previous frame
 
-
                     ref.current.setTranslation(currentPosition, true);
                     ref.current.setRotation(obj.quaternion, true);
-                    // ref.current.mass = 0;
-                    // ref.current.type = 'fixed';
-                    // ref.current.isDynamic(false);
-                    // ref.current.setGravityScale(0);
 
                 }
             });

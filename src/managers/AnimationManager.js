@@ -12,6 +12,7 @@ export class AnimationManager
         this.playAnimation = (name, loopType = THREE.LoopOnce) =>
         {
             const action = this.actions[ name ];
+            let promise = null;
 
             if (action && !action.isRunning())
             {
@@ -19,15 +20,17 @@ export class AnimationManager
                 action.clampWhenFinished = true;
                 action.reset();
                 action.play();
-                //  return a promise that resolves when the animation is finished
-                return new Promise((resolve) =>
+
+                promise = new Promise(resolve =>
                 {
-                    action.stop = () =>
+                    return setTimeout(() =>
                     {
-                        resolve();
-                    };
-                });
+                        resolve()
+                    }, action._clip.duration * 1000)
+                })
+
             }
+            return promise;
         }
     }
 
