@@ -102,12 +102,9 @@ export function SceneXyz3D(props)
                         && sceneManager.audioObjects.map((element, key) => (
                             <Audio
                                 key={key}
-                                size={Math.max(...element.object.scale)}
-                                src={element.src}
+                                url={element.src}
                                 position={element.worldPosition}
                                 quaternion={element.worldRotation}
-                                muted={false}
-                                framed
                             >
                             </Audio>
                         ))
