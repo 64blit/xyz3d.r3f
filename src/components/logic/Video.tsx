@@ -19,6 +19,7 @@ type Props = {
     volume?: number;
     frameMaterial?: Material;
     frameWidth?: number;
+    sourceObject?: any;
 } & GroupProps;
 
 export function Video(props: Props)
@@ -31,6 +32,7 @@ export function Video(props: Props)
         volume = 1,
         frameMaterial,
         frameWidth = 1,
+        sourceObject = null,
         ...rest
     } = props;
 
@@ -39,6 +41,9 @@ export function Video(props: Props)
     const listener = useRef<THREE.AudioListener>();
     const [ speaker, setSpeaker ] = useState<THREE.PositionalAudio>();
     const [ dims, setDims ] = useState<Vector2 | null>();
+
+    const [ callbacks, setCallbacks ] = useState({
+    });
 
     const video = useMemo(() =>
     {
@@ -49,9 +54,22 @@ export function Video(props: Props)
         v.loop = true;
         v.src = src;
         v.autoplay = false;
+        v.preload = "auto";
         v.muted = muted ? muted : false;
         return v;
     }, []);
+
+    const toggleVideo = () =>
+    {
+        if (video.paused)
+        {
+            video.play();
+        }
+        else
+        {
+            video.pause();
+        }
+    }
 
     useEffect(() =>
     {
@@ -73,14 +91,44 @@ export function Video(props: Props)
             }
         };
 
-        const playVideo = () =>
+        const startVideo = () =>
         {
             video
                 .play()
-                .then(() => setDims(new Vector2(video.videoWidth, video.videoHeight)));
+                .then(() =>
+                {
+                    setDims(new Vector2(video.videoWidth, video.videoHeight));
+                    video.pause();
+                });
 
             setupAudio();
         };
+
+        const addCallbacks = () =>
+        {
+            const tempCallbacks = {};
+            if ('Looping' === sourceObject.userData.mediaTrigger)
+            {
+                video.play();
+            } else if ('OnSelect' === sourceObject.userData.mediaTrigger)
+            {
+                tempCallbacks[ 'onClick' ] = () =>
+                {
+                    toggleVideo();
+                }
+            } else if ('OnPointerExit' === sourceObject.userData.mediaTrigger || 'OnPointerEnter' === sourceObject.userData.mediaTrigger)
+            {
+                tempCallbacks[ 'onPointerEnter' ] = () =>
+                {
+                    video.play();
+                }
+                tempCallbacks[ 'onPointerLeave' ] = () =>
+                {
+                    video.pause();
+                }
+            }
+            setCallbacks(tempCallbacks);
+        }
 
         if (video)
         {
@@ -88,14 +136,21 @@ export function Video(props: Props)
             {
                 setDims(new Vector2(video.videoWidth, video.videoHeight));
                 setupAudio();
+                video.pause();
             });
-            
-            document.addEventListener("click", playVideo);
+
+
+            addCallbacks();
+
+            document.addEventListener("click", startVideo);
+
             return () =>
             {
-                document.removeEventListener("click", playVideo);
+                document.removeEventListener("click", startVideo);
             };
         }
+
+        console.log("a1231233sdasdasads");
     }, [ speaker, video, muted ]);
 
     useEffect(() =>
@@ -133,7 +188,8 @@ export function Video(props: Props)
 
     return (
         <group name="spacesvr-video" {...rest}>
-            <mesh>
+            <mesh
+                {...callbacks}>
                 <planeGeometry args={[ width, height ]} />
                 <meshBasicMaterial side={DoubleSide}>
                     <videoTexture attach="map" args={[ video ]} encoding={sRGBEncoding} />

@@ -15,8 +15,12 @@ export class SceneManager
         this.waypoints = [];
 
         this.physicsObjects = [];
-        this.videoObjects = [];
-        this.audioObjects = [];
+
+        this.mediaObjects = {
+            video: [],
+            audio: [],
+            positionalAudio: []
+        };
 
         this.animationManager = new AnimationManager(animations, actions);
         this.audioManager = new AudioManager(this.controls.camera);
@@ -59,7 +63,7 @@ export class SceneManager
 
                 // Extract animation data and update arrays
                 this.animationManager.parseAnimations(node);
-                this.audioManager.parseAnimations(node);
+                this.audioManager.parseSounds(node);
 
                 const userDataCopy = Object.assign({}, node.userData);
 
@@ -162,12 +166,32 @@ export class SceneManager
         {
             object.visible = false;
 
-            if (object.userData.mediaType === "audio")
+            console.log("Media object found: " + object.name)
+
+            if (object.userData.mediaType === "Audio")
             {
-                this.audioObjects.push({ object, worldPosition, worldRotation, src: object.userData.mediaSrc });
-            } else if (object.userData.mediaType === "video")
+                this.mediaObjects.audio.push({
+                    object,
+                    worldPosition,
+                    worldRotation,
+                    mediaSrc: object.userData.mediaSrc
+                });
+            } else if (object.userData.mediaType === "Video")
             {
-                this.videoObjects.push({ object, worldPosition, worldRotation, src: object.userData.mediaSrc });
+                console.log("Video object found: " + object.userData)
+                this.mediaObjects.video.push({
+                    object,
+                    worldPosition,
+                    worldRotation,
+                    mediaSrc: object.userData.mediaSrc
+                });
+            } else if (object.userData.mediaType === "3D Positional Audio")
+            {
+                this.mediaObjects.positionalAudio.push({
+                    object,
+                    worldPosition,
+                    mediaSrc: object.userData.mediaSrc
+                });
             }
         }
 

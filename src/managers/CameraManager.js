@@ -32,8 +32,12 @@ export class CameraManager
         // Function to navigate to a scene zone by name
         this.goToSceneZoneByName = (name) =>
         {
-            if (this.busy || !this.camera || !this.sceneManager) return;
-            this.busy = (true);
+
+            if (this.busy) return;
+            if (!this.camera) return;
+            if (!this.sceneManager) return;
+
+            this.busy = true;
 
             const sceneZone = this.sceneManager.getSceneZone(name);
             if (!sceneZone)
@@ -48,16 +52,15 @@ export class CameraManager
         // Function to smoothly navigate to a scene zone
         this.goToSceneZone = (sceneZone) =>
         {
-            if (!sceneZone || sceneZone.index < 0 || !this.scroll)
-            {
-                return;
-            }
+            if (!sceneZone) return;
+            if (sceneZone.index < 0) return;
+            if (!this.scroll) return;
 
             const newScrollOffset = sceneZone.index / (this.sceneManager.sceneZones.length - 1);
             const scrollTarget = this.scroll.el;
             const scrollTop = (scrollTarget.scrollHeight - scrollTarget.clientHeight) * newScrollOffset;
 
-            scrollTarget.scrollTo({ top: scrollTop, behavior: 'smooth' });
+            scrollTarget.scrollTo({ top: scrollTop });
 
             const position = sceneZone.camera.anchor?.position;
 
@@ -67,14 +70,25 @@ export class CameraManager
 
             if (this.controls === undefined || this.controls === null) return;
 
-            this.controls.setLookAt(...position, ...target, true).then(() => this.busy = (false));
+            this.controls.setLookAt(...position, ...target, true).then(() =>
+            {
+                this.busy = false;
+            });
 
             const tl = gsap.timeline();
 
             tl.fromTo(
                 this.controls.camera,
                 { fov: this.controls.camera.fov },
-                { fov: sceneZone.camera.anchor.fov, duration: this.controls.smoothTime, onUpdate: () => { this.controls.update(0); this.controls.camera.updateProjectionMatrix(); }, onComplete: () => { this.busy = (false); } }
+                {
+                    fov: sceneZone.camera.anchor.fov,
+                    duration: this.controls.smoothTime,
+                    onUpdate: () =>
+                    {
+                        this.controls.update(0);
+                        this.controls.camera.updateProjectionMatrix();
+                    }
+                }
             );
 
             tl.fromTo(
@@ -97,7 +111,9 @@ export class CameraManager
         // Function to handle scrolling
         this.scrollHandler = () =>
         {
-            if (this.busy || this.scroll.delta < .0004) return;
+
+            if (this.busy) return;
+            if (this.scroll.delta < .0004) return;
 
             const scaledScrollOffset = this.scroll.offset * (this.sceneManager.waypoints.length - 1);
             const currentZoneIndex = Math.floor(scaledScrollOffset);

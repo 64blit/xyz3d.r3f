@@ -9,6 +9,8 @@ import { PhysicsObjects } from '../logic/PhyicsObjects.jsx';
 import { InteractionManager } from '../../managers/InteractionManager.js';
 import { CameraManager } from '../../managers/CameraManager.js';
 import { Video } from '../logic/Video';
+import { generateKey } from '../../utils/BaseUtils.js';
+import { Media } from '../logic/Media.jsx';
 
 
 export function SceneXyz3D(props)
@@ -78,21 +80,7 @@ export function SceneXyz3D(props)
                         />
                     }
 
-                    {sceneManager
-                        &&
-                        sceneManager.videoObjects.map((element, key) => (
-                            <Video
-                                key={key}
-                                size={Math.max(...element.object.scale)}
-                                src={element.src}
-                                position={element.worldPosition}
-                                quaternion={element.worldRotation}
-                                muted={false}
-                                framed
-                            >
-                            </Video>
-                        ))
-                    }
+                    <Media sceneManager={sceneManager} interactionManager={interactionManager} />
 
 
                     {props.children}
