@@ -164,7 +164,6 @@ export class SceneManager
 
         if ("Media" in object.userData)
         {
-            object.visible = false;
 
             console.log("Media object found: " + object.name)
 
@@ -178,15 +177,16 @@ export class SceneManager
                 });
             } else if (object.userData.mediaType === "Video")
             {
-                console.log("Video object found: " + object.userData)
+                object.visible = false;
                 this.mediaObjects.video.push({
                     object,
                     worldPosition,
                     worldRotation,
                     mediaSrc: object.userData.mediaSrc
                 });
-            } else if (object.userData.mediaType === "3D Positional Audio")
+            } else if (object.userData.mediaType === "3DPositionalAudio")
             {
+                console.log("audio object found: " + object.userData)
                 this.mediaObjects.positionalAudio.push({
                     object,
                     worldPosition,

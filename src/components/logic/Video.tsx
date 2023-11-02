@@ -42,8 +42,7 @@ export function Video(props: Props)
     const [ speaker, setSpeaker ] = useState<THREE.PositionalAudio>();
     const [ dims, setDims ] = useState<Vector2 | null>();
 
-    const [ callbacks, setCallbacks ] = useState({
-    });
+    const [ callbacks, setCallbacks ] = useState({});
 
     const video = useMemo(() =>
     {
@@ -54,7 +53,6 @@ export function Video(props: Props)
         v.loop = true;
         v.src = src;
         v.autoplay = false;
-        v.preload = "auto";
         v.muted = muted ? muted : false;
         return v;
     }, []);
@@ -73,6 +71,8 @@ export function Video(props: Props)
 
     useEffect(() =>
     {
+
+        console.log("Video obj", props)
         const setupAudio = () =>
         {
             if (!muted && !video.paused && !speaker)
@@ -93,15 +93,17 @@ export function Video(props: Props)
 
         const startVideo = () =>
         {
-            video
-                .play()
-                .then(() =>
-                {
-                    setDims(new Vector2(video.videoWidth, video.videoHeight));
-                    video.pause();
-                });
+            const videoPromise =
+                video
+                    .play()
+                    .then(() =>
+                    {
+                        setDims(new Vector2(video.videoWidth, video.videoHeight));
+                        video.pause();
+                    });
 
             setupAudio();
+            return videoPromise;
         };
 
         const addCallbacks = () =>
@@ -116,7 +118,7 @@ export function Video(props: Props)
                 {
                     toggleVideo();
                 }
-            } else if ('OnPointerExit' === sourceObject.userData.mediaTrigger || 'OnPointerEnter' === sourceObject.userData.mediaTrigger)
+            } else if ('OnPointerExitMedia' === sourceObject.userData.mediaTrigger || 'OnPointerEnter' === sourceObject.userData.mediaTrigger)
             {
                 tempCallbacks[ 'onPointerEnter' ] = () =>
                 {
@@ -132,26 +134,13 @@ export function Video(props: Props)
 
         if (video)
         {
-            video.play().then(() =>
+            startVideo().then(() =>
             {
-                setDims(new Vector2(video.videoWidth, video.videoHeight));
-                setupAudio();
-                video.pause();
+                addCallbacks();
             });
-
-
-            addCallbacks();
-
-            document.addEventListener("click", startVideo);
-
-            return () =>
-            {
-                document.removeEventListener("click", startVideo);
-            };
         }
 
-        console.log("a1231233sdasdasads");
-    }, [ speaker, video, muted ]);
+    }, [ speaker, video, muted, camera, volume, sourceObject ]);
 
     useEffect(() =>
     {
