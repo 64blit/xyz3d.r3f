@@ -50,7 +50,6 @@ export function Xyz3D()
                         />
 
                         {/* Skybox with an ambient light fallback */}
-
                         <ErrorBoundary fallback={<ambientLight intensity={10} />}>
                             <Environment files={"https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_43d_clear_puresky_1k.hdr"} frames={1} resolution={512} background />
                         </ErrorBoundary>

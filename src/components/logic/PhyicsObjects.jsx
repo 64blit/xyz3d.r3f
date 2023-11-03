@@ -28,12 +28,8 @@ export function PhysicsObjects(props)
             {
                 if (action !== undefined && action !== null && action.isRunning()) 
                 {
-                    const currentPosition = obj.position.clone();
-                    // Calculate the delta position between the current frame and the previous frame
-
-                    ref.current.setTranslation(currentPosition, true);
+                    ref.current.setTranslation(obj.position, true);
                     ref.current.setRotation(obj.quaternion, true);
-
                 }
             });
 
@@ -149,9 +145,24 @@ export function PhysicsObjects(props)
                     key={generateKey("rb_" + obj.name)}
                     type={dynamicMass > 0 ? "dynamic" : "fixed"}
                     mass={dynamicMass}
-                    onClick={props.interactionManager.handleInteraction}
-                    onPointerEnter={props.interactionManager.handlePointerEnter}
-                    onPointerLeave={props.interactionManager.handlePointerExit}
+                    onClick={(event) =>
+                    {
+                        event.object = obj;
+                        console.log('click', obj.userData);
+                        props.interactionManager.handleInteraction(event);
+                    }}
+                    onPointerEnter={(event) =>
+                    {
+                        event.object = obj;
+                        console.log('net', obj.userData);
+                        props.interactionManager.handlePointerEnter(event);
+                    }}
+                    onPointerLeave={(event) =>
+                    {
+                        event.object = obj;
+                        console.log('leav', obj.userData);
+                        props.interactionManager.handlePointerExit(event);
+                    }}
                     userData={userData}
                     ref={rigidBodyRefs[ i ]}
                     includeInvisible={includeInvisible}

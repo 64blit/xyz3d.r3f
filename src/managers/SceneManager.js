@@ -2,6 +2,7 @@
 import * as THREE from "three";
 import { AnimationManager } from "./AnimationManager";
 import { AudioManager } from "./AudioManager";
+import { hasCustomGetInitialProps } from "next/dist/build/utils";
 
 // Define a class called SceneManager
 export class SceneManager
@@ -321,8 +322,7 @@ export class SceneManager
             object.userData[ "zone" ] = defaultInteractableZoneName;
         }
 
-
-        sceneZone.objects.interactables.push({ object, worldPosition });
+        let hasInteractableType = false;
 
         // This is a hack to make the object children interactable of an interactable parent
         // This can be possible removed with a group parent object
@@ -335,12 +335,20 @@ export class SceneManager
                 node.userData.interactableType = object.userData.interactableType;
                 node.userData.interactableData = object.userData.interactableData;
 
+                hasInteractableType = node.userData.interactableType != undefined || node.userData.interactableType != null || hasInteractableType;
+
                 if (!("zone" in object.userData))
                 {
                     node.userData[ "zone" ] = "_default_interactable_zone";
                 }
             });
         });
+
+
+        if (hasInteractableType)
+        {
+            sceneZone.objects.interactables.push({ object, worldPosition });
+        }
 
     }
 
