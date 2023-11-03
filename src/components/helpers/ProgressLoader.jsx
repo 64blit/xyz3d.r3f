@@ -1,6 +1,6 @@
 import React from "react";
 import { Html, useProgress } from "@react-three/drei";
-import InfinitySVG from "./InfinitySVG";
+import LoadingScreen from "./LoadingScreen.jsx";
 
 export function ProgressLoader()
 {
@@ -9,7 +9,7 @@ export function ProgressLoader()
     return (
         <>
             <Html center>
-                <InfinitySVG progress={Math.floor(progress)} />
+                <LoadingScreen progress={Math.floor(progress)} />
             </Html>
         </>
     );

@@ -1,6 +1,7 @@
 import * as THREE from "three";
 
 // https://assets.mixkit.co/active_storage/sfx/212/212.wav
+
 export class AudioManager
 {
     constructor(camera)
@@ -10,24 +11,41 @@ export class AudioManager
         // Add audio listener to camera
         const listener = new THREE.AudioListener();
         camera.add(listener);
-        this.playingSounds = [];
+        const playingSounds = [];
+        const loadedSounds = {};
+
+        const sound = new THREE.Audio(listener);
+        const audioLoader = new THREE.AudioLoader();
 
         // Function to play sound by name
-        this.playSound = (name, loop = false) =>
+        this.playSound = (source, loop = false) =>
         {
-            const sound = new THREE.Audio(listener);
-            const audioLoader = new THREE.AudioLoader();
             sound.setLoop(loop);
+            sound.setVolume(1);
+            playingSounds.push(source);
 
-            playingSounds.push({ name, sound });
-
-            this.stopSound(name);
-
-            audioLoader.load(name, function (buffer)
+            if (source in playingSounds)
             {
+                this.stopSound(source);
+            }
+
+            if (sound.isPlaying)
+            {
+                sound.stop();
+            }
+
+            if (source in loadedSounds)
+            {
+                sound.setBuffer(loadedSounds[ source ]);
+                sound.play();
+                return;
+            }
+
+
+            audioLoader.load(source, function (buffer)
+            {
+                loadedSounds[ source ] = buffer;
                 sound.setBuffer(buffer);
-                sound.setLoop(true);
-                sound.setVolume(1);
                 sound.play();
 
                 sound.onEnded = () =>
@@ -39,13 +57,20 @@ export class AudioManager
         };
     }
 
+
+
     // Function to play loop sounds
     playLoopingSounds()
     {
+        for (let i = 0; i < this.loopingSounds.length; i++)
+        {
+            const element = this.loopingSounds[ i ];
+            this.playSound(element, true);
+
+        }
         this.loopingSounds.forEach((sound) =>
         {
             console.log("Playing sound: " + sound);
-            this.playSound(sound, true);
         });
     }
 
@@ -71,48 +96,35 @@ export class AudioManager
     // Extract sound data from user data
     parseSounds(object)
     {
-        if ("LoopingSounds" in object.userData)
+        if (!("Media" in object.userData)) return;
+        if (!("mediaType" in object.userData)) return;
+        if (!("Audio" === object.userData.mediaType)) return;
+        if (!("mediaTrigger" in object.userData))
         {
-            let loopingSounds = object.userData.LoopingSounds;
-
-            if (typeof loopingSounds === "string")
-            {
-                loopingSounds = loopingSounds.replace(/\s/g, "").split(",");
-            } else
-            {
-                loopingSounds = object.userData.LoopingSounds;
-            }
-
-            this.loopingSounds.push(...loopingSounds);
-
-            object.userData.LoopingSounds = loopingSounds;
+            console.log("No media trigger found, ensure a media trigger is set on your Audio enabled object.")
+            return;
         }
 
-        const extractSounds = (userDataKey, objectUserData) =>
+        const mediaSrc = object.userData.mediaSrc;
+
+        if (object.userData.mediaTrigger === "Looping")
         {
-            if (userDataKey in objectUserData)
-            {
-                let sounds = objectUserData[ userDataKey ];
+            this.loopingSounds.push(mediaSrc);
+        }
 
-                if (typeof sounds === "string")
-                {
-                    sounds = sounds.replace(/\s/g, "").split(",");
-                }
+        if (object.userData.mediaTrigger === "OnPointerEnter")
+        {
+            object.userData.OnPointerEnterSound = mediaSrc;
+        }
 
-                objectUserData[ userDataKey ] = sounds;
+        if (object.userData.mediaTrigger === "OnPointerExit")
+        {
+            object.userData.OnPointerExitSound = mediaSrc;
+        }
 
-                //  Adds the same sounds to any children of the object
-                const userDataCopy = Object.assign({}, object.userData);
-
-                object.traverse((node) =>
-                {
-                    node.userData = userDataCopy;
-                });
-            }
-        };
-
-        extractSounds("OnPointerEnterSounds", object.userData);
-        extractSounds("OnPointerExitSounds", object.userData);
-        extractSounds("OnSelectSounds", object.userData);
+        if (object.userData.mediaTrigger === "OnSelect")
+        {
+            object.userData.OnSelectSound = mediaSrc;
+        }
     }
 }

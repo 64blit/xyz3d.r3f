@@ -72,7 +72,6 @@ export function Video(props: Props)
     useEffect(() =>
     {
 
-        console.log("Video obj", props)
         const setupAudio = () =>
         {
             if (!muted && !video.paused && !speaker)

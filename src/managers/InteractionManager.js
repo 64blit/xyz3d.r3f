@@ -65,13 +65,11 @@ export class InteractionManager
                 });
             }
 
-            const sounds = event.object.userData.OnPointerEnterSounds || null;
-            if (sounds != null)
+            const sound = event.object.userData.OnPointerEnterSound || null;
+
+            if (sound != null)
             {
-                sounds.forEach((soundName) =>
-                {
-                    this.playSound(soundName);
-                });
+                this.playSound(sound);
             }
         }
 
@@ -93,13 +91,11 @@ export class InteractionManager
                 });
             }
 
-            const sounds = event.object.userData.OnPointerExitSound || null;
-            if (sounds != null)
+            const sound = event.object.userData.OnPointerExitSound || null;
+
+            if (sound != null)
             {
-                sounds.forEach((soundName) =>
-                {
-                    this.playSound(soundName);
-                });
+                this.playSound(sound);
             }
         }
 
@@ -116,14 +112,11 @@ export class InteractionManager
                 });
             }
 
-            const sounds = object.userData.OnSelectSounds || null;
+            const sound = object.userData.OnSelectSound || null;
 
-            if (sounds != null)
+            if (sound != null)
             {
-                sounds.forEach((soundName) =>
-                {
-                    this.playSound(soundName);
-                });
+                this.playSound(sound);
             }
 
             await Promise.all(animationPromises);

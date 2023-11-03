@@ -165,8 +165,6 @@ export class SceneManager
         if ("Media" in object.userData)
         {
 
-            console.log("Media object found: " + object.name)
-
             if (object.userData.mediaType === "Audio")
             {
                 this.mediaObjects.audio.push({
@@ -186,7 +184,6 @@ export class SceneManager
                 });
             } else if (object.userData.mediaType === "3DPositionalAudio")
             {
-                console.log("audio object found: " + object.userData)
                 this.mediaObjects.positionalAudio.push({
                     object,
                     worldPosition,
