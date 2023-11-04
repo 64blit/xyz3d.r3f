@@ -140,29 +140,41 @@ export function PhysicsObjects(props)
                 userData = {};
             }
 
+            const callbacks = {};
+
+            if (obj.userData?.OnSelectAnimations || obj.userData?.mediaTrigger === "OnSelect")
+            {
+                callbacks.onClick = (event) =>
+                {
+                    event.object = obj;
+                    props.interactionManager.handleInteraction(event);
+                };
+            }
+
+            if (obj.userData?.OnPointerEnterAnimations || obj.userData?.mediaTrigger === "OnPointerEnter")
+            {
+                callbacks.onPointerEnter = (event) =>
+                {
+                    event.object = obj;
+                    props.interactionManager.handlePointerEnter(event);
+                };
+            }
+
+            if (obj.userData?.OnPointerExitAnimations || obj.userData?.mediaTrigger === "OnPointerExit")
+            {
+                callbacks.onPointerLeave = (event) =>
+                {
+                    event.object = obj;
+                    props.interactionManager.handlePointerExit(event);
+                };
+            }
+
             node =
                 <RigidBody
                     key={generateKey("rb_" + obj.name)}
                     type={dynamicMass > 0 ? "dynamic" : "fixed"}
                     mass={dynamicMass}
-                    onClick={(event) =>
-                    {
-                        event.object = obj;
-                        console.log('click', obj.userData);
-                        props.interactionManager.handleInteraction(event);
-                    }}
-                    onPointerEnter={(event) =>
-                    {
-                        event.object = obj;
-                        console.log('net', obj.userData);
-                        props.interactionManager.handlePointerEnter(event);
-                    }}
-                    onPointerLeave={(event) =>
-                    {
-                        event.object = obj;
-                        console.log('leav', obj.userData);
-                        props.interactionManager.handlePointerExit(event);
-                    }}
+                    {...callbacks}
                     userData={userData}
                     ref={rigidBodyRefs[ i ]}
                     includeInvisible={includeInvisible}

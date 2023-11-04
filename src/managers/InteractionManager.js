@@ -26,7 +26,6 @@ export class InteractionManager
 
             switch (type)
             {
-
                 case "Popup HTML":
                     this.setShowPopup(true);
                     this.setPopupContent(data);
@@ -42,17 +41,12 @@ export class InteractionManager
 
                 default:
                     break;
-
             }
         }
 
         // on hover callback for playing any hover animations found inside the userData varaiable under hoverAnimations
         this.handlePointerEnter = (event) =>
         {
-            if (event.object.userData?.type !== "interactable")
-            {
-                return;
-            }
 
             document.body.style.cursor = "pointer";
 
@@ -65,8 +59,8 @@ export class InteractionManager
                 });
             }
 
-            const sound = event.object.userData.OnPointerEnterSound || null;
-
+            const sound = event.object.userData.mediaSrc || null;
+            console.log(sound)
             if (sound != null)
             {
                 this.playSound(sound);
@@ -75,10 +69,6 @@ export class InteractionManager
 
         this.handlePointerExit = (event) =>
         {
-            if (event.object.userData?.type !== "interactable")
-            {
-                return;
-            }
 
             document.body.style.cursor = "auto";
 
@@ -91,7 +81,7 @@ export class InteractionManager
                 });
             }
 
-            const sound = event.object.userData.OnPointerExitSound || null;
+            const sound = event.object.userData.mediaSrc || null;
 
             if (sound != null)
             {
@@ -112,7 +102,7 @@ export class InteractionManager
                 });
             }
 
-            const sound = object.userData.OnSelectSound || null;
+            const sound = object.userData.mediaSrc || null;
 
             if (sound != null)
             {

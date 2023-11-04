@@ -11,7 +11,6 @@ export class AudioManager
         // Add audio listener to camera
         const listener = new THREE.AudioListener();
         camera.add(listener);
-        const playingSounds = [];
         const loadedSounds = {};
 
         const sound = new THREE.Audio(listener);
@@ -22,16 +21,10 @@ export class AudioManager
         {
             sound.setLoop(loop);
             sound.setVolume(1);
-            playingSounds.push(source);
-
-            if (source in playingSounds)
-            {
-                this.stopSound(source);
-            }
 
             if (sound.isPlaying)
             {
-                sound.stop();
+                return;
             }
 
             if (source in loadedSounds)
@@ -41,17 +34,12 @@ export class AudioManager
                 return;
             }
 
-
             audioLoader.load(source, function (buffer)
             {
                 loadedSounds[ source ] = buffer;
                 sound.setBuffer(buffer);
                 sound.play();
 
-                sound.onEnded = () =>
-                {
-                    playingSounds.splice(playingSounds.indexOf(sound), 1);
-                };
             });
 
         };
@@ -74,18 +62,6 @@ export class AudioManager
         });
     }
 
-    // Function to stop sound by name
-    stopSound(name)
-    {
-        for (let i = 0; i < playingSounds.length; i++)
-        {
-            if (playingSounds[ i ].name === name)
-            {
-                playingSounds[ i ].sound.stop();
-                playingSounds.splice(i, 1);
-            }
-        }
-    }
 
     // Function to get looping sounds
     getLoopingSounds()

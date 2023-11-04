@@ -29,7 +29,6 @@ export const Media = (props = { sceneManager }) =>
                                 framed >
                             </Video>
                         ))}
-
                     </group>
                     <group>
                         {props.sceneManager?.mediaObjects.positionalAudio.map((element, key) => (
@@ -46,8 +45,7 @@ export const Media = (props = { sceneManager }) =>
                         ))}
 
                     </group>
-                </>
-                ;
+                </>;
 
             setMediaContent(tempMediaContent);
             document.removeEventListener("click", loadMedia);
