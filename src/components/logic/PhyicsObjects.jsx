@@ -101,6 +101,39 @@ export function PhysicsObjects(props)
         return null;
     };
 
+    const getCallbacks = (obj) =>
+    {
+        const callbacks = {};
+
+        if (obj.userData?.OnSelectAnimations || obj.userData?.mediaTrigger === "OnSelect")
+        {
+            callbacks.onClick = (event) =>
+            {
+                event.object = obj;
+                props.interactionManager.handleInteraction(event);
+            };
+        }
+
+        if (obj.userData?.OnPointerEnterAnimations || obj.userData?.mediaTrigger === "OnPointerEnter")
+        {
+            callbacks.onPointerEnter = (event) =>
+            {
+                event.object = obj;
+                props.interactionManager.handlePointerEnter(event);
+            };
+        }
+
+        if (obj.userData?.OnPointerExitAnimations || obj.userData?.mediaTrigger === "OnPointerExit")
+        {
+            callbacks.onPointerLeave = (event) =>
+            {
+                event.object = obj;
+                props.interactionManager.handlePointerExit(event);
+            };
+        }
+
+        return callbacks;
+    }
 
     const getPhyicsNodes = (physicsObjects) =>
     {
@@ -140,34 +173,7 @@ export function PhysicsObjects(props)
                 userData = {};
             }
 
-            const callbacks = {};
-
-            if (obj.userData?.OnSelectAnimations || obj.userData?.mediaTrigger === "OnSelect")
-            {
-                callbacks.onClick = (event) =>
-                {
-                    event.object = obj;
-                    props.interactionManager.handleInteraction(event);
-                };
-            }
-
-            if (obj.userData?.OnPointerEnterAnimations || obj.userData?.mediaTrigger === "OnPointerEnter")
-            {
-                callbacks.onPointerEnter = (event) =>
-                {
-                    event.object = obj;
-                    props.interactionManager.handlePointerEnter(event);
-                };
-            }
-
-            if (obj.userData?.OnPointerExitAnimations || obj.userData?.mediaTrigger === "OnPointerExit")
-            {
-                callbacks.onPointerLeave = (event) =>
-                {
-                    event.object = obj;
-                    props.interactionManager.handlePointerExit(event);
-                };
-            }
+            const callbacks = getCallbacks(obj);
 
             node =
                 <RigidBody

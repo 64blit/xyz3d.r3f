@@ -6,10 +6,18 @@ export function ProgressLoader()
 {
     const { active, progress, errors, item, loaded, total } = useProgress();
 
+    const [ percent, setPercent ] = React.useState(0);
+
+    React.useEffect(() =>
+    {
+        setPercent(Math.floor(progress));
+    }, [ progress ]);
+
+
     return (
         <>
             <Html center>
-                <LoadingScreen progress={Math.floor(progress)} />
+                <LoadingScreen progress={percent} />
             </Html>
         </>
     );

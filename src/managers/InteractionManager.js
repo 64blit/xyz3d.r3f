@@ -60,7 +60,7 @@ export class InteractionManager
             }
 
             const sound = event.object.userData.mediaSrc || null;
-            console.log(sound)
+
             if (sound != null)
             {
                 this.playSound(sound);

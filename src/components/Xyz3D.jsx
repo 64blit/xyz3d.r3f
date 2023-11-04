@@ -5,6 +5,7 @@ import { HtmlOverlay } from './helpers/HtmlOverlay.jsx';
 import { ProgressLoader } from './helpers/ProgressLoader.jsx';
 import { Environment } from '@react-three/drei';
 import { ErrorBoundary } from 'react-error-boundary';
+import { ScrollIndicator } from './helpers/ScrollIndicator.jsx';
 
 
 export function Xyz3D()
@@ -57,8 +58,9 @@ export function Xyz3D()
 
                     </Suspense>
 
-
                 </Canvas>
+
+                <ScrollIndicator />
 
             </div>
 

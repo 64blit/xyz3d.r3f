@@ -27,16 +27,55 @@ export function SceneZone(props)
 
     });
 
+    const getCallbacks = (element) =>
+    {
+        const callbacks = {};
+
+        const type = element.object.userData?.type;
+        const data = element.object.userData?.interactableData;
+
+        if (element.object.userData?.type !== "interactable")
+        {
+            return;
+        }
+
+        if (type === undefined || type === null)
+        {
+            console.log("Missing interactable type for ", element.object.name);
+            return;
+        }
+        if (data === undefined || data === null)
+        {
+            console.log("Missing interactable data for ", element.object.name);
+            return;
+        }
+
+        callbacks.onClick = (event) => props.interactionManager.handleInteraction(event, element);
+
+
+        if (element.object.userData?.OnPointerEnterAnimations !== undefined && element.object.userData?.OnPointerEnterAnimations !== null)
+        {
+            callbacks.onPointerEnter = (event) => props.interactionManager.handlePointerEnter(event, element);
+        }
+
+        if (element.object.userData?.OnPointerExitAnimations !== undefined && element.object.userData?.OnPointerExitAnimations !== null)
+        {
+            callbacks.onPointerLeave = (event) => props.interactionManager.handlePointerExit(event, element);
+        }
+
+        return callbacks;
+
+    }
+
 
     return (
         <>
             <group ref={zoneRef}>
+
                 {sceneData.objects.interactables.map((element, key) => (
                     <group
                         key={key}
-                        onClick={props.interactionManager.handleInteraction}
-                        onPointerEnter={props.interactionManager.handlePointerEnter}
-                        onPointerLeave={props.interactionManager.handlePointerExit}
+                        {...getCallbacks(element)}
                     >
                         <primitive
                             object={element.object}
@@ -46,8 +85,6 @@ export function SceneZone(props)
                         />
                     </group>
                 ))}
-
-
 
             </group>
 

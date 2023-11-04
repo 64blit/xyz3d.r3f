@@ -321,8 +321,6 @@ export class SceneManager
             object.userData[ "zone" ] = defaultInteractableZoneName;
         }
 
-        let hasInteractableType = false;
-
         // This is a hack to make the object children interactable of an interactable parent
         // This can be possible removed with a group parent object
         object.children.forEach((child) =>
@@ -334,8 +332,6 @@ export class SceneManager
                 node.userData.interactableType = object.userData.interactableType;
                 node.userData.interactableData = object.userData.interactableData;
 
-                hasInteractableType = node.userData.interactableType != undefined || node.userData.interactableType != null || hasInteractableType;
-
                 if (!("zone" in object.userData))
                 {
                     node.userData[ "zone" ] = "_default_interactable_zone";
@@ -344,10 +340,8 @@ export class SceneManager
         });
 
 
-        if (hasInteractableType)
-        {
-            sceneZone.objects.interactables.push({ object, worldPosition });
-        }
+        sceneZone.objects.interactables.push({ object, worldPosition });
+
 
     }
 

@@ -129,7 +129,6 @@ export function Audio3D(props: AudioProps)
 
         if (audio)
         {
-
             addCallbacks();
             startAudio();
         }
