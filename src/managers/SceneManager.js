@@ -13,6 +13,7 @@ export class SceneManager
         this.controls = controls;
         this.sceneZones = [];
         this.waypoints = [];
+        this.siteData = {};
 
         this.physicsObjects = [];
 
@@ -76,7 +77,7 @@ export class SceneManager
                 }
 
                 // Add the object to the appropriate scene zone
-                this.addObject(sceneZone, node);
+                this.parseNode(sceneZone, node);
             });
         });
 
@@ -156,15 +157,28 @@ export class SceneManager
     }
 
 
-    addObject(sceneZone, object)
+    parseNode(sceneZone, object)
     {
-        let isCameraAnchor = false;
 
         const { worldPosition, worldRotation } = this.getWorldData(object);
 
+        if ("siteProperties" in object.userData)
+        {
+            this.siteData.siteTitle = object.userData?.siteTitle;
+            this.siteData.siteAuthor = object.userData?.siteAuthor;
+            this.siteData.siteDescription = object.userData?.siteDescription;
+            this.siteData.siteURL = object.userData?.siteURL;
+            this.siteData.siteIconURL = object.userData?.siteIconURL;
+            this.siteData.splashScreenActive = object.userData?.splashActive;
+            this.siteData.splashScreenTitle = object.userData?.splashTitle;
+            this.siteData.splashScreenBody = object.userData?.splashBody;
+            this.siteData.splashScreenButton = object.userData?.splashButton;
+            this.scene.remove(object);
+            return;
+        }
+
         if ("Media" in object.userData)
         {
-
             if (object.userData.mediaType === "Audio")
             {
                 this.mediaObjects.audio.push({
@@ -196,22 +210,20 @@ export class SceneManager
         {
             //  Note: Interactable physics objects are handled in the physics component,
             //   not the scene zone component
-            const { worldPosition, worldRotation } = this.getWorldData(object);
             object.userData[ "worldPosition" ] = worldPosition;
             object.userData[ "worldRotation" ] = worldRotation;
             this.physicsObjects.push(object);
 
-        } else if ("type" in object.userData && object.userData.type == "interactable")
+        } else if (object.userData?.type == "interactable")
         {
             this.addInteractable(sceneZone, object);
-        } else if ("type" in object.userData && object.userData.type == "cameraAnchor") 
+        } else if (object.userData?.type == "cameraAnchor") 
         {
-            isCameraAnchor = true;
             this.addCameraAnchor(sceneZone, object);
         }
 
         // Add the object to the scene zone's camera target
-        if (sceneZone && !isCameraAnchor)
+        if (sceneZone && !(object.userData?.type == "cameraAnchor"))
         {
             const target = new THREE.Vector3();
             sceneZone.camera.target.expandByObject(object);
@@ -349,6 +361,11 @@ export class SceneManager
     getLoopingAnimations()
     {
         return this.animationManager.getLoopingAnimations();
+    }
+
+    getSiteData()
+    {
+        return this.siteData;
     }
 
     // Fix scene zones by adjusting camera positions and targets

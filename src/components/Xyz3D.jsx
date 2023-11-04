@@ -5,7 +5,7 @@ import { HtmlOverlay } from './helpers/HtmlOverlay.jsx';
 import { ProgressLoader } from './helpers/ProgressLoader.jsx';
 import { Environment } from '@react-three/drei';
 import { ErrorBoundary } from 'react-error-boundary';
-import { ScrollIndicator } from './helpers/ScrollIndicator.jsx';
+import { SplashScreen } from './helpers/SplashScreen.jsx';
 
 
 export function Xyz3D()
@@ -13,6 +13,8 @@ export function Xyz3D()
     const [ showPopup, setShowPopup ] = useState(false);
     const [ popupContent, setPopupContent ] = useState(null);
     const [ isDebugging, setIsDebugging ] = useState(false);
+    const [ isLoaded, setIsLoaded ] = useState(false);
+    const [ siteData, setSiteData ] = useState(null);
 
     // if the user presses the "D" key, toggle debugging mode
     React.useEffect(() =>
@@ -40,7 +42,7 @@ export function Xyz3D()
                 <Canvas>
 
                     {/* The loading screen */}
-                    <Suspense fallback={<ProgressLoader />}>
+                    <Suspense fallback={<ProgressLoader setIsLoaded={setIsLoaded} />}>
 
                         {/* The 3D Scene */}
                         <SceneXyz3D
@@ -48,6 +50,7 @@ export function Xyz3D()
                             setShowPopup={setShowPopup}
                             isDebugging={isDebugging}
                             setPopupContent={setPopupContent}
+                            setSiteData={setSiteData}
                         />
 
                         {/* Skybox with an ambient light fallback */}
@@ -55,17 +58,17 @@ export function Xyz3D()
                             <Environment files={"https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_43d_clear_puresky_1k.hdr"} frames={1} resolution={512} background />
                         </ErrorBoundary>
 
-
                     </Suspense>
 
                 </Canvas>
 
-                <ScrollIndicator />
+                {/* The splash screen we show indicating how to interact with the scene. */}
+                {isLoaded && siteData && <SplashScreen siteData={siteData} />}
 
-            </div>
+            </div >
 
             {/* The container for HTML content */}
-            <HtmlOverlay content={popupContent} showPopup={showPopup} setShowPopup={setShowPopup} />
+            < HtmlOverlay content={popupContent} showPopup={showPopup} setShowPopup={setShowPopup} />
 
         </>
     );

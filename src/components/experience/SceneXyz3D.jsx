@@ -27,6 +27,8 @@ export function SceneXyz3D(props)
 
     const initializeManagers = (scroll) =>
     {
+        if (sceneManager) return;
+
         const tempSceneManager = new SceneManager(scene, controlsRef.current, animations, actions, mixer);
         setSceneManager(tempSceneManager);
 
@@ -34,7 +36,11 @@ export function SceneXyz3D(props)
         setCameraManager(tempCameraManager);
 
         const tempInteractionManager = new InteractionManager(props.setShowPopup, props.setPopupContent, tempCameraManager.goToSceneZoneByName, tempSceneManager.playAnimation, tempSceneManager.playSound);
+
         setInteractionManager(tempInteractionManager);
+        const siteData = tempSceneManager.getSiteData();
+
+        props.setSiteData(siteData);
     };
 
     // UseFrame hook for animations and interactions

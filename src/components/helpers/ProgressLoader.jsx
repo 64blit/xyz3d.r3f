@@ -2,7 +2,7 @@ import React from "react";
 import { Html, useProgress } from "@react-three/drei";
 import LoadingScreen from "./LoadingScreen.jsx";
 
-export function ProgressLoader()
+export function ProgressLoader({ setIsLoaded })
 {
     const { active, progress, errors, item, loaded, total } = useProgress();
 
@@ -11,12 +11,18 @@ export function ProgressLoader()
     React.useEffect(() =>
     {
         setPercent(Math.floor(progress));
+
+        if (progress >= 99)
+        {
+            setIsLoaded(true);
+        }
+
     }, [ progress ]);
 
 
     return (
         <>
-            <Html center>
+            <Html fullscreen>
                 <LoadingScreen progress={percent} />
             </Html>
         </>
