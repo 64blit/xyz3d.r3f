@@ -4,7 +4,6 @@ import { useState } from "react";
 export const SplashScreen = (props) =>
 {
     const [ active, setActive ] = useState(props.splashData?.active);
-    console.log(props)
 
     return (
         <>

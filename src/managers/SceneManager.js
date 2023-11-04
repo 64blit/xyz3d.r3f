@@ -164,15 +164,15 @@ export class SceneManager
 
         if ("siteProperties" in object.userData)
         {
-            this.siteData.siteTitle = object.userData?.siteTitle;
-            this.siteData.siteAuthor = object.userData?.siteAuthor;
-            this.siteData.siteDescription = object.userData?.siteDescription;
-            this.siteData.siteURL = object.userData?.siteURL;
-            this.siteData.siteIconURL = object.userData?.siteIconURL;
-            this.siteData.splashScreenActive = object.userData?.splashActive;
-            this.siteData.splashScreenTitle = object.userData?.splashTitle;
-            this.siteData.splashScreenBody = object.userData?.splashBody;
-            this.siteData.splashScreenButton = object.userData?.splashButton;
+            this.siteData.siteTitle = object.userData?.siteTitle || "";
+            this.siteData.siteAuthor = object.userData?.siteAuthor || "";
+            this.siteData.siteDescription = object.userData?.siteDescription || "";
+            this.siteData.siteURL = object.userData?.siteURL || "";
+            this.siteData.siteIconURL = object.userData?.siteIconURL || "";
+            this.siteData.splashScreenActive = object.userData?.splashActive || true;
+            this.siteData.splashScreenTitle = object.userData?.splashTitle || "Welcome!";
+            this.siteData.splashScreenBody = object.userData?.splashBody || "Scroll down to explore.";
+            this.siteData.splashScreenButton = object.userData?.splashButton || "Start";
             this.scene.remove(object);
             return;
         }

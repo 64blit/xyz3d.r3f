@@ -6,7 +6,8 @@ import { ProgressLoader } from './helpers/ProgressLoader.jsx';
 import { Environment } from '@react-three/drei';
 import { ErrorBoundary } from 'react-error-boundary';
 import { SplashScreen } from './helpers/SplashScreen.jsx';
-
+import { Seo } from './helpers/SEO.jsx';
+import { HelmetProvider } from 'react-helmet-async';
 
 export function Xyz3D()
 {
@@ -33,7 +34,7 @@ export function Xyz3D()
 
 
     return (
-        <>
+        <HelmetProvider>
 
             {/* Wrapper div to cover the screen */}
             <div className="absolute inset-0 bg-black">
@@ -63,13 +64,19 @@ export function Xyz3D()
                 </Canvas>
 
                 {/* The splash screen we show indicating how to interact with the scene. */}
-                {isLoaded && siteData && <SplashScreen siteData={siteData} />}
+                {isLoaded
+                    && siteData && <SplashScreen active={siteData.splashScreenActive} title={siteData.splashScreenTitle} body={siteData.splashScreenBody} button={siteData.splashScreenButton} />}
+
+                {/* The seo content which is added to the head section. */}
+                {isLoaded
+                    && siteData && <Seo url={siteData.siteURL} author={siteData.siteAuthor} title={siteData.siteTitle} description={siteData.description} icon={siteData.siteIconURL} image={siteData.siteIconURL} />}
+
 
             </div >
 
             {/* The container for HTML content */}
             < HtmlOverlay content={popupContent} showPopup={showPopup} setShowPopup={setShowPopup} />
 
-        </>
+        </HelmetProvider>
     );
 }
