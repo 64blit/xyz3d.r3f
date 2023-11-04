@@ -2,7 +2,6 @@
 import * as THREE from "three";
 import { AnimationManager } from "./AnimationManager";
 import { AudioManager } from "./AudioManager";
-import { hasCustomGetInitialProps } from "next/dist/build/utils";
 
 // Define a class called SceneManager
 export class SceneManager
