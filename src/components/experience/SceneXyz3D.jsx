@@ -57,43 +57,40 @@ export function SceneXyz3D(props)
 
     return (
         <>
-            <ScrollControls enabled={true} pages={sceneManager?.waypoints.length - 1}>
+            <Controls innerRef={controlsRef} />
 
-                <Controls innerRef={controlsRef} />
+            <ScrollWrapper onReady={initializeManagers}>
 
-                <ScrollWrapper onReady={initializeManagers}>
+                <primitive object={scene}>
 
-                    <primitive object={scene}>
+                    {controlsRef.current
+                        && sceneManager
+                        && sceneManager.getSceneZones().map((object, key) => (
+                            <SceneZone
+                                interactionManager={interactionManager}
+                                isDebugging={props.isDebugging}
+                                object={object}
+                                key={key}
+                            />
+                        ))}
 
-                        {controlsRef.current
-                            && sceneManager
-                            && sceneManager.getSceneZones().map((object, key) => (
-                                <SceneZone
-                                    interactionManager={interactionManager}
-                                    isDebugging={props.isDebugging}
-                                    object={object}
-                                    key={key}
-                                />
-                            ))}
+                </primitive>
 
-                    </primitive>
+                {sceneManager
+                    && <PhysicsObjects
+                        debug={props.isDebugging}
+                        sceneManager={sceneManager}
+                        interactionManager={interactionManager}
+                        isDebugging={props.isDebugging}
+                    />
+                }
 
-                    {sceneManager
-                        && <PhysicsObjects
-                            debug={props.isDebugging}
-                            sceneManager={sceneManager}
-                            interactionManager={interactionManager}
-                            isDebugging={props.isDebugging}
-                        />
-                    }
-
-                    <Media sceneManager={sceneManager} interactionManager={interactionManager} />
+                <Media sceneManager={sceneManager} interactionManager={interactionManager} />
 
 
-                    {props.children}
+                {props.children}
 
-                </ScrollWrapper>
-            </ScrollControls>
+            </ScrollWrapper>
         </>
     );
 }
