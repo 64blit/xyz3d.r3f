@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import React, { useRef, useState, useEffect, forwardRef, useMemo, useImperativeHandle } from 'react';
 import { ScrollControls, useAnimations, useGLTF } from "@react-three/drei";
 import { useFrame, useThree } from '@react-three/fiber';
 import { SceneManager } from '../../managers/SceneManager.js';
@@ -13,7 +13,7 @@ import { generateKey } from '../../utils/BaseUtils.js';
 import { Media } from '../logic/Media.jsx';
 
 
-export function SceneXyz3D(props)
+export const SceneXyz3D = forwardRef((props, ref) =>  
 {
     const { camera } = useThree();
     const { scene, animations } = useGLTF(props.path);
@@ -24,6 +24,12 @@ export function SceneXyz3D(props)
     const [ sceneManager, setSceneManager ] = useState(null);
     const [ interactionManager, setInteractionManager ] = useState(null);
     const [ cameraManager, setCameraManager ] = useState(null);
+
+    useImperativeHandle(ref, () => ({
+        goToSceneZoneByIndex: cameraManager?.goToSceneZoneByIndex,
+        goToSceneZoneByName: cameraManager?.goToSceneZoneByName,
+        sceneManager: sceneManager,
+    }));
 
     const initializeManagers = (scroll) =>
     {
@@ -93,4 +99,4 @@ export function SceneXyz3D(props)
             </ScrollWrapper>
         </>
     );
-}
+});

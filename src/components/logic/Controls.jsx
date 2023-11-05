@@ -19,7 +19,11 @@ export function Controls(props)
     useEffect(() =>
     {
         const controls = ref.current;
-        controls.mouseButtons.wheel = CameraControls.ACTION.NONE;
+        controls.azimuthRotateSpeed = .25;
+        controls.polarRotateSpeed = .25;
+        controls.truckSpeed = 1;
+        controls.dollySpeed = 1;
+
     }, [ ref?.current ]);
 
     return (

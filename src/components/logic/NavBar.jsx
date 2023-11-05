@@ -15,8 +15,8 @@ export function NavBar(props)
 
     useEffect(() =>
     {
-        const sceneManager = props.xyzRef.getSceneManager();
-
+        const sceneManager = props.xyzRef?.sceneManager;
+        if (!sceneManager) return;
 
         setSceneManagerInitialized(true);
         let filteredZones = [];
@@ -38,7 +38,7 @@ export function NavBar(props)
         }
 
         setSceneZones(filteredZones);
-    }, []);
+    }, [ props.xyzRef ]);
 
     const navigateTo = (name) => (event) =>
     {

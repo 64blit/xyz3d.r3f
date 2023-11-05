@@ -4,7 +4,6 @@ import { SceneXyz3D } from './experience/SceneXyz3D.jsx';
 import { HtmlOverlay } from './helpers/HtmlOverlay.jsx';
 import { ProgressLoader } from './helpers/ProgressLoader.jsx';
 import { Environment } from '@react-three/drei';
-import { ErrorBoundary } from 'react-error-boundary';
 import { SplashScreen } from './helpers/SplashScreen.jsx';
 import { Seo } from './helpers/SEO.jsx';
 import { HelmetProvider } from 'react-helmet-async';
@@ -85,7 +84,7 @@ export function Xyz3D()
             {/* The container for HTML content */}
             < HtmlOverlay content={popupContent} showPopup={showPopup} setShowPopup={setShowPopup} />
             {/* Navbar */}
-            {isInitialized && <NavBar xyzRef={sceneRef.current} />}
+            {isLoaded && <NavBar xyzRef={sceneRef.current} />}
 
         </HelmetProvider >
     );
