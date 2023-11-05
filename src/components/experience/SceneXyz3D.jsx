@@ -4,7 +4,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { SceneManager } from '../../managers/SceneManager.js';
 import { Controls } from '../logic/Controls.jsx';
 import { SceneZone } from './SceneZone.jsx';
-import { SceneZoneWrapper } from '../helpers/SceneZoneWrapper.jsx';
+import { ScrollWrapper } from '../helpers/ScrollWrapper.jsx';
 import { PhysicsObjects } from '../logic/PhyicsObjects.jsx';
 import { InteractionManager } from '../../managers/InteractionManager.js';
 import { CameraManager } from '../../managers/CameraManager.js';
@@ -27,7 +27,11 @@ export function SceneXyz3D(props)
 
     const initializeManagers = (scroll) =>
     {
-        if (sceneManager) return;
+        if (sceneManager)
+        {
+            cameraManager.scroll = scroll;
+            return;
+        }
 
         const tempSceneManager = new SceneManager(scene, controlsRef.current, animations, actions, mixer);
         setSceneManager(tempSceneManager);
@@ -57,15 +61,13 @@ export function SceneXyz3D(props)
 
                 <Controls innerRef={controlsRef} />
 
-                <SceneZoneWrapper onReady={initializeManagers}>
+                <ScrollWrapper onReady={initializeManagers}>
 
                     <primitive object={scene}>
 
                         {controlsRef.current
-                            &&
-                            sceneManager
-                            &&
-                            sceneManager.getSceneZones().map((object, key) => (
+                            && sceneManager
+                            && sceneManager.getSceneZones().map((object, key) => (
                                 <SceneZone
                                     interactionManager={interactionManager}
                                     isDebugging={props.isDebugging}
@@ -77,8 +79,7 @@ export function SceneXyz3D(props)
                     </primitive>
 
                     {sceneManager
-                        &&
-                        <PhysicsObjects
+                        && <PhysicsObjects
                             debug={props.isDebugging}
                             sceneManager={sceneManager}
                             interactionManager={interactionManager}
@@ -90,7 +91,8 @@ export function SceneXyz3D(props)
 
 
                     {props.children}
-                </SceneZoneWrapper>
+
+                </ScrollWrapper>
             </ScrollControls>
         </>
     );

@@ -3,7 +3,7 @@
 import { useScroll } from "@react-three/drei";
 import { useEffect } from "react";
 
-export function SceneZoneWrapper(props)
+export function ScrollWrapper(props)
 {
 
     const scroll = useScroll();
