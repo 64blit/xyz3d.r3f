@@ -5,13 +5,13 @@ function FallbackMessage()
 {
     return (
         <div>
-            Oops! The 3D canvas failed to render or is very slow. Please try refreshing the page or check back later.
+            Oops! The 3D canvas failed to render or is very slow. Please try refreshing the page or check back on another device.
         </div>
     );
 }
 
 
-export class ErrorBoundary extends React.Component<any, any>
+export class CustomErrorBoundary extends React.Component<any, any>
 {
     constructor(props)
     {

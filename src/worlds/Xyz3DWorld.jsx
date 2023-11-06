@@ -3,7 +3,6 @@ import React, { ReactNode, Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import SceneXyz3D from "../components/SceneXyz3D";
 import { HtmlOverlay } from "../helpers/HtmlOverlay";
-import TransparentFloor from "ideas/TransparentFloor";
 // import { Perf, usePerf } from "r3f-perf";
 
 
@@ -20,24 +19,22 @@ export default function Xyz3DWorld()
 
       <StandardReality physicsProps={{ gravity: [ 0, -9.86, 0 ] }} >
 
-        <Suspense fallback={null}>
 
-          <SceneXyz3D
-            path={"assets/scene.glb"}
-            setShowPopup={setShowPopup}
-            setPopupContent={setPopupContent}
+        <SceneXyz3D
+          path={"assets/scene.glb"}
+          setShowPopup={setShowPopup}
+          setPopupContent={setPopupContent}
+        />
+
+        <ErrorBoundary fallback={<ambientLight />}>
+
+          <HDRI
+            src="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_43d_clear_puresky_1k.hdr"
+            disableBackground={false} // used to disable visual hdr (skybox)
+            disableEnvironment={false} // used to disable environment map
           />
 
-          <ErrorBoundary fallback={<ambientLight />}>
-
-            <HDRI
-              src="https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_43d_clear_puresky_1k.hdr"
-              disableBackground={false} // used to disable visual hdr (skybox)
-              disableEnvironment={false} // used to disable environment map
-            />
-
-          </ErrorBoundary>
-        </Suspense>
+        </ErrorBoundary>
 
         {/* <Perf /> */}
 
