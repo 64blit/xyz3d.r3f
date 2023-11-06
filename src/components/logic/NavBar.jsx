@@ -9,22 +9,23 @@ const generateKey = (pre) =>
 
 export function NavBar(props)
 {
-    const [ sceneManagerInitialized, setSceneManagerInitialized ] = useState(false);
     const [ sceneZones, setSceneZones ] = useState([]);
     const [ navStyles, setNavStyles ] = useState(null);
+    const [ sceneManager, setSceneManager ] = useState(null);
 
     useEffect(() =>
     {
-        const sceneManager = props.xyzRef?.sceneManager;
-        if (!sceneManager) return;
+        if (props.xyzAPI == null) return;
 
-        setSceneManagerInitialized(true);
+        const tempSceneMan = props.xyzAPI.getSceneManager();
+        if (!tempSceneMan) return;
+
         let filteredZones = [];
 
         // remove the scenezone named "_default_animations_zone" or "_default_interactable_zone"
-        for (let i = 0; i < sceneManager.sceneZones.length; i++)
+        for (let i = 0; i < tempSceneMan.sceneZones.length; i++)
         {
-            const sceneZone = sceneManager.sceneZones[ i ];
+            const sceneZone = tempSceneMan.sceneZones[ i ];
 
             if (sceneZone.name != "_default_animations_zone" && sceneZone.name != "_default_interactable_zone")
             {
@@ -38,12 +39,13 @@ export function NavBar(props)
         }
 
         setSceneZones(filteredZones);
-    }, [ props.xyzRef ]);
+        setSceneManager(tempSceneMan);
+    }, [ props.xyzAPI ]);
 
     const navigateTo = (name) => (event) =>
     {
         event.preventDefault();
-        props.xyzRef.goToSceneZoneByName(name);
+        props.xyzAPI.goToSceneZoneByName(name);
     }
 
     return (
@@ -52,7 +54,7 @@ export function NavBar(props)
 
                 <div className="flex justify-end w-full max-w-full">
                     <ul className="hidden md:flex md:flex-row-reverse items-center text-[18px] font-semibold  w-full max-w-full">
-                        {sceneManagerInitialized &&
+                        {sceneManager &&
                             sceneZones?.map((sceneZone, index) => (
                                 <li onClick={navigateTo(sceneZone.name)} key={generateKey(index)} className="text-white  transition duration-1000 ease-in-out border-white hover:italic hover:underline hover:scale-125  bg-black pl-4 pr-4 hover:cursor-pointer hover:text-blue-300"><a
                                     href="#"> {sceneZone.name}</a></li>
@@ -71,7 +73,7 @@ export function NavBar(props)
                                     </li>
                                 </a>
 
-                                {sceneManagerInitialized &&
+                                {sceneManager &&
                                     sceneZones?.map((sceneZone, index) => (
                                         <a href="#" key={generateKey(index)}>
                                             <li onClick={navigateTo(sceneZone.name)} className="text-stone-600 p-5 transition duration-500 ease-in-out  hover:bg-black hover:text-white hover:scale-125 font-medium mx-4 my-1 hover:underline hover:italic"> {sceneZone.name}

@@ -4,14 +4,13 @@ import { gsap } from 'gsap';
 
 export class CameraManager
 {
-    constructor(sceneManager, controls, camera, scroll)
+    constructor(sceneManager, controls, camera)
     {
 
         this.sceneManager = sceneManager;
         this.controls = controls;
         this.camera = camera;
         this.busy = false;
-        this.scroll = scroll;
 
         // Function to navigate to a scene zone by index
         this.goToSceneZoneByIndex = (index) =>
@@ -54,13 +53,6 @@ export class CameraManager
         {
             if (!sceneZone) return;
             if (sceneZone.index < 0) return;
-            if (!this.scroll) return;
-
-            const newScrollOffset = sceneZone.index / (this.sceneManager.sceneZones.length - 1);
-            const scrollTarget = this.scroll.el;
-            const scrollTop = (scrollTarget.scrollHeight - scrollTarget.clientHeight) * newScrollOffset;
-
-            scrollTarget.scrollTo({ top: scrollTop });
 
             const position = sceneZone.camera.anchor?.position;
 
@@ -108,46 +100,12 @@ export class CameraManager
         }
 
 
-        // Function to handle scrolling
-        this.scrollHandler = () =>
-        {
-
-            if (this.busy) return;
-            if (this.scroll.delta < .0004) return;
-
-            const scaledScrollOffset = this.scroll.offset * (this.sceneManager.waypoints.length - 1);
-            const currentZoneIndex = Math.floor(scaledScrollOffset);
-            const nextZoneIndex = Math.ceil(scaledScrollOffset);
-            const currentZone = this.sceneManager.waypoints[ currentZoneIndex ];
-            const nextZone = this.sceneManager.waypoints[ nextZoneIndex ];
-
-            if (!currentZone || !nextZone) return;
-
-            const percent = (scaledScrollOffset % 1);
-
-            // Use slerp to interpolate camera position and target
-            const cameraPosition = currentZone.camera.anchor.position.clone().lerp(nextZone.camera.anchor.position, percent);
-            const cameraTarget = currentZone.camera.targetPosition.clone().lerp(nextZone.camera.targetPosition, percent);
-
-            this.controls.setLookAt(...cameraPosition, ...cameraTarget, true);
-
-            if ("fov" in currentZone.camera.anchor)
-            {
-                this.controls.camera.fov = basicLerp(currentZone.camera.anchor.fov, nextZone.camera.anchor.fov, percent);
-                this.controls.camera.near = basicLerp(currentZone.camera.anchor.near, nextZone.camera.anchor.near, percent);
-                this.controls.camera.far = basicLerp(currentZone.camera.anchor.far, nextZone.camera.anchor.far, percent);
-                this.controls.camera.updateProjectionMatrix();
-                this.controls.update(0);
-            }
-
-        };
 
         this.goToSceneZoneByIndex(0);
     }
 
     update()
     {
-        this.scrollHandler();
     }
 
 }

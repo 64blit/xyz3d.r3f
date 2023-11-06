@@ -13,36 +13,29 @@ import { generateKey } from '../../utils/BaseUtils.js';
 import { Media } from '../logic/Media.jsx';
 
 
-export const SceneXyz3D = forwardRef((props, ref) =>  
+export const SceneXyz3D = (props) =>  
 {
     const { camera } = useThree();
     const { scene, animations } = useGLTF(props.path);
     const { mixer, actions } = useAnimations(animations, scene);
 
     const controlsRef = useRef(null);
-
     const [ sceneManager, setSceneManager ] = useState(null);
     const [ interactionManager, setInteractionManager ] = useState(null);
     const [ cameraManager, setCameraManager ] = useState(null);
 
-    useImperativeHandle(ref, () => ({
-        goToSceneZoneByIndex: cameraManager?.goToSceneZoneByIndex,
-        goToSceneZoneByName: cameraManager?.goToSceneZoneByName,
-        sceneManager: sceneManager,
-    }));
 
     const initializeManagers = (scroll) =>
     {
         if (sceneManager)
         {
-            cameraManager.scroll = scroll;
             return;
         }
 
         const tempSceneManager = new SceneManager(scene, controlsRef.current, animations, actions, mixer);
         setSceneManager(tempSceneManager);
 
-        const tempCameraManager = new CameraManager(tempSceneManager, controlsRef.current, camera, scroll);
+        const tempCameraManager = new CameraManager(tempSceneManager, controlsRef.current, camera);
         setCameraManager(tempCameraManager);
 
         const tempInteractionManager = new InteractionManager(props.setShowPopup, props.setPopupContent, tempCameraManager.goToSceneZoneByName, tempSceneManager.playAnimation, tempSceneManager.playSound);
@@ -50,7 +43,14 @@ export const SceneXyz3D = forwardRef((props, ref) =>
         setInteractionManager(tempInteractionManager);
         const siteData = tempSceneManager.getSiteData();
 
-        props.setSiteData(siteData);
+        props.setXyzAPI({
+            goToSceneZoneByIndex: tempCameraManager.goToSceneZoneByIndex,
+            goToSceneZoneByName: tempCameraManager.goToSceneZoneByName,
+            getSceneManager: () => { return tempSceneManager },
+            getCameraManager: () => { return tempCameraManager },
+            getInteractionManager: () => { return tempInteractionManager },
+            getSiteData: () => { return siteData }
+        })
     };
 
     // UseFrame hook for animations and interactions
@@ -99,4 +99,4 @@ export const SceneXyz3D = forwardRef((props, ref) =>
             </ScrollWrapper>
         </>
     );
-});
+};

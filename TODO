@@ -1,0 +1,2 @@
+[] Change nested function calls into an api object for clarity { doThis(), bar(), foo()}
+[] Add ckeditor for HTML components

@@ -16,8 +16,7 @@ export function Xyz3D()
     const [ popupContent, setPopupContent ] = useState(null);
     const [ isDebugging, setIsDebugging ] = useState(false);
     const [ isLoaded, setIsLoaded ] = useState(false);
-    const [ siteData, setSiteData ] = useState(null);
-    const sceneRef = React.useRef(null);
+    const [ xyzAPI, setXyzAPI ] = useState(null);
 
     // if the user presses the "D" key, toggle debugging mode
     React.useEffect(() =>
@@ -49,12 +48,11 @@ export function Xyz3D()
 
                         {/* 3D Scene */}
                         <SceneXyz3D
-                            ref={sceneRef}
                             path={"assets/scene.glb"}
                             setShowPopup={setShowPopup}
                             isDebugging={isDebugging}
                             setPopupContent={setPopupContent}
-                            setSiteData={setSiteData}
+                            setXyzAPI={setXyzAPI}
                         />
 
                         {/* Skybox with an ambient light fallback */}
@@ -66,25 +64,19 @@ export function Xyz3D()
 
                 </Canvas>
 
-                {/* The splash screen we show indicating how to interact with the scene. */}
-                {
-                    isLoaded
-                    && siteData && <SplashScreen active={siteData.splashScreenActive} title={siteData.splashScreenTitle} body={siteData.splashScreenBody} button={siteData.splashScreenButton} />
-                }
-
-                {/* The seo content which is added to the head section. */}
-                {
-                    isLoaded
-                    && siteData && <Seo url={siteData.siteURL} author={siteData.siteAuthor} title={siteData.siteTitle} description={siteData.description} icon={siteData.siteIconURL} image={siteData.siteIconURL} />
-                }
-
 
             </div >
+
+            {/* The splash screen we show indicating how to interact with the scene. */}
+            {isLoaded && <SplashScreen xyzAPI={xyzAPI} />}
+
+            {/* The seo content which is added to the head section. */}
+            {isLoaded && <Seo xyzAPI={xyzAPI} />}
 
             {/* The container for HTML content */}
             < HtmlOverlay content={popupContent} showPopup={showPopup} setShowPopup={setShowPopup} />
             {/* Navbar */}
-            {isLoaded && <NavBar xyzRef={sceneRef.current} />}
+            {isLoaded && <NavBar xyzAPI={xyzAPI} />}
 
         </HelmetProvider >
     );
