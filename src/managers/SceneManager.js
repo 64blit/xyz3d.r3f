@@ -1,5 +1,4 @@
 // Import necessary dependencies
-import { Bounds, meshBounds } from "@react-three/drei";
 import { Box3, Quaternion, Vector3 } from "three";
 
 // Define a class called SceneManager

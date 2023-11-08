@@ -1,0 +1,12 @@
+const device = navigator.userAgent;
+
+if (device.match(/(iPhone|iPad|Android|Windows Phone)/))
+{
+    console.log("This is a mobile device");
+} else
+{
+    console.log("This is a desktop computer");
+}
+
+
+[] add xr / desktop / mobile support
