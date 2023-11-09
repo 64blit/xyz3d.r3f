@@ -67,7 +67,7 @@ export function NavBar(props)
                         <div className="z-20 w-5 my-[3px] h-[3px] bg-gray-600 rounded "></div>
                         <div
                             className="transition-all ease-in duration-500 absolute top-0 -right-full opacity-0 w-full border bg-white group-focus:right-0 group-focus:opacity-100 h-screen">
-                            <ul className="flex flex-col justify-center items-center text-[18px] min-w[10rem] h-screen overflow-scroll">
+                            <ul className="flex flex-col justify-center items-center text-[18px] pt-[1rem] min-w[10rem] h-screen overflow-scroll">
                                 <a href="#">
                                     <li onClick={(e) => { console.log(e); e.target.focus() }} key={generateKey("X")} className="text-stone-600 p-5 transition duration-500 ease-in-out  hover:bg-black hover:text-white hover:scale-125 font-medium mx-4 my-1 hover:underline hover:italic rounded-full w-[4rem] h-[4rem]"> X
                                     </li>
