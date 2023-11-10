@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { ScrollControls, useAnimations, useGLTF } from "@react-three/drei";
+import { useAnimations, useGLTF } from "@react-three/drei";
 import { SceneManager } from '../managers/SceneManager';
 import { SceneZone } from './SceneZone';
 import * as THREE from 'three';
@@ -8,68 +8,77 @@ import { generateKey } from '../helpers/ReactHelpers';
 import { PhysicsBall } from '../ideas/PhysicsBall';
 import { PhysicsCollidable } from '../ideas/PhysicsCollidable';
 import { gsap } from 'gsap';
+import { CameraManager } from '../managers/CameraManager';
+import { InteractionManager } from '../managers/InteractionManager';
+import { Media } from '../logic/Media';
+import { useFrame, useThree } from '@react-three/fiber';
 
 
 export default function SceneXyz3D({
     path,
     setShowPopup,
-    setPopupContent
+    setPopupContent,
+    setXyzAPI,
+    isDebugging = false,
 })
 {
     const { scene, animations } = useGLTF(path);
     const { ref, mixer, names, actions, clips } = useAnimations(animations, scene);
 
-    const [ sceneManager, setSceneManager ] = useState(null);
     const [ sceneZoneNodes, setSceneZoneNodes ] = useState(null);
     const [ physicsNodes, setPhysicsNodes ] = useState(null);
 
     const playerState = usePlayer();
 
+    const { camera } = useThree();
+    const [ sceneManager, setSceneManager ] = useState(null);
+    const [ interactionManager, setInteractionManager ] = useState(null);
+    const [ cameraManager, setCameraManager ] = useState(null);
+    const { gl } = useThree();
 
-    const playAnimation = (name, loopType = THREE.LoopOnce) =>
+    const initializeManagers = (scroll) =>
     {
-        const action = actions[ name ];
-
-        if (!action)
+        // only initialize once
+        if (sceneManager)
         {
             return;
         }
 
-        if (action.isRunning())
-        {
-            return;
-        }
+        const tempSceneManager = new SceneManager(scene, camera, animations, actions, mixer);
+        setSceneManager(tempSceneManager);
 
-        action.setLoop(loopType);
-        action.clampWhenFinished = true;
-        action.reset();
-        action.play();
+        const tempCameraManager = new CameraManager(tempSceneManager, camera, playerState);
+        setCameraManager(tempCameraManager);
 
+        const tempInteractionManager = new InteractionManager(gl.domElement, setShowPopup, setPopupContent, tempCameraManager.goToSceneZoneByName, tempSceneManager.playAnimation, tempSceneManager.playSound);
+
+        setInteractionManager(tempInteractionManager);
+        const siteData = tempSceneManager.getSiteData();
+
+        setXyzAPI({
+            goToSceneZoneByIndex: tempCameraManager.goToSceneZoneByIndex,
+            goToSceneZoneByName: tempCameraManager.goToSceneZoneByName,
+            getSceneManager: () => { return tempSceneManager },
+            getCameraManager: () => { return tempCameraManager },
+            getInteractionManager: () => { return tempInteractionManager },
+            getSiteData: () => { return siteData }
+        })
     };
 
 
-    const goToSceneZone = (zoneName) =>
+    // UseFrame hook for animations and interactions
+    useFrame(() =>
     {
-        const zone = sceneManager.getSceneZone(zoneName);
+        if (!cameraManager)
+        {
+            initializeManagers();
+            return;
+        }
 
-        if (!zone) { return; }
+        cameraManager.update(playerState);
+    });
 
-        // Retrieve the current player position using the custom `get` method
-        const currentPlayerPosition = playerState.position.get();
 
-        // Animate position components separately
-        gsap.to(currentPlayerPosition, {
-            duration: 1,
-            x: zone.camera.anchor.position.x,
-            y: zone.camera.anchor.position.y,
-            z: zone.camera.anchor.position.z,
-            onUpdate: () =>
-            {
-                // Update the player position using the custom `set` method
-                playerState.position.set(currentPlayerPosition);
-            },
-        });
-    }
 
     const getSceneZoneNodes = () =>
     {
@@ -77,10 +86,8 @@ export default function SceneXyz3D({
         sceneManager.getSceneZones().forEach((zone) =>
         {
             const node = <SceneZone
-                setShowPopup={setShowPopup}
-                setPopupContent={setPopupContent}
-                goToSceneZone={goToSceneZone}
-                playAnimation={playAnimation}
+                interactionManager={interactionManager}
+                isDebugging={isDebugging}
                 object={zone}
                 key={generateKey(zone.name)}
             />;
@@ -129,25 +136,13 @@ export default function SceneXyz3D({
 
     }, [ sceneManager ]);
 
-    // Set up the scene manager on component mount
-    useEffect(() =>
-    {
-        const manager = new SceneManager(scene);
-        setSceneManager(manager);
-
-        // Play all looping animations
-        manager.getLoopingAnimations().forEach((actionName) =>
-        {
-            playAnimation(actionName, THREE.LoopRepeat);
-        });
-
-    }, []);
-
 
     return (
         <primitive object={scene}>
             {sceneZoneNodes}
             {physicsNodes}
+
+            <Media sceneManager={sceneManager} interactionManager={interactionManager} />
 
         </primitive>
     );

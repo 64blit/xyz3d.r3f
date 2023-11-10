@@ -1,107 +1,81 @@
-import { Box, useHelper } from '@react-three/drei';
-import { useFrame, useThree } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import React, { useState, useEffect, useRef } from 'react';
-import { Interactable, Video } from 'spacesvr';
 import { Box3, BoxHelper, Vector3 } from 'three';
 
 export function SceneZone(props)
 {
     const sceneData = props.object;
 
-    const [ hovered, setHovered ] = useState(false);
+    const zoneRef = useRef();
+    const boxMeshRef = useRef();
+    const cameraViewBoxRef = useRef();
 
-    const zoneRef = useRef(null);
-
-    const { gl } = useThree();
-
-    useEffect(() =>
+    useFrame(() =>
     {
-        document.body.style.cursor = hovered ? "pointer" : "auto";
+        if (!props.isDebugging) return;
+        if (!zoneRef.current) return;
 
-    }, [ hovered ])
+        const box = new Box3();
+        box.setFromObject(zoneRef.current);
+        const size = box.getSize(new Vector3());
+        boxMeshRef.current.position.copy(box.getCenter(new Vector3()));
+        boxMeshRef.current.scale.set(...size);
 
+        const cameraSize = sceneData.camera.target.getSize(new Vector3());
+        cameraViewBoxRef.current.position.copy(sceneData.camera.targetPosition);
+        cameraViewBoxRef.current.scale.set(...cameraSize);
 
-    const handleInteraction = (event) =>
+    });
+
+    const getCallbacks = (element) =>
     {
-        const type = event.object.userData.interactableType;
-        const data = event.object.userData.interactableData;
+        const callbacks = {};
 
-        playSelectAnimation(event.object);
+        const type = element.object.userData?.type;
+        const data = element.object.userData?.interactableData;
 
-        switch (type)
+        if (element.object.userData?.type !== "interactable")
         {
-
-            case "Popup HTML":
-                props.setShowPopup(true);
-                props.setPopupContent(data);
-
-                gl.domElement.ownerDocument.exitPointerLock();
-
-                break;
-
-            case "Open Link":
-                window.open(data, "_blank");
-                break;
-
-            case "Go To Scene Zone":
-                props.goToSceneZone(data);
-                break;
-
-            default:
-                break;
-
+            return;
         }
+
+        if (type === undefined || type === null)
+        {
+            console.log("Missing interactable type for ", element.object.name);
+            return;
+        }
+        if (data === undefined || data === null)
+        {
+            console.log("Missing interactable data for ", element.object.name);
+            return;
+        }
+
+        callbacks.onClick = (event) => props.interactionManager.handleInteraction(event, element);
+
+
+        if (element.object.userData?.OnPointerEnterAnimations !== undefined && element.object.userData?.OnPointerEnterAnimations !== null)
+        {
+            callbacks.onPointerEnter = (event) => props.interactionManager.handlePointerEnter(event, element);
+        }
+
+        if (element.object.userData?.OnPointerExitAnimations !== undefined && element.object.userData?.OnPointerExitAnimations !== null)
+        {
+            callbacks.onPointerLeave = (event) => props.interactionManager.handlePointerExit(event, element);
+        }
+
+        return callbacks;
+
     }
 
-    // on hover callback for playing any hover animations found inside the userData varaiable under hoverAnimations
-    const handlePointerEnter = (event) =>
-    {
-        setHovered(true);
-        const onHoverAnimations = event.object.userData.OnPointerEnterAnimations || null;
-        if (onHoverAnimations != null)
-        {
-            onHoverAnimations.forEach((actionName) =>
-            {
-                props.playAnimation(actionName);
-            });
-        }
-    }
-
-    const handlePointerExit = (event) =>
-    {
-        setHovered(false);
-        const onPointerExit = event.object.userData.OnPointerExitAnimations || null;
-        if (onPointerExit != null)
-        {
-            onPointerExit.forEach((actionName) =>
-            {
-                props.playAnimation(actionName);
-            });
-        }
-    }
-
-    const playSelectAnimation = (object) =>
-    {
-        const actions = object.userData.OnSelectAnimations || null;
-
-        if (actions != null)
-        {
-            actions.forEach((actionName) =>
-            {
-                props.playAnimation(actionName);
-            });
-        }
-    }
 
     return (
         <>
             <group ref={zoneRef}>
+
                 {sceneData.objects.interactables.map((element, key) => (
-                    <Interactable
-                        onClick={handleInteraction}
-                        onHovered={handlePointerEnter}
-                        onUnHovered={handlePointerExit}
+                    <group
                         key={key}
+                        {...getCallbacks(element)}
                     >
                         <primitive
                             object={element.object}
@@ -109,27 +83,20 @@ export function SceneZone(props)
                             scale={element.scale}
                             rotation={element.rotation}
                         />
-
-                    </Interactable>
+                    </group>
                 ))}
-
-
-                {sceneData.objects.videos.map((element, key) => (
-                    <Video
-                        key={key}
-                        size={Math.max(...element.object.scale)}
-                        src={element.src}
-                        position={element.worldPosition}
-                        quaternion={element.worldRotation}
-                        muted={false}
-                        framed
-                    >
-                    </Video>
-                ))}
-
-
 
             </group>
+
+            <mesh ref={boxMeshRef} visible={props.isDebugging}>
+                <boxGeometry args={[ 1, 1, 1 ]} />
+                <meshBasicMaterial wireframe color="cyan" />
+            </mesh>
+
+            <mesh ref={cameraViewBoxRef} visible={props.isDebugging}>
+                <boxGeometry args={[ 1, 1, 1 ]} />
+                <meshBasicMaterial wireframe color="red" />
+            </mesh>
         </>
     );
 }
