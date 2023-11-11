@@ -18,7 +18,7 @@ export class InteractionManager
             const data = event.object.userData.interactableData;
 
             // Play all the select animations first, then trigger the interaction
-            await this.playSelectAnimation(event.object);
+            await this.handlePointerSelect(event.object);
 
             document.body.style.cursor = "auto";
 
@@ -89,7 +89,7 @@ export class InteractionManager
             }
         }
 
-        this.playSelectAnimation = async (object) =>
+        this.handlePointerSelect = async (object) =>
         {
             const actions = object.userData.OnSelectAnimations || null;
             const animationPromises = [];
@@ -103,7 +103,6 @@ export class InteractionManager
             }
 
             const sound = object.userData.mediaSrc || null;
-
             if (sound != null)
             {
                 this.playSound(sound);

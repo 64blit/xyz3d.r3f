@@ -21,7 +21,6 @@ export class AudioManager
         {
             sound.setLoop(loop);
             sound.setVolume(1);
-            console.log('Playing sound: ' + source)
 
             if (sound.isPlaying)
             {
@@ -55,14 +54,8 @@ export class AudioManager
         {
             const element = this.loopingSounds[ i ];
             this.playSound(element, true);
-
         }
-        this.loopingSounds.forEach((sound) =>
-        {
-            console.log("Playing sound: " + sound);
-        });
     }
-
 
     // Function to get looping sounds
     getLoopingSounds()

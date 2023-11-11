@@ -5,15 +5,16 @@ import { useSphere } from "@react-three/cannon";
 import { Collidable } from "spacesvr";
 import { useTrimeshCollision } from "helpers/TrimeshHelper";
 
-export function PhysicsCollidable({ obj, invisible }) 
+export const PhysicsCollidable = React.forwardRef((props, ref) =>
 {
-
+    const { obj, invisible } = props;
     // Wrap the object with the physics sphere and render the object inside the sphere.
     return (
         <Collidable
-            triLimit={1000}
+            triLimit={100}
             enabled={true}
             hideCollisionMeshes={invisible}
+            {...props}
         >
             <primitive object={obj}
                 position={obj.position}
@@ -22,4 +23,4 @@ export function PhysicsCollidable({ obj, invisible })
             />
         </Collidable>
     );
-};
+});

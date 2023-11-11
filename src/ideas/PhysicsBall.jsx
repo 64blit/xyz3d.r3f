@@ -2,9 +2,11 @@ import * as THREE from "three";
 import React, { useEffect, useRef, useState } from "react";
 import { useSphere } from "@react-three/cannon";
 
-export function PhysicsBall({ obj, mass, invisible }) 
+export const PhysicsBall = React.forwardRef((props, ref) =>
 {
+    const { obj, mass, invisible } = props;
     const boundingSphere = new THREE.Sphere();
+
     obj.traverse((child) =>
     {
         if (child.isMesh)
@@ -16,11 +18,13 @@ export function PhysicsBall({ obj, mass, invisible })
 
     const [ ballRef, api ] = useSphere(() => ({
         mass: mass,
+        widthSegments: 12,
+        heightSegments: 8,
         position: obj.position,
         rotation: obj.rotation.clone(),
         linearDamping: 0.9,
         angularDamping: 0.1,
-        args: [ boundingSphere.radius * Math.max(...obj.scale) ]
+        args: [ boundingSphere.radius * Math.max(...obj.scale) ],
     }));
 
     useEffect(() =>
@@ -33,6 +37,12 @@ export function PhysicsBall({ obj, mass, invisible })
 
     // Wrap the object with the physics sphere and render the object inside the sphere.
     return (
-        <primitive object={obj} scale={obj.scale} rotation={obj.rotation} ref={ballRef} visible={!invisible} />
+        <primitive
+            object={obj}
+            scale={obj.scale}
+            rotation={obj.rotation}
+            ref={ballRef}
+            visible={!invisible}
+            {...props} />
     );
-};
+});

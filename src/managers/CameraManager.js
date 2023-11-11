@@ -34,7 +34,6 @@ export class CameraManager
         this.goToSceneZoneByName = (name) =>
         {
 
-            console.log("GOING TO SCENE ZONE", name);
             if (this.busy) return;
             if (!this.camera) return;
             if (!this.sceneManager) return;
@@ -61,8 +60,6 @@ export class CameraManager
 
             const position = sceneZone.camera.anchor?.position;
             if (!position) return;
-
-            console.log(this.playerState)
 
             // Retrieve the current player position using the custom `get` method
             const currentPlayerPosition = this.playerState.position.get();

@@ -12,6 +12,7 @@ import { CameraManager } from '../managers/CameraManager';
 import { InteractionManager } from '../managers/InteractionManager';
 import { Media } from '../logic/Media';
 import { useFrame, useThree } from '@react-three/fiber';
+import { PhysicsObjects } from '../ideas/PhyicsObjects';
 
 
 export default function SceneXyz3D({
@@ -36,7 +37,7 @@ export default function SceneXyz3D({
     const [ cameraManager, setCameraManager ] = useState(null);
     const { gl } = useThree();
 
-    const initializeManagers = (scroll) =>
+    const initializeManagers = () =>
     {
         // only initialize once
         if (sceneManager)
@@ -97,30 +98,6 @@ export default function SceneXyz3D({
         return zoneNodes;
     }
 
-    const getPhyicsNodes = () =>
-    {
-        const physicsNodes = [];
-        sceneManager.getPhysicsObjects().forEach((obj) =>
-        {
-            const dynamicMass = parseInt(obj.userData[ "Dynamic" ]) || 0;
-            const collides = obj.userData[ "Static" ] === "true";
-            const invisible = obj.userData[ "Invisible" ] === "true";
-
-            let node = null;
-
-            if (collides)
-            {
-                node = <PhysicsCollidable obj={obj} key={generateKey(obj.name)} invisible={invisible} />;
-            }
-            else if (dynamicMass > 0)
-            {
-                node = <PhysicsBall obj={obj} mass={dynamicMass} invisible={invisible} key={generateKey(obj.name)} />;
-            }
-
-            physicsNodes.push(node);
-        });
-        return physicsNodes;
-    }
 
     // Go to the first scene zone on component mount
     useEffect(() =>
@@ -130,20 +107,26 @@ export default function SceneXyz3D({
         const zoneNodes = getSceneZoneNodes();
         setSceneZoneNodes(zoneNodes);
 
-        const physicsNodes = getPhyicsNodes();
-        setPhysicsNodes(physicsNodes);
-
-
     }, [ sceneManager ]);
 
 
     return (
-        <primitive object={scene}>
-            {sceneZoneNodes}
-            {physicsNodes}
+        <>
+            {
+                sceneManager && <primitive object={scene}>
 
-            <Media sceneManager={sceneManager} interactionManager={interactionManager} />
+                    {sceneZoneNodes}
 
-        </primitive>
+                    <PhysicsObjects
+                        isDebugging={isDebugging}
+                        sceneManager={sceneManager}
+                        interactionManager={interactionManager}
+                    />
+
+                    <Media sceneManager={sceneManager} interactionManager={interactionManager} />
+
+                </primitive>
+            }
+        </>
     );
 }
