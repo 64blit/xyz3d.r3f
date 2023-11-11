@@ -40,10 +40,8 @@ export const Media = (props = { sceneManager }) =>
                                 position={element.worldPosition}
                                 quaternion={element.worldRotation}
                                 muted={false}
-                                framed
                             />
                         ))}
-
                     </group>
                 </>;
 
