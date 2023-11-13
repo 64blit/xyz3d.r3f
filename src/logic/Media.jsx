@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import { Audio3D } from './Audio3D.tsx';
-import { Video } from './Video';
+import { Video3D } from './Video3D.tsx';
 
 export const Media = (props = { sceneManager }) =>
 {
@@ -18,7 +18,7 @@ export const Media = (props = { sceneManager }) =>
                 <>
                     <group>
                         {props.sceneManager?.mediaObjects.video.map((element, key) => (
-                            <Video
+                            <Video3D
                                 key={key}
                                 size={Math.max(...element.object.scale)}
                                 src={element.mediaSrc}
@@ -27,7 +27,7 @@ export const Media = (props = { sceneManager }) =>
                                 sourceObject={element.object}
                                 muted={false}
                                 framed >
-                            </Video>
+                            </Video3D>
                         ))}
                     </group>
                     <group>

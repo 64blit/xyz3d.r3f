@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GroupProps, useThree } from "@react-three/fiber";
-import { Frame } from 'spacesvr';
+import VideoFrame from "./VideoFrame";
+
 import
 {
     DoubleSide,
@@ -22,7 +23,7 @@ type Props = {
     sourceObject?: any;
 } & GroupProps;
 
-export function Video(props: Props)
+export function Video3D(props: Props)
 {
     const {
         src,
@@ -184,14 +185,15 @@ export function Video(props: Props)
                 </meshBasicMaterial>
             </mesh>
             {speaker && <primitive object={speaker} />}
-            {framed && (
-                <Frame
+            {/* {framed &&
+                <VideoFrame
                     width={width}
                     height={height}
                     thickness={frameWidth}
                     material={frameMaterial}
-                />
-            )}
+                >
+                </VideoFrame>
+            } */}
         </group>
     );
 }
