@@ -168,11 +168,11 @@ export class SceneManager
             this.siteData.siteAuthor = object.userData?.siteAuthor || "";
             this.siteData.siteDescription = object.userData?.siteDescription || "";
             this.siteData.siteURL = object.userData?.siteURL || "";
-            this.siteData.siteIconURL = object.userData?.siteIconURL || "";
-            this.siteData.splashScreenActive = object.userData?.splashActive || true;
+            this.siteData.siteIconURL = object.userData?.siteIconURL || "favicon.ico";
+            this.siteData.splashScreenActive = object.userData?.splashActive || false;
             this.siteData.splashScreenTitle = object.userData?.splashTitle || "Welcome!";
             this.siteData.splashScreenBody = object.userData?.splashBody || "Scroll down to explore.";
-            this.siteData.splashScreenButton = object.userData?.splashButton || "Start";
+            this.siteData.splashScreenButton = object.userData?.splashButton || "Continue";
             this.scene.remove(object);
             return;
         }

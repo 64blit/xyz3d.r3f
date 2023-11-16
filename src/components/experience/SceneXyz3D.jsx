@@ -43,6 +43,7 @@ export function SceneXyz3D(props)
 
         setInteractionManager(tempInteractionManager);
         const siteData = tempSceneManager.getSiteData();
+        console.log("siteData", siteData);
 
         props.setSiteData(siteData);
     };

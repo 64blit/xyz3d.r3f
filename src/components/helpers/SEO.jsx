@@ -18,6 +18,7 @@ export const Seo = (props) =>
         />
         <meta name="robots" content="index,follow" />
         <link rel="canonical" href={url} />
+        <link rel="icon" type="image/x-icon" href={url} />
         <meta property="og:title" content={props.title} />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={url} />
