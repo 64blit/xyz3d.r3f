@@ -31,34 +31,24 @@ export function SceneZone(props)
     {
         const callbacks = {};
 
-        const type = element.object.userData?.type;
-        const data = element.object.userData?.interactableData;
+        const mainObj = element.object;
+        const type = mainObj.userData?.type;
+        const data = mainObj.userData?.interactableData;
 
-        if (element.object.userData?.type !== "interactable")
+        if (mainObj.userData?.type !== "interactable")
         {
-            return;
-        }
-
-        if (type === undefined || type === null)
-        {
-            console.log("Missing interactable type for ", element.object.name);
-            return;
-        }
-        if (data === undefined || data === null)
-        {
-            console.log("Missing interactable data for ", element.object.name);
             return;
         }
 
         callbacks.onClick = (event) => props.interactionManager.handleInteraction(event, element);
 
 
-        if (element.object.userData?.OnPointerEnterAnimations !== undefined && element.object.userData?.OnPointerEnterAnimations !== null)
+        if (mainObj.userData?.OnPointerEnterAnimations !== undefined && mainObj.userData?.OnPointerEnterAnimations !== null || mainObj.userData.mediaTrigger === "OnPointerEnter")
         {
             callbacks.onPointerEnter = (event) => props.interactionManager.handlePointerEnter(event, element);
         }
 
-        if (element.object.userData?.OnPointerExitAnimations !== undefined && element.object.userData?.OnPointerExitAnimations !== null)
+        if (mainObj.userData?.OnPointerExitAnimations !== undefined && mainObj.userData?.OnPointerExitAnimations !== null || mainObj.userData.mediaTrigger === "OnPointerExit")
         {
             callbacks.onPointerLeave = (event) => props.interactionManager.handlePointerExit(event, element);
         }

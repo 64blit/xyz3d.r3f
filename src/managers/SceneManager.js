@@ -187,6 +187,9 @@ export class SceneManager
                     worldRotation,
                     mediaSrc: object.userData.mediaSrc
                 });
+                object.userData.type = "interactable";
+                object.userData.interactableData = "audio";
+
             } else if (object.userData.mediaType === "Video")
             {
                 object.visible = false;

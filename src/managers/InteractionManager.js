@@ -19,6 +19,13 @@ export class InteractionManager
             const type = event.object.userData.interactableType;
             const data = event.object.userData.interactableData;
 
+            const sound = event.object.userData.mediaSrc || null;
+            console.log("sound: " + sound)
+            if (sound != null)
+            {
+                this.playSound(sound);
+            }
+
             // Play all the select animations first, then trigger the interaction
             await this.playSelectAnimation(event.object);
 

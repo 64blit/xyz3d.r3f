@@ -24,7 +24,7 @@ export class AudioManager
 
             if (sound.isPlaying)
             {
-                return;
+                sound.stop();
             }
 
             if (source in loadedSounds)
@@ -90,17 +90,17 @@ export class AudioManager
 
         if (object.userData.mediaTrigger === "OnPointerEnter")
         {
-            object.userData.OnPointerEnterSound = mediaSrc;
+            object.userData.mediaSrc = mediaSrc;
         }
 
         if (object.userData.mediaTrigger === "OnPointerExit")
         {
-            object.userData.OnPointerExitSound = mediaSrc;
+            object.userData.mediaSrc = mediaSrc;
         }
 
         if (object.userData.mediaTrigger === "OnSelect")
         {
-            object.userData.OnSelectSound = mediaSrc;
+            object.userData.mediaSrc = mediaSrc;
         }
     }
 }
