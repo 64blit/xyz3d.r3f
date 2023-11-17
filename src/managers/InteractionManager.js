@@ -11,7 +11,6 @@ export class InteractionManager
         this.playAnimation = playAnimation;
         this.playSound = playSound;
 
-
         this.handleInteraction = async (event) =>
         {
             event.stopPropagation();

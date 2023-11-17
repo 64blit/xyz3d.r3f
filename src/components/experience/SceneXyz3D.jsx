@@ -44,7 +44,14 @@ export function SceneXyz3D(props)
         setInteractionManager(tempInteractionManager);
         const siteData = tempSceneManager.getSiteData();
 
-        props.setSiteData(siteData);
+        props.setXyzAPI({
+            goToSceneZoneByIndex: tempCameraManager.goToSceneZoneByIndex,
+            goToSceneZoneByName: tempCameraManager.goToSceneZoneByName,
+            getSceneManager: () => { return tempSceneManager },
+            getCameraManager: () => { return tempCameraManager },
+            getInteractionManager: () => { return tempInteractionManager },
+            getSiteData: () => { return siteData }
+        })
     };
 
     // UseFrame hook for animations and interactions
