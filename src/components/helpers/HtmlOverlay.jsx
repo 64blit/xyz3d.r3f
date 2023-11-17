@@ -10,11 +10,11 @@ export const HtmlOverlay = (props) =>
     {
         if (props.showPopup)
         {
-            setMainClasses("transition-all duration-1000 opacity-100 fixed top-0 left-0 w-full h-full");
+            setMainClasses("transition-all duration-1000 opacity-100 fixed top-0 left-0 w-full h-full z-50 bg-black");
         }
         else
         {
-            setMainClasses("transition-all duration-1000 opacity-0 fixed top-0 left-0 w-full h-full");
+            setMainClasses("transition-all duration-1000 opacity-0 fixed top-0 left-0 w-full h-full z-50 bg-black");
         }
 
     }, [ props.showPopup, opacityDivRef.current ]);
@@ -42,16 +42,16 @@ export const HtmlOverlay = (props) =>
                     <div className="flex flex-col items-center justify-center w-full h-full bg-black">
                         <button className="absolute top-0 left-0 h-[2.5rem] w-[2.5rem] text-gray-900 group  hover:text-white dark:text-white focus:ring-4 focus:outline-none"
                             onClick={() => { props.setShowPopup(false); }}>
-                            <span className="relative -top-4 -left-2 pl-2 transition-all text-7xl ease-in duration-75 bg-white group-hover:bg-opacity-0 rounded-r-3xl">
+                            <span className="relative transition-all text-7xl ease-in duration-75 bg-white group-hover:bg-opacity-25 rounded-sm text-black hover:text-white group-hover:bg-gray-900">
                                 ⇠
                             </span>
                         </button>
 
-                        <div className=" w-full h-full flex flex-col justify-center items-center">
+                        <div className=" w-full h-full flex flex-col justify-center items-center bg-black">
 
 
-                            <Suspense fallback={<div className="bg-white text-black text-9xl ">Loading...</div>}>
-                                <iframe ref={iframeRef} src={props.content} className="w-full h-full"></iframe>
+                            <Suspense fallback={<div className="bg-black text-black text-9xl ">Loading...</div>}>
+                                <iframe ref={iframeRef} src={props.content} className="w-full h-full bg-black"></iframe>
                             </Suspense>
 
                         </div>
