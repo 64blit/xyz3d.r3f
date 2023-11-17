@@ -8,6 +8,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { SplashScreen } from './helpers/SplashScreen.jsx';
 import { Seo } from './helpers/SEO.jsx';
 import { HelmetProvider } from 'react-helmet-async';
+import OnScreenControls from './helpers/OnScreenControls.jsx';
 
 export function Xyz3D()
 {
@@ -36,8 +37,10 @@ export function Xyz3D()
     return (
         <HelmetProvider>
 
+
             {/* Wrapper div to cover the screen */}
             <div className="absolute inset-0 bg-black">
+
 
                 {/* The 3D rendering canvas */}
                 <Canvas>
@@ -71,8 +74,11 @@ export function Xyz3D()
                 {isLoaded
                     && siteData && <Seo url={siteData.siteURL} author={siteData.siteAuthor} title={siteData.siteTitle} description={siteData.description} icon={siteData.siteIconURL} image={siteData.siteIconURL} />}
 
+                {isLoaded && <OnScreenControls />}
+                {/* <OnScreenControls /> */}
 
             </div >
+
 
             {/* The container for HTML content */}
             < HtmlOverlay content={popupContent} showPopup={showPopup} setShowPopup={setShowPopup} />

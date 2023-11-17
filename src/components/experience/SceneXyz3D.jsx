@@ -57,11 +57,11 @@ export function SceneXyz3D(props)
 
     return (
         <>
-            <ScrollControls enabled={true} pages={sceneManager?.waypoints.length - 1}>
+            <ScrollControls enabled={true} pages={sceneManager?.waypoints.length - 1} >
 
                 <Controls innerRef={controlsRef} />
 
-                <ScrollWrapper onReady={initializeManagers}>
+                <ScrollWrapper onReady={initializeManagers} >
 
                     <primitive object={scene}>
 
