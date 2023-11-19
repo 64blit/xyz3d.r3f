@@ -19,7 +19,7 @@ export class InteractionManager
             const data = event.object.userData.interactableData;
 
             const sound = event.object.userData.mediaSrc || null;
-            console.log("sound: " + sound)
+
             if (sound != null)
             {
                 this.playSound(sound);
@@ -28,7 +28,7 @@ export class InteractionManager
             // Play all the select animations first, then trigger the interaction
             await this.playSelectAnimation(event.object);
 
-            document.body.style.cursor = "auto";
+            document.body.style.cursor = "pointer";
 
             switch (type)
             {

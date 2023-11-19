@@ -1,5 +1,5 @@
 
-import { basicLerp } from '../utils/BaseUtils.js';
+import { basicLerp, map } from '../utils/BaseUtils.js';
 import { gsap } from 'gsap';
 
 export class CameraManager
@@ -145,9 +145,18 @@ export class CameraManager
         this.goToSceneZoneByIndex(0);
     }
 
-    update()
+    update(avgFreq)
     {
-        this.scrollHandler();
+
+        if (this.scroll.delta > .0004)
+        {
+            this.scrollHandler();
+        } else if (avgFreq > 10)
+        {
+            const avgFreqZoom = map(avgFreq, 0, 255, 0.15, 1.15);
+            this.controls.zoomTo(avgFreqZoom, true);
+        }
+
     }
 
 }

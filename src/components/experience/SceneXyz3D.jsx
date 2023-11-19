@@ -58,7 +58,8 @@ export function SceneXyz3D(props)
     useFrame(() =>
     {
         if (!cameraManager) return;
-        cameraManager.update();
+        const freq = sceneManager.audioManager.getAverageFrequency();
+        cameraManager.update(freq);
     });
 
 

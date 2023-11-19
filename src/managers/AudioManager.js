@@ -7,6 +7,11 @@ export class AudioManager
     constructor(camera)
     {
         this.loopingSounds = [];
+        const self = this;
+
+
+        // // get the average frequency of the sound
+        // const data = analyser.getAverageFrequency();
 
         // Add audio listener to camera
         const listener = new THREE.AudioListener();
@@ -15,6 +20,9 @@ export class AudioManager
 
         const sound = new THREE.Audio(listener);
         const audioLoader = new THREE.AudioLoader();
+
+        // create an AudioAnalyser, passing in the sound and desired fftSize
+        this.analyser = new THREE.AudioAnalyser(sound, 32);
 
         // Function to play sound by name
         this.playSound = (source, loop = false) =>
@@ -25,6 +33,7 @@ export class AudioManager
             if (sound.isPlaying)
             {
                 sound.stop();
+                audioAverages.length = 0;
             }
 
             if (source in loadedSounds)
@@ -39,10 +48,26 @@ export class AudioManager
                 loadedSounds[ source ] = buffer;
                 sound.setBuffer(buffer);
                 sound.play();
-
             });
 
         };
+
+        const audioAverages = [];
+        const averageSamples = 50;
+
+        // Function to get the average frequency
+        this.getAverageFrequency = () =>
+        {
+            const data = this.analyser.getAverageFrequency();
+            audioAverages.push(data);
+
+            if (audioAverages.length > averageSamples) audioAverages.shift();
+
+            const average = audioAverages.reduce((sum, value) => sum + value, 0) / audioAverages.length;
+
+            return average;
+        }
+
     }
 
 
