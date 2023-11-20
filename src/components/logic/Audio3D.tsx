@@ -30,7 +30,6 @@ export function Audio3D(props: AudioProps)
     const [ speaker, setSpeaker ] = useState<PositionalAudio>();
     const camera = useThree((state) => state.camera);
     const [ callbacks, setCallbacks ] = useState({});
-    const [ objectCopy, setObjectCopy ] = useState(null);
     const [ audioStarted, setAudioStarted ] = useState(false);
 
     const audio = useMemo(() =>
@@ -68,15 +67,11 @@ export function Audio3D(props: AudioProps)
 
             audio.volume = 0;
             audio.muted = true;
-            audio.setAttribute("muted", "true");
-            audio.setAttribute("volume", "0");
             audio.play().then(() =>
             {
                 setupAudio()
-                audio.volume = 1;
+                audio.volume = volume;
                 audio.muted = false;
-                audio.setAttribute("muted", "false");
-                audio.setAttribute("volume", "1");
 
             });
         };
@@ -90,8 +85,9 @@ export function Audio3D(props: AudioProps)
 
                 const speak = new PositionalAudio(listener);
                 speak.setMediaElementSource(audio);
-                speak.setRefDistance(.75);
+                speak.setRefDistance(5);
                 speak.setRolloffFactor(rollOff);
+
                 speak.setVolume(volume);
                 speak.setDirectionalCone(dCone.x, dCone.y, dCone.z);
 

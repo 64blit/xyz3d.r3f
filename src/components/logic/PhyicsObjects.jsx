@@ -65,11 +65,13 @@ export function PhysicsObjects(props)
     // Get all actions on the object so that we can mimic the action movement on the physics object
     const getActions = (obj) =>
     {
+        const boundActions = props.sceneManager.getBoundedActions(obj);
 
         if (obj.userData?.OnSelectAnimations
             || obj.userData?.OnPointerEnterAnimations
             || obj.userData?.OnPointerExitAnimations
             || obj.userData?.LoopingAnimations
+            || boundActions.length > 0
         )
         {
 
@@ -81,12 +83,13 @@ export function PhysicsObjects(props)
             ];
 
             const actions = [];
+            actions.push(...boundActions);
 
             for (let i = 0; i < oldActionNames.length; i++)
             {
                 const element = oldActionNames[ i ];
 
-                let action = props.sceneManager.getAnimationAction(element);
+                const action = props.sceneManager.getAnimationAction(element);
 
                 if (action)
                 {
@@ -105,7 +108,7 @@ export function PhysicsObjects(props)
     {
         const callbacks = {};
 
-        if (obj.userData?.OnSelectAnimations || obj.userData?.mediaTrigger === "OnSelect")
+        if (obj.userData?.OnSelectAnimations || obj.userData?.mediaTrigger === "OnSelect" || obj.userData?.type === "interactable")
         {
             callbacks.onClick = (event) =>
             {
@@ -114,7 +117,7 @@ export function PhysicsObjects(props)
             };
         }
 
-        if (obj.userData?.OnPointerEnterAnimations || obj.userData?.mediaTrigger === "OnPointerEnter")
+        if (obj.userData?.OnPointerEnterAnimations || obj.userData?.mediaTrigger === "OnPointerEnter" || obj.userData?.type === "interactable")
         {
             callbacks.onPointerEnter = (event) =>
             {
@@ -123,7 +126,7 @@ export function PhysicsObjects(props)
             };
         }
 
-        if (obj.userData?.OnPointerExitAnimations || obj.userData?.mediaTrigger === "OnPointerExit")
+        if (obj.userData?.OnPointerExitAnimations || obj.userData?.mediaTrigger === "OnPointerExit" || obj.userData?.type === "interactable")
         {
             callbacks.onPointerLeave = (event) =>
             {
@@ -159,6 +162,7 @@ export function PhysicsObjects(props)
             const dynamicMass = parseInt(obj.userData[ "Dynamic" ]) || 0;
             const isStatic = obj.userData[ "Static" ] === "true";
             const invisible = obj.userData[ "Invisible" ] === "true";
+            const physicsType = dynamicMass > 0 ? "dynamic" : "fixed";
 
             // if any object is invisible, make sure it's still considered in the physics simulation
             includeInvisible = includeInvisible || invisible;
@@ -178,14 +182,14 @@ export function PhysicsObjects(props)
             node =
                 <RigidBody
                     key={generateKey("rb_" + obj.name)}
-                    type={dynamicMass > 0 ? "dynamic" : "fixed"}
+                    type={physicsType}
                     mass={dynamicMass}
                     {...callbacks}
                     userData={userData}
                     ref={rigidBodyRefs[ i ]}
                     includeInvisible={includeInvisible}
-                    position={obj.position}
-                >
+                    position={obj.position}>
+
                     <primitive
                         object={obj.clone()}
                         position={[ 0, 0, 0 ]}
@@ -203,7 +207,7 @@ export function PhysicsObjects(props)
         }
 
         return (
-            <Physics debug={props.isDebugging} gravity={[ 0, -9.81, 0 ]} includeInvisible={includeInvisible}>
+            <Physics debug={props.isDebugging} includeInvisible={includeInvisible}>
                 {physicsNodes}
             </Physics>
         );
