@@ -9,43 +9,43 @@ export class AudioManager
         this.loopingSounds = [];
 
         // Add audio listener to camera
-        const listener = new THREE.AudioListener();
-        camera.add(listener);
+        this.listener = new THREE.AudioListener();
+        camera.add(this.listener);
         const loadedSounds = {};
 
-        const sound = new THREE.Audio(listener);
+        const sound = new THREE.Audio(this.listener);
         const audioLoader = new THREE.AudioLoader();
 
         // Function to play sound by name
-        this.playSound = (source, loop = false) =>
+        this.playSound = (source, loop = false, audioObj = null) =>
         {
-            sound.setLoop(loop);
-            sound.setVolume(1);
+            if (!audioObj) audioObj = sound;
 
-            if (sound.isPlaying)
+            audioObj.setLoop(loop);
+            audioObj.setVolume(1);
+
+            if (audioObj.isPlaying)
             {
-                sound.stop();
+                audioObj.stop();
             }
 
             if (source in loadedSounds)
             {
-                sound.setBuffer(loadedSounds[ source ]);
-                sound.play();
+                audioObj.setBuffer(loadedSounds[ source ]);
+                audioObj.play();
                 return;
             }
 
             audioLoader.load(source, function (buffer)
             {
                 loadedSounds[ source ] = buffer;
-                sound.setBuffer(buffer);
-                sound.play();
+                audioObj.setBuffer(buffer);
+                audioObj.play();
 
             });
 
         };
     }
-
-
 
     // Function to play loop sounds
     playLoopingSounds()
@@ -53,12 +53,11 @@ export class AudioManager
         for (let i = 0; i < this.loopingSounds.length; i++)
         {
             const element = this.loopingSounds[ i ];
-            this.playSound(element, true);
-
+            this.playSound(element, true, new THREE.Audio(this.listener));
         }
         this.loopingSounds.forEach((sound) =>
         {
-            console.log("Playing sound: " + sound);
+            console.log("Playing Looping Sound: " + sound);
         });
     }
 

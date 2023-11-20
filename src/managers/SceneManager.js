@@ -51,6 +51,11 @@ export class SceneManager
         return this.animationManager.actions[ name ];
     }
 
+    getBoundedActions(obj)
+    {
+        return this.animationManager.getBoundedActions(obj);
+    }
+
     // Populate scene zones and objects within zones
     populateSceneZones(scene)
     {
@@ -205,6 +210,7 @@ export class SceneManager
                     object,
                     worldPosition,
                     mediaSrc: object.userData.mediaSrc
+                    // volume and looping need to be added
                 });
             }
         }
