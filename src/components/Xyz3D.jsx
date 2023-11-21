@@ -7,7 +7,6 @@ import { Environment } from '@react-three/drei';
 import { SplashScreen } from './helpers/SplashScreen.jsx';
 import { Seo } from './helpers/SEO.jsx';
 import { HelmetProvider } from 'react-helmet-async';
-import { NavBar } from './logic/NavBar.jsx';
 import { ErrorBoundary } from 'react-error-boundary';
 
 export function Xyz3D()
@@ -75,8 +74,6 @@ export function Xyz3D()
 
             {/* The container for HTML content */}
             < HtmlOverlay content={popupContent} showPopup={showPopup} setShowPopup={setShowPopup} />
-            {/* Navbar */}
-            {isLoaded && <NavBar xyzAPI={xyzAPI} />}
 
         </HelmetProvider >
     );
