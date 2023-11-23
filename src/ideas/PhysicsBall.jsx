@@ -27,6 +27,8 @@ export const PhysicsBall = React.forwardRef((props, ref) =>
         args: [ boundingSphere.radius * Math.max(...obj.scale) ],
     }));
 
+    ref = ballRef;
+
     useEffect(() =>
     {
         // Set the sphere's position to match the object's position.

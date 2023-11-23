@@ -14,7 +14,7 @@ export const PhysicsObjects = ({ sceneManager, interactionManager, isDebugging =
     const pobjs = sceneManager.getPhysicsObjects();
     const rigidBodyRefs = pobjs.map(() => useRef());
 
-    // setup tje physics nodes on component mount
+    // setup the physics nodes on component mount
     useEffect(() =>
     {
         if (!sceneManager) return;
@@ -34,6 +34,8 @@ export const PhysicsObjects = ({ sceneManager, interactionManager, isDebugging =
             }
         }
 
+        console.log("rigidBodyRefs", rigidBodyRefs);
+
     }, [ sceneManager ]);
 
 
@@ -44,7 +46,6 @@ export const PhysicsObjects = ({ sceneManager, interactionManager, isDebugging =
 
         rigidBodyRefs.forEach((ref) =>
         {
-
             if (ref == null || ref.current === null || ref.current === undefined) return;
 
             const { obj, actions } = ref.current?.userData;
@@ -101,6 +102,7 @@ export const PhysicsObjects = ({ sceneManager, interactionManager, isDebugging =
                 }
             }
 
+            // console.log("boundActions", obj.name, ...actions);
             return actions;
 
         }
@@ -207,6 +209,7 @@ export const PhysicsObjects = ({ sceneManager, interactionManager, isDebugging =
 
             if (dynamicMass >= 0 || isStatic)
             {
+                console.log(node.props.userData?.actions)
                 nodes.push(node);
             }
 

@@ -11,9 +11,10 @@ export const PhysicsCollidable = React.forwardRef((props, ref) =>
     // Wrap the object with the physics sphere and render the object inside the sphere.
     return (
         <Collidable
-            triLimit={100}
+            triLimit={1000}
             enabled={true}
             hideCollisionMeshes={invisible}
+            // ref={ref}
             {...props}
         >
             <primitive object={obj}
