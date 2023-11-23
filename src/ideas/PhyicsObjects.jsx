@@ -57,7 +57,6 @@ export const PhysicsObjects = ({ sceneManager, interactionManager, isDebugging =
             {
                 if (action !== undefined && action !== null && action.isRunning()) 
                 {
-                    console.log(ref.current);
                     // ref.current.setTranslation(obj.position, true);
                     // ref.current.setRotation(obj.quaternion, true);
                 }
@@ -213,7 +212,6 @@ export const PhysicsObjects = ({ sceneManager, interactionManager, isDebugging =
 
         }
 
-        console.log("physics nodes", nodes.length, nodes)
         return (<>{nodes}</>);
     }
     return (
