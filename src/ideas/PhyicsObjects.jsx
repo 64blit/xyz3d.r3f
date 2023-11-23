@@ -34,8 +34,6 @@ export const PhysicsObjects = ({ sceneManager, interactionManager, isDebugging =
             }
         }
 
-        console.log("rigidBodyRefs", rigidBodyRefs);
-
     }, [ sceneManager ]);
 
 
