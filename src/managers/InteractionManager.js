@@ -17,10 +17,17 @@ export class InteractionManager
             const type = event.object.userData.interactableType;
             const data = event.object.userData.interactableData;
 
+            const sound = event.object.userData.mediaSrc || null;
+
+            if (sound != null)
+            {
+                this.playSound(sound);
+            }
+
             // Play all the select animations first, then trigger the interaction
             await this.handlePointerSelect(event.object);
 
-            document.body.style.cursor = "auto";
+            document.body.style.cursor = "pointer";
 
             switch (type)
             {
