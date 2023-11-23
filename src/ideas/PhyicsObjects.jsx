@@ -100,7 +100,6 @@ export const PhysicsObjects = ({ sceneManager, interactionManager, isDebugging =
                 }
             }
 
-            // console.log("boundActions", obj.name, ...actions);
             return actions;
 
         }
@@ -207,7 +206,6 @@ export const PhysicsObjects = ({ sceneManager, interactionManager, isDebugging =
 
             if (dynamicMass >= 0 || isStatic)
             {
-                console.log(node.props.userData?.actions)
                 nodes.push(node);
             }
 
