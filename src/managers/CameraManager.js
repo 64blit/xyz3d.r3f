@@ -1,14 +1,14 @@
 
 import { basicLerp } from '../utils/BaseUtils.js';
 import { gsap } from 'gsap';
+import * as THREE from 'three';
 
 export class CameraManager
 {
-    constructor(sceneManager, controls, camera, playerState)
+    constructor(sceneManager, camera, playerState)
     {
         this.playerState = playerState;
         this.sceneManager = sceneManager;
-        this.controls = controls;
         this.camera = camera;
         this.busy = false;
 
@@ -58,7 +58,11 @@ export class CameraManager
             if (sceneZone.index < 0) return;
             if (!this.playerState) return;
 
+            // const position = new THREE.Vector3();
+            // sceneZone.camera.anchor?.getWorldPosition(position);
+
             const position = sceneZone.camera.anchor?.position;
+
             if (!position) return;
 
             // Retrieve the current player position using the custom `get` method
@@ -67,9 +71,9 @@ export class CameraManager
             // Animate position components separately
             gsap.to(currentPlayerPosition, {
                 duration: 1,
-                x: sceneZone.camera.anchor.position.x,
-                y: sceneZone.camera.anchor.position.y,
-                z: sceneZone.camera.anchor.position.z,
+                x: position.x,
+                y: position.y,
+                z: position.z,
                 onUpdate: () =>
                 {
                     // Update the player position using the custom `set` method
@@ -83,7 +87,7 @@ export class CameraManager
         }
 
 
-
+        console.log("CameraManager created");
         this.goToSceneZoneByIndex(0);
     }
 
