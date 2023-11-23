@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GroupProps, useThree } from "@react-three/fiber";
 import { AudioAnalyser, PositionalAudio, Vector3, AudioListener } from "three";
-import autoprefixer from "autoprefixer";
+import { PositionalAudioHelper } from "three/examples/jsm/helpers/PositionalAudioHelper.js";
 
 type AudioProps = {
     url: string;
     dCone?: Vector3;
     rollOff?: number;
     volume?: number;
+    isDebugging?: boolean;
     sourceObject?: any;
     setAudioAnalyser?: (aa: AudioAnalyser) => void;
     fftSize?: 64 | 128 | 256 | 512 | 1024;
@@ -22,6 +23,7 @@ export function Audio3D(props: AudioProps)
         volume = 1,
         sourceObject = null,
         setAudioAnalyser,
+        isDebugging = false,
         fftSize = 128,
         ...rest
     } = props;
@@ -30,7 +32,6 @@ export function Audio3D(props: AudioProps)
     const [ speaker, setSpeaker ] = useState<PositionalAudio>();
     const camera = useThree((state) => state.camera);
     const [ callbacks, setCallbacks ] = useState({});
-    const [ objectCopy, setObjectCopy ] = useState(null);
     const [ audioStarted, setAudioStarted ] = useState(false);
 
     const audio = useMemo(() =>
@@ -68,15 +69,11 @@ export function Audio3D(props: AudioProps)
 
             audio.volume = 0;
             audio.muted = true;
-            audio.setAttribute("muted", "true");
-            audio.setAttribute("volume", "0");
             audio.play().then(() =>
             {
                 setupAudio()
                 audio.volume = 1;
                 audio.muted = false;
-                audio.setAttribute("muted", "false");
-                audio.setAttribute("volume", "1");
 
             });
         };
@@ -86,11 +83,12 @@ export function Audio3D(props: AudioProps)
             if (!audio.paused && !speaker)
             {
                 const listener = new AudioListener();
+                listener.name = "audio_listener";
                 camera.add(listener);
 
                 const speak = new PositionalAudio(listener);
                 speak.setMediaElementSource(audio);
-                speak.setRefDistance(.75);
+                speak.setRefDistance(10);
                 speak.setRolloffFactor(rollOff);
                 speak.setVolume(volume);
                 speak.setDirectionalCone(dCone.x, dCone.y, dCone.z);
@@ -142,6 +140,25 @@ export function Audio3D(props: AudioProps)
         speaker.setVolume(volume);
         speaker.setDirectionalCone(dCone.x, dCone.y, dCone.z);
     }, [ dCone, rollOff, volume ]);
+
+
+    // Never fired because this component is added on the fly
+    useEffect(() =>
+    {
+        if (!speaker) return;
+        if (isDebugging)
+        {
+            const helper = new PositionalAudioHelper(speaker, 10);
+            speaker.add(helper);
+        } else
+        {
+            speaker.children = [];
+        }
+    }, [ isDebugging ])
+
+
+
+    if (!sourceObject) return null;
 
     return (
         <primitive object={sourceObject.clone()} visible={false} {...callbacks} {...rest} >
