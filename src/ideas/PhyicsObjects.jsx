@@ -4,7 +4,6 @@ import { useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { PhysicsCollidable } from './PhysicsCollidable.jsx';
 import { PhysicsBall } from './PhysicsBall.jsx';
-import { Physics } from 'spacesvr';
 import { Debug } from '@react-three/cannon';
 
 export const PhysicsObjects = ({ sceneManager, interactionManager, isDebugging = false }) =>
@@ -20,8 +19,6 @@ export const PhysicsObjects = ({ sceneManager, interactionManager, isDebugging =
     {
         if (!sceneManager) return;
         if (!rigidBodyRefs) return;
-
-        // console.log("asdads", rigidBodyRefs)
 
         const physicsReactNodes = getPhyicsNodes(pobjs);
         setPhysicsNodes(physicsReactNodes);
@@ -72,11 +69,13 @@ export const PhysicsObjects = ({ sceneManager, interactionManager, isDebugging =
     // Get all actions on the object so that we can mimic the action movement on the physics object
     const getActions = (obj) =>
     {
+        const boundActions = sceneManager.getBoundedActions(obj);
 
         if (obj.userData?.OnSelectAnimations
             || obj.userData?.OnPointerEnterAnimations
             || obj.userData?.OnPointerExitAnimations
             || obj.userData?.LoopingAnimations
+            || boundActions.length > 0
         )
         {
 
@@ -88,6 +87,8 @@ export const PhysicsObjects = ({ sceneManager, interactionManager, isDebugging =
             ];
 
             const actions = [];
+            actions.push(...boundActions);
+
 
             for (let i = 0; i < oldActionNames.length; i++)
             {
