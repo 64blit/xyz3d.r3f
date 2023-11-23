@@ -50,6 +50,26 @@ export class AnimationManager
         return this.loopingAnimations;
     }
 
+    // Function to get all actions which are bound to the given object
+    getBoundedActions(object)
+    {
+        const actions = [];
+
+        const keys = Object.keys(this.actions);
+        for (let index = 0; index < keys.length; index++)
+        {
+            const elementKey = keys[ index ];
+            const element = this.actions[ elementKey ];
+
+            if (element._propertyBindings[ 0 ].binding.node.name === object.name)
+            {
+                actions.push(element);
+            }
+        }
+
+        return actions;
+    }
+
     // Extract animation data from user data
     parseAnimations(object)
     {
