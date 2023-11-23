@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GroupProps, useThree } from "@react-three/fiber";
-import VideoFrame from "./VideoFrame";
 
 import
 {
@@ -12,10 +11,13 @@ import
     AudioListener,
 } from "three";
 
+import { PositionalAudioHelper } from "three/examples/jsm/helpers/PositionalAudioHelper.js";
+
 type Props = {
     src: string;
     size?: number;
     framed?: boolean;
+    isDebugging?: boolean;
     muted?: boolean;
     volume?: number;
     frameMaterial?: Material;
@@ -34,57 +36,47 @@ export function Video3D(props: Props)
         frameMaterial,
         frameWidth = 1,
         sourceObject = null,
+        isDebugging = false,
         ...rest
     } = props;
 
-    const camera = useThree((state) => state.camera);
+    const { camera } = useThree();
 
-    const listener = useRef<THREE.AudioListener>();
     const [ speaker, setSpeaker ] = useState<THREE.PositionalAudio>();
-    const [ dims, setDims ] = useState<Vector2 | null>();
-
+    const [ videoState, setVideoState ] = useState<Object>();
     const [ callbacks, setCallbacks ] = useState({});
 
     const video = useMemo(() =>
     {
         const v = document.createElement("video");
-        // @ts-ignore
+
         v.playsInline = true;
         v.crossOrigin = "Anonymous";
         v.loop = true;
         v.src = src;
         v.autoplay = false;
+        v.volume = volume;
         v.muted = muted ? muted : false;
+
         return v;
     }, []);
 
-    const toggleVideo = () =>
+    useMemo(() =>
     {
-        if (video.paused)
-        {
-            video.play();
-        }
-        else
-        {
-            video.pause();
-        }
-    }
-
-    useEffect(() =>
-    {
-
         const setupAudio = () =>
         {
-            if (!muted && !video.paused && !speaker)
+            if (!muted)
             {
                 const listener = new AudioListener();
+                listener.name = "video_listener";
                 camera.add(listener);
 
                 const speak = new PositionalAudio(listener);
                 speak.setMediaElementSource(video);
-                speak.setRefDistance(0.75);
+                const dist = 12;
+                speak.setRefDistance(dist);
                 speak.setRolloffFactor(1);
-                speak.setVolume(volume);
+                speak.setVolume(1);
                 speak.setDirectionalCone(180, 230, 0.1);
 
                 setSpeaker(speak);
@@ -94,15 +86,20 @@ export function Video3D(props: Props)
         const startVideo = () =>
         {
             const videoPromise =
-                video
-                    .play()
+                video.play()
                     .then(() =>
                     {
-                        setDims(new Vector2(video.videoWidth, video.videoHeight));
+
+                        const max = Math.max(video.videoWidth, video.videoHeight);
+                        const width = (video.videoWidth / max) * size;
+                        const height = (video.videoHeight / max) * size;
+                        setVideoState({ width, height });
                         video.pause();
+                        setupAudio();
+                    }).catch((err) =>
+                    {
                     });
 
-            setupAudio();
             return videoPromise;
         };
 
@@ -114,9 +111,10 @@ export function Video3D(props: Props)
                 video.play();
             } else if ('OnSelect' === sourceObject.userData.mediaTrigger)
             {
-                tempCallbacks[ 'onClick' ] = () =>
+                tempCallbacks[ 'onClick' ] = () => 
                 {
                     toggleVideo();
+
                 }
             } else if ('OnPointerExitMedia' === sourceObject.userData.mediaTrigger || 'OnPointerEnter' === sourceObject.userData.mediaTrigger)
             {
@@ -132,68 +130,55 @@ export function Video3D(props: Props)
             setCallbacks(tempCallbacks);
         }
 
-        if (video)
+        startVideo().then(() =>
         {
-            startVideo().then(() =>
-            {
-                addCallbacks();
-            });
+            addCallbacks();
+        });
+
+    }, [ video ]);
+
+    const toggleVideo = () =>
+    {
+        if (video.paused)
+        {
+            video.play();
         }
-
-    }, [ speaker, video, muted, camera, volume, sourceObject ]);
-
-    useEffect(() =>
-    {
-        return () =>
+        else
         {
-            if (listener.current)
-            {
-                camera.remove(listener.current);
-                listener.current.clear();
-                listener.current = undefined;
-            }
-            if (speaker)
-            {
-                speaker.clear();
-                speaker.disconnect();
-                setSpeaker(undefined);
-            }
-            if (video)
-            {
-                video.pause();
-                video.remove();
-            }
-        };
-    }, []);
-
-    if (!dims || !video)
-    {
-        return null;
+            video.pause();
+        }
     }
 
-    const max = Math.max(dims.x, dims.y);
-    const width = (dims.x / max) * size;
-    const height = (dims.y / max) * size;
+    // Never fired because this component is added on the fly
+    useEffect(() =>
+    {
+        if (!speaker) return;
+        if (isDebugging)
+        {
+            const helper = new PositionalAudioHelper(speaker, 10);
+            speaker.add(helper);
+        } else
+        {
+            speaker.children = [];
+        }
+    }, [ isDebugging ])
+
+
+    if (!video) return null;
+
 
     return (
-        <group name="spacesvr-video" {...rest}>
+        <group name="videos" {...rest}>
             <mesh
                 {...callbacks}>
-                <planeGeometry args={[ width, height ]} />
+                <planeGeometry args={[ videoState?.width, videoState?.height ]} />
                 <meshBasicMaterial side={DoubleSide}>
                     <videoTexture attach="map" args={[ video ]} encoding={sRGBEncoding} />
                 </meshBasicMaterial>
             </mesh>
-            {speaker && <primitive object={speaker} />}
-            {/* {framed &&
-                <VideoFrame
-                    width={width}
-                    height={height}
-                    thickness={frameWidth}
-                    material={frameMaterial}
-                >
-                </VideoFrame>
-            } */}
+
+            {speaker && <primitive object={speaker} ></primitive>}
+
         </group>
     );
 }
