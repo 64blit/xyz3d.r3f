@@ -3,8 +3,9 @@ import React, { ReactNode, Suspense, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import SceneXyz3D from "../components/SceneXyz3D";
 import { HtmlOverlay } from "../helpers/HtmlOverlay";
+import { Seo } from "../helpers/SEO";
 import { HelmetProvider } from "react-helmet-async";
-// import { Perf, usePerf } from "r3f-perf";
+import { Perf, usePerf } from "r3f-perf";
 
 
 export default function Xyz3DWorld()
@@ -19,6 +20,7 @@ export default function Xyz3DWorld()
   // if the user presses the "-" key, toggle debugging mode
   React.useEffect(() =>
   {
+
     const handleKeyDown = (event) =>
     {
       if (event.key === "-")
@@ -29,9 +31,10 @@ export default function Xyz3DWorld()
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
+
   }, [ isDebugging ]);
 
-  // usePerf();
+  usePerf();
 
   return (
     <HelmetProvider>
@@ -57,7 +60,7 @@ export default function Xyz3DWorld()
 
         </ErrorBoundary>
 
-        {/* <Perf /> */}
+        {isDebugging && <Perf />}
 
       </StandardReality >
 
@@ -68,6 +71,7 @@ export default function Xyz3DWorld()
       {isLoaded && <Seo xyzAPI={xyzAPI} />}
 
       <HtmlOverlay content={popupContent} showPopup={showPopup} setShowPopup={setShowPopup} />
+
     </HelmetProvider>
   );
 }
