@@ -27,7 +27,6 @@ export default function SceneXyz3D({
     const { ref, mixer, names, actions, clips } = useAnimations(animations, scene);
 
     const [ sceneZoneNodes, setSceneZoneNodes ] = useState(null);
-    const [ physicsNodes, setPhysicsNodes ] = useState(null);
 
     const playerState = usePlayer();
 
@@ -37,14 +36,15 @@ export default function SceneXyz3D({
     const [ cameraManager, setCameraManager ] = useState(null);
     const { gl } = useThree();
 
-    const initializeManagers = () =>
+    const initializeManagers = (playerState) =>
     {
         // only initialize once
-        if (sceneManager)
+        if (sceneManager || playerState === null || playerState === undefined)
         {
             return;
         }
 
+        camera.children.length = 0;
         const tempSceneManager = new SceneManager(scene, camera, animations, actions, mixer);
         setSceneManager(tempSceneManager);
 
@@ -72,7 +72,7 @@ export default function SceneXyz3D({
     {
         if (!cameraManager)
         {
-            initializeManagers();
+            initializeManagers(playerState);
             return;
         }
 
@@ -81,29 +81,28 @@ export default function SceneXyz3D({
 
 
 
-    const getSceneZoneNodes = () =>
-    {
-        const zoneNodes = [];
-        sceneManager.getSceneZones().forEach((zone) =>
-        {
-            const node = <SceneZone
-                interactionManager={interactionManager}
-                isDebugging={isDebugging}
-                object={zone}
-                key={generateKey(zone.name)}
-            />;
-
-            zoneNodes.push(node);
-        });
-        return zoneNodes;
-    }
-
 
     // Go to the first scene zone on component mount
     useEffect(() =>
     {
         if (!sceneManager) return;
 
+        const getSceneZoneNodes = () =>
+        {
+            const zoneNodes = [];
+            sceneManager.getSceneZones().forEach((zone) =>
+            {
+                const node = <SceneZone
+                    interactionManager={interactionManager}
+                    isDebugging={isDebugging}
+                    object={zone}
+                    key={generateKey(zone.name)}
+                />;
+
+                zoneNodes.push(node);
+            });
+            return zoneNodes;
+        }
         const zoneNodes = getSceneZoneNodes();
         setSceneZoneNodes(zoneNodes);
 
@@ -123,7 +122,7 @@ export default function SceneXyz3D({
                         interactionManager={interactionManager}
                     />
 
-                    <Media sceneManager={sceneManager} interactionManager={interactionManager} />
+                    <Media sceneManager={sceneManager} interactionManager={interactionManager} isDebugging={isDebugging} />
 
                 </primitive>
             }
