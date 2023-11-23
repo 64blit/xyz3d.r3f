@@ -25,6 +25,11 @@ type Props = {
     sourceObject?: any;
 } & GroupProps;
 
+type VideoState = {
+    width: number;
+    height: number;
+};
+
 export function Video3D(props: Props)
 {
     const {
@@ -43,8 +48,8 @@ export function Video3D(props: Props)
     const { camera } = useThree();
 
     const [ speaker, setSpeaker ] = useState<THREE.PositionalAudio>();
-    const [ videoState, setVideoState ] = useState<Object>();
-    const [ callbacks, setCallbacks ] = useState({});
+    const [ videoState, setVideoState ] = useState<VideoState>();
+    const [ callbacks, setCallbacks ] = useState(null);
 
     const video = useMemo(() =>
     {
@@ -168,17 +173,23 @@ export function Video3D(props: Props)
 
 
     return (
-        <group name="videos" {...rest}>
-            <mesh
-                {...callbacks}>
-                <planeGeometry args={[ videoState?.width, videoState?.height ]} />
-                <meshBasicMaterial side={DoubleSide}>
-                    <videoTexture attach="map" args={[ video ]} encoding={sRGBEncoding} />
-                </meshBasicMaterial>
-            </mesh>
+        <>
+            {videoState && <>
+                <group name="videos" {...rest}>
+                    <mesh
+                        {...callbacks}>
+                        <planeGeometry args={[ videoState?.width, videoState?.height ]} />
+                        <meshBasicMaterial side={DoubleSide}>
+                            <videoTexture attach="map" args={[ video ]} encoding={sRGBEncoding} />
+                        </meshBasicMaterial>
+                    </mesh>
 
-            {speaker && <primitive object={speaker} ></primitive>}
+                    {speaker && <primitive object={speaker} ></primitive>}
 
-        </group>
+                </group>
+            </>
+            }
+        </>
+
     );
 }
