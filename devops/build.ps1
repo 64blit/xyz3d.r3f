@@ -5,8 +5,8 @@ $build_path = "C:\Users\edmun\OneDrive\Documents\_SPACE\Web\xyz3d.r3f\dist"
 $src_path = "C:\Users\edmun\OneDrive\Documents\_SPACE\Web\xyz3d.r3f\"
 
 # Set the destination paths
-$preview_dest = "C:\Users\edmun\OneDrive\Documents\_SPACE\Blender\WebCrafterPro-blender-plugin\Templates\orbit\preview"
-$r3f_dest = "C:\Users\edmun\OneDrive\Documents\_SPACE\Blender\WebCrafterPro-blender-plugin\Templates\orbit\source"
+$preview_dest = "C:\Users\edmun\OneDrive\Documents\_SPACE\Blender\WebCrafterPro-blender-plugin\Templates\scroll\preview"
+$r3f_dest = "C:\Users\edmun\OneDrive\Documents\_SPACE\Blender\WebCrafterPro-blender-plugin\Templates\scroll\source"
 
 # Build the project using yarn
 Write-Host "Building the project..."
