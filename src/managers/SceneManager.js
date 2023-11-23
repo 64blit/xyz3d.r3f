@@ -51,6 +51,11 @@ export class SceneManager
         return this.animationManager.actions[ name ];
     }
 
+    getBoundedActions(obj)
+    {
+        return this.animationManager.getBoundedActions(obj);
+    }
+
     // Populate scene zones and objects within zones
     populateSceneZones(scene)
     {
@@ -171,7 +176,7 @@ export class SceneManager
             this.siteData.siteIconURL = object.userData?.siteIconURL || "";
             this.siteData.splashScreenActive = object.userData?.splashActive || true;
             this.siteData.splashScreenTitle = object.userData?.splashTitle || "Welcome!";
-            this.siteData.splashScreenBody = object.userData?.splashBody || "Scroll down to explore.";
+            this.siteData.splashScreenBody = object.userData?.splashBody || "Move around to explore!";
             this.siteData.splashScreenButton = object.userData?.splashButton || "Start";
             this.scene.remove(object);
             return;
@@ -194,14 +199,16 @@ export class SceneManager
                     object,
                     worldPosition,
                     worldRotation,
-                    mediaSrc: object.userData.mediaSrc
+                    mediaSrc: object.userData.mediaSrc,
+                    key: object.uuid
                 });
             } else if (object.userData.mediaType === "3DPositionalAudio")
             {
                 this.mediaObjects.positionalAudio.push({
                     object,
                     worldPosition,
-                    mediaSrc: object.userData.mediaSrc
+                    mediaSrc: object.userData.mediaSrc,
+                    key: object.uuid
                 });
             }
         }
@@ -439,13 +446,12 @@ export class SceneManager
         // Calculate the new position target for the camera
         const newPositionTarget = positionTarget.clone().sub(lookTarget).setLength(camDist).add(lookTarget);
 
-        // if (this === null)
-        // {
-        //     return;
-        // }
+        this.camera.position.x = positionTarget.x;
+        this.camera.position.y = positionTarget.y;
+        this.camera.position.z = positionTarget.z;
 
-        // // Set the camera position and look target
-        // this.setLookAt(...newPositionTarget, ...lookTarget, damp);
+        this.camera.lookAt(lookTarget);
+        this.camera.updateProjectionMatrix();
     }
 
 }
