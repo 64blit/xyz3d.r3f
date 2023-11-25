@@ -8,6 +8,7 @@ import { SplashScreen } from './helpers/SplashScreen.jsx';
 import { Seo } from './helpers/SEO.jsx';
 import { HelmetProvider } from 'react-helmet-async';
 import { ErrorBoundary } from 'react-error-boundary';
+import { Perf } from 'r3f-perf'
 
 export function Xyz3D()
 {
@@ -61,6 +62,7 @@ export function Xyz3D()
 
                     </Suspense>
 
+                    {isDebugging && <Perf />}
                 </Canvas>
 
 
@@ -74,6 +76,7 @@ export function Xyz3D()
 
             {/* The container for HTML content */}
             < HtmlOverlay content={popupContent} showPopup={showPopup} setShowPopup={setShowPopup} />
+
 
         </HelmetProvider >
     );

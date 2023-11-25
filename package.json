@@ -8,6 +8,7 @@
     "camera-controls": "^2.4.1",
     "gltfjsx": "^6.1.4",
     "gsap": "^3.12.2",
+    "r3f-perf": "^7.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.11",
