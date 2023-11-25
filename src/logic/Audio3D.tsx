@@ -1,14 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GroupProps, useThree } from "@react-three/fiber";
 import { AudioAnalyser, PositionalAudio, Vector3, AudioListener } from "three";
-import { PositionalAudioHelper } from "three/examples/jsm/helpers/PositionalAudioHelper.js";
+import autoprefixer from "autoprefixer";
 
 type AudioProps = {
     url: string;
     dCone?: Vector3;
     rollOff?: number;
     volume?: number;
-    isDebugging?: boolean;
     sourceObject?: any;
     setAudioAnalyser?: (aa: AudioAnalyser) => void;
     fftSize?: 64 | 128 | 256 | 512 | 1024;
@@ -23,7 +22,6 @@ export function Audio3D(props: AudioProps)
         volume = 1,
         sourceObject = null,
         setAudioAnalyser,
-        isDebugging = false,
         fftSize = 128,
         ...rest
     } = props;
@@ -32,7 +30,6 @@ export function Audio3D(props: AudioProps)
     const [ speaker, setSpeaker ] = useState<PositionalAudio>();
     const camera = useThree((state) => state.camera);
     const [ callbacks, setCallbacks ] = useState({});
-    const [ audioStarted, setAudioStarted ] = useState(false);
 
     const audio = useMemo(() =>
     {
@@ -41,8 +38,9 @@ export function Audio3D(props: AudioProps)
         a.preload = "auto";
         a.crossOrigin = "Anonymous";
         a.loop = false;
-        a.autoplay = true;
+        a.autoplay = false;
         a.muted = true;
+        a.volume = 0;
         return a;
     }, []);
 
@@ -60,36 +58,19 @@ export function Audio3D(props: AudioProps)
 
     useEffect(() =>
     {
-        if (audioStarted) return;
-
-        const startAudio = () =>
-        {
-            if (audioStarted) return;
-            setAudioStarted(true);
-
-            audio.volume = 0;
-            audio.muted = true;
-            audio.play().then(() =>
-            {
-                setupAudio()
-                audio.volume = 1;
-                audio.muted = false;
-
-            });
-        };
 
         const setupAudio = () =>
         {
-            if (!audio.paused && !speaker)
+            if (!speaker)
             {
                 const listener = new AudioListener();
-                listener.name = "audio_listener";
                 camera.add(listener);
 
                 const speak = new PositionalAudio(listener);
                 speak.setMediaElementSource(audio);
-                speak.setRefDistance(10);
+                speak.setRefDistance(5);
                 speak.setRolloffFactor(rollOff);
+
                 speak.setVolume(volume);
                 speak.setDirectionalCone(dCone.x, dCone.y, dCone.z);
 
@@ -105,17 +86,17 @@ export function Audio3D(props: AudioProps)
         const addCallbacks = () =>
         {
             const tempCallbacks = {};
-            if ('Looping' === sourceObject.userData.mediaTrigger)
+            if ('Looping' === sourceObject.userData?.mediaTrigger)
             {
                 audio.loop = true;
                 audio.play();
-            } else if ('OnSelect' === sourceObject.userData.mediaTrigger)
+            } else if ('OnSelect' === sourceObject.userData?.mediaTrigger)
             {
                 tempCallbacks[ 'onClick' ] = () =>
                 {
                     toggleAudio();
                 }
-            } else if ('OnPointerExit' === sourceObject.userData.mediaTrigger || 'OnPointerEnter' === sourceObject.userData.mediaTrigger)
+            } else if ('OnPointerExit' === sourceObject.userData?.mediaTrigger || 'OnPointerEnter' === sourceObject.userData?.mediaTrigger)
             {
                 tempCallbacks[ 'onPointerEnter' ] = () =>
                 {
@@ -127,10 +108,12 @@ export function Audio3D(props: AudioProps)
 
         if (audio)
         {
+            audio.volume = volume;
+            audio.muted = false;
             addCallbacks();
-            startAudio();
+            setupAudio();
         }
-    }, [ speaker, audio, url, sourceObject, audioStarted ]);
+    }, [ speaker, audio, url, sourceObject ]);
 
     useEffect(() =>
     {
@@ -140,25 +123,6 @@ export function Audio3D(props: AudioProps)
         speaker.setVolume(volume);
         speaker.setDirectionalCone(dCone.x, dCone.y, dCone.z);
     }, [ dCone, rollOff, volume ]);
-
-
-    // Never fired because this component is added on the fly
-    useEffect(() =>
-    {
-        if (!speaker) return;
-        if (isDebugging)
-        {
-            const helper = new PositionalAudioHelper(speaker, 10);
-            speaker.add(helper);
-        } else
-        {
-            speaker.children = [];
-        }
-    }, [ isDebugging ])
-
-
-
-    if (!sourceObject) return null;
 
     return (
         <primitive object={sourceObject.clone()} visible={false} {...callbacks} {...rest} >
