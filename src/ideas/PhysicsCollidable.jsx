@@ -1,9 +1,5 @@
-import * as THREE from "three";
 import React, { useEffect, useMemo, useRef } from "react";
-import { useFrame, useLoader } from "@react-three/fiber";
-import { useSphere } from "@react-three/cannon";
 import { Collidable } from "spacesvr";
-import { useTrimeshCollision } from "helpers/TrimeshHelper";
 
 export const PhysicsCollidable = React.forwardRef((props, ref) =>
 {
