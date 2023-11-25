@@ -34,7 +34,6 @@ export function Xyz3D()
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [ isDebugging ]);
 
-
     return (
         <HelmetProvider>
 
@@ -77,6 +76,7 @@ export function Xyz3D()
 
             {/* The container for HTML content */}
             < HtmlOverlay content={popupContent} showPopup={showPopup} setShowPopup={setShowPopup} />
+
             {/* Navbar */}
             {isLoaded && <NavBar xyzAPI={xyzAPI} />}
 
