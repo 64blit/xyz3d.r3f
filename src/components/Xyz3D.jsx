@@ -9,6 +9,7 @@ import { Seo } from './helpers/SEO.jsx';
 import { HelmetProvider } from 'react-helmet-async';
 import { NavBar } from './logic/NavBar.jsx';
 import { ErrorBoundary } from 'react-error-boundary';
+import { Perf } from 'r3f-perf'
 
 export function Xyz3D()
 {
@@ -62,6 +63,7 @@ export function Xyz3D()
 
                     </Suspense>
 
+                    {isDebugging && <Perf />}
                 </Canvas>
 
 
@@ -77,6 +79,7 @@ export function Xyz3D()
             < HtmlOverlay content={popupContent} showPopup={showPopup} setShowPopup={setShowPopup} />
             {/* Navbar */}
             {isLoaded && <NavBar xyzAPI={xyzAPI} />}
+
 
         </HelmetProvider >
     );
