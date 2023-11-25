@@ -1,11 +1,10 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
-            "type": "node",
+            "name": "WEBCRAFTER DEV",
+            "type": "chrome",
             "request": "launch",
             "runtimeExecutable": "C://Users//edmun//AppData//Local//BraveSoftware//Brave-Browser//Application//brave.exe",
             "url": "http://localhost:5173/index.html",
@@ -19,10 +18,6 @@
                 "--remote-debugging-port=9222",
                 "----incognito"
             ],
-            "program": "${workspaceFolder}\\src\\worlds\\Starter.tsx",
-            "outFiles": [
-                "${workspaceFolder}/**/*.js"
-            ]
-        }
+        },
     ]
 }
