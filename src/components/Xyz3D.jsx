@@ -18,7 +18,7 @@ export function Xyz3D()
     const [ isLoaded, setIsLoaded ] = useState(false);
     const [ xyzAPI, setXyzAPI ] = useState(null);
 
-    // if the user presses the "D" key, toggle debugging mode
+    // if the user presses the "-" key, toggle debugging mode
     React.useEffect(() =>
     {
         const handleKeyDown = (event) =>
