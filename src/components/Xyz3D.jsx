@@ -33,7 +33,6 @@ export function Xyz3D()
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [ isDebugging ]);
 
-
     return (
         <HelmetProvider>
 

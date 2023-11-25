@@ -48,10 +48,6 @@ export class AnimationManager
     getBoundedActions(object)
     {
         const actions = [];
-        if (object.userData.name.includes("Physics_Bowl"))
-        {
-            console.log("Getting actions for object: " + object.userData.name);
-        }
 
         const keys = Object.keys(this.actions);
         for (let index = 0; index < keys.length; index++)
