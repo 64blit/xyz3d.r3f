@@ -100,9 +100,7 @@ export function Video3D(props: Props)
                         const height = (video.videoHeight / max) * size;
                         setVideoState({ width, height });
                         video.pause();
-                        setupAudio();
-                    }).catch((err) =>
-                    {
+                        // setupAudio();
                     });
 
             return videoPromise;
