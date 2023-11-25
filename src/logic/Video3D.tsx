@@ -182,7 +182,7 @@ export function Video3D(props: Props)
                         </meshBasicMaterial>
                     </mesh>
 
-                    {speaker && <primitive object={speaker} ></primitive>}
+                    {/* {speaker && <primitive object={speaker} ></primitive>} */}
 
                 </group>
             </>
