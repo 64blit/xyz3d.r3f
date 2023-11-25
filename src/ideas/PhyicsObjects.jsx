@@ -112,7 +112,7 @@ export const PhysicsObjects = ({ sceneManager, interactionManager, isDebugging =
         const callbacks = {};
         const objCopy = Object.assign({}, obj);
 
-        if (obj.userData?.OnSelectAnimations || obj.userData?.mediaTrigger === "OnSelect")
+        if (obj.userData?.OnSelectAnimations || obj.userData?.mediaTrigger === "OnSelect" || obj.userData?.type === "interactable")
         {
             callbacks.onClick = (event) =>
             {
@@ -121,7 +121,7 @@ export const PhysicsObjects = ({ sceneManager, interactionManager, isDebugging =
             };
         }
 
-        if (obj.userData?.OnPointerEnterAnimations || obj.userData?.mediaTrigger === "OnPointerEnter")
+        if (obj.userData?.OnPointerEnterAnimations || obj.userData?.mediaTrigger === "OnPointerEnter" || obj.userData?.type === "interactable")
         {
             callbacks.onPointerEnter = (event) =>
             {
@@ -130,7 +130,7 @@ export const PhysicsObjects = ({ sceneManager, interactionManager, isDebugging =
             };
         }
 
-        if (obj.userData?.OnPointerExitAnimations || obj.userData?.mediaTrigger === "OnPointerExit")
+        if (obj.userData?.OnPointerExitAnimations || obj.userData?.mediaTrigger === "OnPointerExit" || obj.userData?.type === "interactable")
         {
             callbacks.onPointerLeave = (event) =>
             {
