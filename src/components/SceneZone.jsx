@@ -32,33 +32,21 @@ export function SceneZone(props)
         const callbacks = {};
 
         const type = element.object.userData?.type;
-        const data = element.object.userData?.interactableData;
 
-        if (element.object.userData?.type !== "interactable")
+        if (type !== "interactable")
         {
-            return;
-        }
-
-        if (type === undefined || type === null)
-        {
-            console.log("Missing interactable type for ", element.object.name);
-            return;
-        }
-        if (data === undefined || data === null)
-        {
-            console.log("Missing interactable data for ", element.object.name);
             return;
         }
 
         callbacks.onClick = (event) => props.interactionManager.handleInteraction(event, element);
 
 
-        if (element.object.userData?.OnPointerEnterAnimations !== undefined && element.object.userData?.OnPointerEnterAnimations !== null)
+        if (element.object.userData?.OnPointerEnterAnimations !== undefined && element.object.userData?.OnPointerEnterAnimations !== null || element.object.userData.mediaTrigger === "OnPointerEnter")
         {
             callbacks.onPointerEnter = (event) => props.interactionManager.handlePointerEnter(event, element);
         }
 
-        if (element.object.userData?.OnPointerExitAnimations !== undefined && element.object.userData?.OnPointerExitAnimations !== null)
+        if (element.object.userData?.OnPointerExitAnimations !== undefined && element.object.userData?.OnPointerExitAnimations !== null || element.object.userData.mediaTrigger === "OnPointerExit")
         {
             callbacks.onPointerLeave = (event) => props.interactionManager.handlePointerExit(event, element);
         }
