@@ -53,12 +53,19 @@ export class CameraManager
         {
             if (!sceneZone) return;
             if (sceneZone.index < 0) return;
+            if (!this.scroll) return;
 
             const position = sceneZone.camera.anchor?.position;
 
             if (!position) return;
 
             const target = sceneZone.camera.targetPosition;
+
+            const newScrollOffset = sceneZone.index / (this.sceneManager.sceneZones.length - 1);
+            const scrollTarget = this.scroll.el;
+            const scrollTop = (scrollTarget.scrollHeight - scrollTarget.clientHeight) * newScrollOffset;
+
+            scrollTarget.scrollTo({ top: scrollTop });
 
             if (this.controls === undefined || this.controls === null) return;
 
