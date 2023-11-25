@@ -30,7 +30,6 @@ export function Audio3D(props: AudioProps)
     const [ speaker, setSpeaker ] = useState<PositionalAudio>();
     const camera = useThree((state) => state.camera);
     const [ callbacks, setCallbacks ] = useState({});
-    const [ audioStarted, setAudioStarted ] = useState(false);
 
     const audio = useMemo(() =>
     {
@@ -39,8 +38,9 @@ export function Audio3D(props: AudioProps)
         a.preload = "auto";
         a.crossOrigin = "Anonymous";
         a.loop = false;
-        a.autoplay = true;
+        a.autoplay = false;
         a.muted = true;
+        a.volume = 0;
         return a;
     }, []);
 
@@ -58,27 +58,10 @@ export function Audio3D(props: AudioProps)
 
     useEffect(() =>
     {
-        if (audioStarted) return;
-
-        const startAudio = () =>
-        {
-            if (audioStarted) return;
-            setAudioStarted(true);
-
-            audio.volume = 0;
-            audio.muted = true;
-            audio.play().then(() =>
-            {
-                setupAudio()
-                audio.volume = volume;
-                audio.muted = false;
-
-            });
-        };
 
         const setupAudio = () =>
         {
-            if (!audio.paused && !speaker)
+            if (!speaker)
             {
                 const listener = new AudioListener();
                 camera.add(listener);
@@ -103,17 +86,17 @@ export function Audio3D(props: AudioProps)
         const addCallbacks = () =>
         {
             const tempCallbacks = {};
-            if ('Looping' === sourceObject.userData.mediaTrigger)
+            if ('Looping' === sourceObject.userData?.mediaTrigger)
             {
                 audio.loop = true;
                 audio.play();
-            } else if ('OnSelect' === sourceObject.userData.mediaTrigger)
+            } else if ('OnSelect' === sourceObject.userData?.mediaTrigger)
             {
                 tempCallbacks[ 'onClick' ] = () =>
                 {
                     toggleAudio();
                 }
-            } else if ('OnPointerExit' === sourceObject.userData.mediaTrigger || 'OnPointerEnter' === sourceObject.userData.mediaTrigger)
+            } else if ('OnPointerExit' === sourceObject.userData?.mediaTrigger || 'OnPointerEnter' === sourceObject.userData?.mediaTrigger)
             {
                 tempCallbacks[ 'onPointerEnter' ] = () =>
                 {
@@ -125,10 +108,12 @@ export function Audio3D(props: AudioProps)
 
         if (audio)
         {
+            audio.volume = volume;
+            audio.muted = false;
             addCallbacks();
-            startAudio();
+            setupAudio();
         }
-    }, [ speaker, audio, url, sourceObject, audioStarted ]);
+    }, [ speaker, audio, url, sourceObject ]);
 
     useEffect(() =>
     {
