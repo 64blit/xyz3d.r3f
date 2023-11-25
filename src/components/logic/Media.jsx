@@ -29,8 +29,6 @@ export const Media = (props = { sceneManager }) =>
                                 framed >
                             </Video>
                         ))}
-                    </group>
-                    <group>
                         {props.sceneManager?.mediaObjects.positionalAudio.map((element, key) => (
                             <Audio3D
                                 key={key}
