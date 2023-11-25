@@ -3,7 +3,7 @@ $build_path = "C:\Users\edmun\OneDrive\Documents\_SPACE\Web\xyz3d.r3f\dist"
 
 # Set the path of the src folder
 $src_path = "C:\Users\edmun\OneDrive\Documents\_SPACE\Web\xyz3d.r3f\"
-
+yarn install
 # Set the destination paths
 $preview_dest = "C:\Users\edmun\OneDrive\Documents\_SPACE\Blender\WebCrafterPro-blender-plugin\Templates\orbit\preview"
 $r3f_dest = "C:\Users\edmun\OneDrive\Documents\_SPACE\Blender\WebCrafterPro-blender-plugin\Templates\orbit\source"
