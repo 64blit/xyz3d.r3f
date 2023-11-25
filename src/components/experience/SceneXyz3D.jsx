@@ -29,7 +29,6 @@ export const SceneXyz3D = (props) =>
     {
         if (sceneManager)
         {
-            console.log("scrolling to scene zone", scroll)
             cameraManager.scroll = scroll;
             return;
         }
@@ -37,7 +36,6 @@ export const SceneXyz3D = (props) =>
         const tempSceneManager = new SceneManager(scene, controlsRef.current, animations, actions, mixer);
         setSceneManager(tempSceneManager);
 
-        console.log("scroll", scroll)
         const tempCameraManager = new CameraManager(tempSceneManager, controlsRef.current, camera, scroll);
         setCameraManager(tempCameraManager);
 
