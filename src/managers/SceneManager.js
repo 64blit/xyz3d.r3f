@@ -173,11 +173,11 @@ export class SceneManager
             this.siteData.siteAuthor = object.userData?.siteAuthor || "";
             this.siteData.siteDescription = object.userData?.siteDescription || "";
             this.siteData.siteURL = object.userData?.siteURL || "";
-            this.siteData.siteIconURL = object.userData?.siteIconURL || "";
-            this.siteData.splashScreenActive = object.userData?.splashActive || true;
+            this.siteData.siteIconURL = object.userData?.siteIconURL || "favicon.ico";
+            this.siteData.splashScreenActive = object.userData?.splashActive || false;
             this.siteData.splashScreenTitle = object.userData?.splashTitle || "Welcome!";
-            this.siteData.splashScreenBody = object.userData?.splashBody || "Move around to explore!";
-            this.siteData.splashScreenButton = object.userData?.splashButton || "Start";
+            this.siteData.splashScreenBody = object.userData?.splashBody || "Scroll down to explore.";
+            this.siteData.splashScreenButton = object.userData?.splashButton || "Continue";
             this.scene.remove(object);
             return;
         }
@@ -192,6 +192,9 @@ export class SceneManager
                     worldRotation,
                     mediaSrc: object.userData.mediaSrc
                 });
+                object.userData.type = object.userData.type || "interactable";
+                object.userData.interactableData = object.userData.interactableData || "audio";
+
             } else if (object.userData.mediaType === "Video")
             {
                 object.visible = false;
@@ -199,16 +202,15 @@ export class SceneManager
                     object,
                     worldPosition,
                     worldRotation,
-                    mediaSrc: object.userData.mediaSrc,
-                    key: object.uuid
+                    mediaSrc: object.userData.mediaSrc
                 });
             } else if (object.userData.mediaType === "3DPositionalAudio")
             {
                 this.mediaObjects.positionalAudio.push({
                     object,
                     worldPosition,
-                    mediaSrc: object.userData.mediaSrc,
-                    key: object.uuid
+                    mediaSrc: object.userData.mediaSrc
+                    // volume and looping need to be added
                 });
             }
         }
