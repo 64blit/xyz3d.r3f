@@ -7,9 +7,17 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "skipFiles": [
-                "<node_internals>/**"
+            "runtimeExecutable": "C://Users//edmun//AppData//Local//BraveSoftware//Brave-Browser//Application//brave.exe",
+            "url": "http://localhost:5173/index.html",
+            "webRoot": "${workspaceFolder}/src",
+            "sourceMapPathOverrides": {
+                "webpack:///./src/*": "${webRoot}/*",
+                "webpack:///./src/*?*": "${webRoot}/*"
+            },
+            "port": 9222,
+            "runtimeArgs": [
+                "--remote-debugging-port=9222",
+                "----incognito"
             ],
             "program": "${workspaceFolder}\\src\\worlds\\Starter.tsx",
             "outFiles": [
