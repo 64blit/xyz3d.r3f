@@ -32,7 +32,7 @@ export class SceneManager
         this.fixZones();
 
         this.animationManager.playLoopingAnimations();
-        this.audioManager.playLoopingSounds();
+        // this.audioManager.playLoopingSounds();
 
         this.playAnimation = (name, loopType = THREE.LoopOnce) =>
         {
@@ -184,13 +184,16 @@ export class SceneManager
 
         if ("Media" in object.userData)
         {
+            const volume = "mediaVolume" in object.userData ? object.userData?.mediaVolume : 1;
+
             if (object.userData.mediaType === "Audio")
             {
                 this.mediaObjects.audio.push({
                     object,
                     worldPosition,
                     worldRotation,
-                    mediaSrc: object.userData.mediaSrc
+                    mediaSrc: object.userData.mediaSrc,
+                    volume,
                 });
                 object.userData.type = object.userData.type || "interactable";
                 object.userData.interactableData = object.userData.interactableData || "audio";
@@ -202,15 +205,16 @@ export class SceneManager
                     object,
                     worldPosition,
                     worldRotation,
-                    mediaSrc: object.userData.mediaSrc
+                    mediaSrc: object.userData.mediaSrc,
+                    volume,
                 });
             } else if (object.userData.mediaType === "3DPositionalAudio")
             {
                 this.mediaObjects.positionalAudio.push({
                     object,
                     worldPosition,
-                    mediaSrc: object.userData.mediaSrc
-                    // volume and looping need to be added
+                    mediaSrc: object.userData.mediaSrc,
+                    volume,
                 });
             }
         }
