@@ -87,7 +87,6 @@ export class CameraManager
         }
 
 
-        console.log("CameraManager created");
         this.goToSceneZoneByIndex(0);
     }
 
