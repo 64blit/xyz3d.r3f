@@ -113,7 +113,7 @@ export class CameraManager
 
             if (!this.scroll) return;
             if (this.busy) return;
-            if (this.scroll.delta < .0004) return;
+            if (this.scroll.delta < .00004) return;
 
             const scaledScrollOffset = this.scroll.offset * (this.sceneManager.waypoints.length - 1);
             const currentZoneIndex = Math.floor(scaledScrollOffset);
