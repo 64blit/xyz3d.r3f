@@ -7,17 +7,35 @@
             "type": "chrome",
             "request": "launch",
             "runtimeExecutable": "C://Users//edmun//AppData//Local//BraveSoftware//Brave-Browser//Application//brave.exe",
-            "url": "http://localhost:5173/index.html",
-            "webRoot": "${workspaceFolder}/src",
-            "sourceMapPathOverrides": {
-                "webpack:///./src/*": "${webRoot}/*",
-                "webpack:///./src/*?*": "${webRoot}/*"
-            },
+            "url": "http://localhost:3000",
             "port": 9222,
             "runtimeArgs": [
                 "--remote-debugging-port=9222",
                 "----incognito"
             ],
         },
+        {
+            "name": "Next.js: debug server-side",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "npm run dev"
+        },
+        {
+            "name": "Next.js: debug client-side",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:3000"
+        },
+        {
+            "name": "Next.js: debug full stack",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "npm run dev",
+            "serverReadyAction": {
+                "pattern": "- Local:.+(https?://.+)",
+                "uriFormat": "%s",
+                "action": "debugWithChrome",
+            }
+        }
     ]
 }
