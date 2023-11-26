@@ -13,12 +13,15 @@ import
 
 import { PositionalAudioHelper } from "three/examples/jsm/helpers/PositionalAudioHelper.js";
 
+import { Frame } from "spacesvr";
+
 type Props = {
     src: string;
     size?: number;
     framed?: boolean;
     isDebugging?: boolean;
     muted?: boolean;
+    rollOff?: number;
     volume?: number;
     frameMaterial?: Material;
     frameWidth?: number;
@@ -38,6 +41,7 @@ export function Video3D(props: Props)
         framed,
         muted,
         volume = 1,
+        rollOff = 1,
         frameMaterial,
         frameWidth = 1,
         sourceObject = null,
@@ -59,6 +63,7 @@ export function Video3D(props: Props)
         v.crossOrigin = "Anonymous";
         v.loop = true;
         v.src = src;
+        v.preload = "auto";
         v.autoplay = false;
         v.volume = volume;
         v.muted = muted ? muted : false;
@@ -66,45 +71,38 @@ export function Video3D(props: Props)
         return v;
     }, []);
 
+    const toggleActive = () =>
+    {
+        if (video.paused)
+        {
+            video.play();
+        }
+        else
+        {
+            video.pause();
+        }
+    }
+
+
     useMemo(() =>
     {
         const setupAudio = () =>
         {
-            if (!muted)
-            {
-                const listener = new AudioListener();
-                listener.name = "video_listener";
-                camera.add(listener);
 
-                const speak = new PositionalAudio(listener);
-                speak.setMediaElementSource(video);
-                const dist = 12;
-                speak.setRefDistance(dist);
-                speak.setRolloffFactor(1);
-                speak.setVolume(1);
-                speak.setDirectionalCone(180, 230, 0.1);
+            return;
+            const listener = new AudioListener();
+            listener.name = "video_listener";
+            const speak = new PositionalAudio(listener);
+            speak.setMediaElementSource(video);
+            speak.setRefDistance(1);
+            speak.setRolloffFactor(rollOff);
+            speak.setVolume(volume);
+            speak.setDirectionalCone(180, 230, 0.1);
 
-                setSpeaker(speak);
-            }
+            setSpeaker(speak);
+            camera.add(listener);
         };
 
-        const startVideo = () =>
-        {
-            const videoPromise =
-                video.play()
-                    .then(() =>
-                    {
-
-                        const max = Math.max(video.videoWidth, video.videoHeight);
-                        const width = (video.videoWidth / max) * size;
-                        const height = (video.videoHeight / max) * size;
-                        setVideoState({ width, height });
-                        video.pause();
-                        // setupAudio();
-                    });
-
-            return videoPromise;
-        };
 
         const addCallbacks = () =>
         {
@@ -116,7 +114,7 @@ export function Video3D(props: Props)
             {
                 tempCallbacks[ 'onClick' ] = () => 
                 {
-                    toggleVideo();
+                    toggleActive();
 
                 }
             } else if ('OnPointerExitMedia' === sourceObject.userData.mediaTrigger || 'OnPointerEnter' === sourceObject.userData.mediaTrigger)
@@ -133,24 +131,29 @@ export function Video3D(props: Props)
             setCallbacks(tempCallbacks);
         }
 
-        startVideo().then(() =>
+
+        if (video)
         {
-            addCallbacks();
-        });
+            video.play().then(() =>
+            {
+                video.pause();
+                setupAudio();
+                addCallbacks();
+                const max = Math.max(video.videoWidth, video.videoHeight);
+                const width = (video.videoWidth / max) * size;
+                const height = (video.videoHeight / max) * size;
+                setVideoState({ width, height });
+            });
+        }
 
     }, [ video ]);
 
-    const toggleVideo = () =>
+
+    useEffect(() =>
     {
-        if (video.paused)
-        {
-            video.play();
-        }
-        else
-        {
-            video.pause();
-        }
-    }
+        if (!speaker) return;
+        speaker.setVolume(volume);
+    }, [ volume ]);
 
     // Never fired because this component is added on the fly
     useEffect(() =>
@@ -181,8 +184,16 @@ export function Video3D(props: Props)
                             <videoTexture attach="map" args={[ video ]} encoding={sRGBEncoding} />
                         </meshBasicMaterial>
                     </mesh>
+                    {speaker && <primitive object={speaker} position={[ 0, 0, 0 ]} ></primitive>}
 
-                    {/* {speaker && <primitive object={speaker} ></primitive>} */}
+                    {framed && (
+                        <Frame
+                            width={videoState?.width}
+                            height={videoState?.height}
+                            thickness={frameWidth}
+                            material={frameMaterial}
+                        />
+                    )}
 
                 </group>
             </>

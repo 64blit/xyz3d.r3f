@@ -10,8 +10,8 @@ export const Media = ({ sceneManager, isDebugging }) =>
 
     useEffect(() =>
     {
-        // if (!sceneManager) return;
-        // if (!sceneManager.mediaObjects) return;
+        if (!sceneManager) return;
+        if (!sceneManager.mediaObjects) return;
 
         const loadMedia = (event) =>
         {

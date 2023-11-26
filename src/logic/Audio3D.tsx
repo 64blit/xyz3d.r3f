@@ -1,15 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GroupProps, useThree } from "@react-three/fiber";
-import { AudioAnalyser, PositionalAudio, Vector3, AudioListener } from "three";
-import autoprefixer from "autoprefixer";
-
+import * as THREE from "three"
 type AudioProps = {
     url: string;
-    dCone?: Vector3;
+    dCone?: THREE.Vector3;
     rollOff?: number;
     volume?: number;
     sourceObject?: any;
-    setAudioAnalyser?: (aa: AudioAnalyser) => void;
+    setAudioAnalyser?: (aa: THREE.AudioAnalyser) => void;
     fftSize?: 64 | 128 | 256 | 512 | 1024;
 } & GroupProps;
 
@@ -17,7 +15,7 @@ export function Audio3D(props: AudioProps)
 {
     const {
         url,
-        dCone = new Vector3(180, 230, 0.1),
+        dCone = new THREE.Vector3(180, 230, 0.1),
         rollOff = 1,
         volume = 1,
         sourceObject = null,
@@ -27,8 +25,9 @@ export function Audio3D(props: AudioProps)
     } = props;
 
 
-    const [ speaker, setSpeaker ] = useState<PositionalAudio>();
-    const camera = useThree((state) => state.camera);
+    const { camera } = useThree();
+
+    const [ speaker, setSpeaker ] = useState<THREE.PositionalAudio>();
     const [ callbacks, setCallbacks ] = useState({});
 
     const audio = useMemo(() =>
@@ -39,48 +38,46 @@ export function Audio3D(props: AudioProps)
         a.crossOrigin = "Anonymous";
         a.loop = false;
         a.autoplay = false;
-        a.muted = true;
-        a.volume = 0;
+        a.volume = 1;
+
         return a;
     }, []);
 
-    const toggleAudio = () =>
+    const playToggle = () =>
     {
         if (audio.paused)
         {
             audio.play();
-        }
-        else
+        } else
         {
             audio.pause();
         }
-    }
+    };
 
     useEffect(() =>
     {
-
+        let listener = null;
         const setupAudio = () =>
         {
-            if (!speaker)
+            return;
+            listener = new THREE.AudioListener();
+            listener.name = "audio_listener";
+            const speak = new THREE.PositionalAudio(listener);
+            speak.setMediaElementSource(audio);
+            speak.setRefDistance(1);
+            speak.setRolloffFactor(rollOff);
+            speak.setVolume(volume);
+            speak.context.resume();
+            // speak.setDirectionalCone(dCone.x, dCone.y, dCone.z);
+
+            camera.add(listener);
+
+            if (setAudioAnalyser)
             {
-                const listener = new AudioListener();
-                camera.add(listener);
-
-                const speak = new PositionalAudio(listener);
-                speak.setMediaElementSource(audio);
-                speak.setRefDistance(5);
-                speak.setRolloffFactor(rollOff);
-
-                speak.setVolume(volume);
-                speak.setDirectionalCone(dCone.x, dCone.y, dCone.z);
-
-                if (setAudioAnalyser)
-                {
-                    setAudioAnalyser(new AudioAnalyser(speak, fftSize));
-                }
-
-                setSpeaker(speak);
+                setAudioAnalyser(new THREE.AudioAnalyser(speak, fftSize));
             }
+
+            setSpeaker(speak);
         };
 
         const addCallbacks = () =>
@@ -94,7 +91,7 @@ export function Audio3D(props: AudioProps)
             {
                 tempCallbacks[ 'onClick' ] = () =>
                 {
-                    toggleAudio();
+                    playToggle();
                 }
             } else if ('OnPointerExit' === sourceObject.userData?.mediaTrigger || 'OnPointerEnter' === sourceObject.userData?.mediaTrigger)
             {
@@ -106,23 +103,24 @@ export function Audio3D(props: AudioProps)
             setCallbacks(tempCallbacks);
         }
 
-        if (audio)
+        if (audio && !speaker)
         {
-            audio.volume = volume;
-            audio.muted = false;
-            addCallbacks();
-            setupAudio();
+            audio.play().then(() =>
+            {
+                audio.pause();
+                setupAudio();
+                addCallbacks();
+            });
         }
-    }, [ speaker, audio, url, sourceObject ]);
+
+    }, [ audio ]);
 
     useEffect(() =>
     {
         if (!speaker) return;
-
         speaker.setRolloffFactor(rollOff);
         speaker.setVolume(volume);
-        speaker.setDirectionalCone(dCone.x, dCone.y, dCone.z);
-    }, [ dCone, rollOff, volume ]);
+    }, [ rollOff, volume ]);
 
     return (
         <primitive object={sourceObject.clone()} visible={false} {...callbacks} {...rest} >
