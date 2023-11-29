@@ -40,7 +40,7 @@ export function Audio3D(props: AudioProps)
         a.loop = false;
         a.autoplay = false;
         a.muted = true;
-        a.volume = 0;
+        a.volume = volume;
         return a;
     }, []);
 

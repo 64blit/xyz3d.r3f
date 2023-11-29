@@ -54,8 +54,17 @@ export function Video(props: Props)
         v.src = src;
         v.autoplay = false;
         v.muted = muted ? muted : false;
+        v.volume = volume;
         return v;
     }, []);
+
+    useEffect(() =>
+    {
+        if (!speaker) return;
+
+        speaker.setVolume(volume);
+    }, [ volume, speaker ]);
+
 
     const toggleVideo = () =>
     {

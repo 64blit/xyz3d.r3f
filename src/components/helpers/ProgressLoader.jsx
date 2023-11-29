@@ -14,7 +14,6 @@ export function ProgressLoader({ setIsLoaded })
 
         if (progress >= 99 || loaded >= total)
         {
-            console.log("loaded")
             setIsLoaded(true);
         }
 
