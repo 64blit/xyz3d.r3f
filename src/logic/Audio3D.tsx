@@ -38,7 +38,7 @@ export function Audio3D(props: AudioProps)
         a.crossOrigin = "Anonymous";
         a.loop = false;
         a.autoplay = false;
-        a.volume = 1;
+        a.volume = volume;
 
         return a;
     }, []);
