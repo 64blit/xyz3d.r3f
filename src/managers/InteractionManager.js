@@ -20,7 +20,6 @@ export class InteractionManager
             const data = event.object.userData.interactableData;
 
             const hasSoundTrigger = event.object.userData?.mediaTrigger == "OnSelect";
-            const sound = event.object.userData.mediaSrc || null;
 
             const actions = event.object.userData.OnSelectAnimations || null;
             const animationPromises = [];
@@ -34,9 +33,9 @@ export class InteractionManager
             }
 
 
-            if (sound != null && hasSoundTrigger) 
+            if (hasSoundTrigger) 
             {
-                this.playSound(sound);
+                this.playSound(event.object);
             }
 
             await Promise.all(animationPromises);
@@ -80,12 +79,8 @@ export class InteractionManager
             const hasSoundTrigger = event.object.userData?.mediaTrigger == "OnPointerEnter";
             if (!hasSoundTrigger) return;
 
-            const sound = event.object.userData.mediaSrc || null;
+            this.playSound(event.object);
 
-            if (sound != null)
-            {
-                this.playSound(sound);
-            }
         }
 
         this.handlePointerExit = (event) =>
@@ -105,12 +100,8 @@ export class InteractionManager
             const hasSoundTrigger = event.object.userData?.mediaTrigger == "OnPointerExit";
 
             if (!hasSoundTrigger) return;
-            const sound = event.object.userData.mediaSrc || null;
+            this.playSound(event.object);
 
-            if (sound != null)
-            {
-                this.playSound(sound);
-            }
         }
 
 

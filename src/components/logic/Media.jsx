@@ -26,6 +26,7 @@ export const Media = (props = { sceneManager }) =>
                                 quaternion={element.worldRotation}
                                 sourceObject={element.object}
                                 muted={false}
+                                volume={element.volume}
                                 framed >
                             </Video>
                         ))}
@@ -38,6 +39,7 @@ export const Media = (props = { sceneManager }) =>
                                 position={element.worldPosition}
                                 quaternion={element.worldRotation}
                                 muted={false}
+                                volume={element.volume}
                                 framed
                             />
                         ))}
