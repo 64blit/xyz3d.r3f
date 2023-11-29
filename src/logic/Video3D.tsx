@@ -88,7 +88,7 @@ export function Video3D(props: Props)
     {
         const setupAudio = () =>
         {
-
+            // After a dependecy update of the project, positional audio has stopped working.
             return;
             const listener = new AudioListener();
             listener.name = "video_listener";
