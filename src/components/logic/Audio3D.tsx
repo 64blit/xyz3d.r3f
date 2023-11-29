@@ -18,7 +18,7 @@ export function Audio3D(props: AudioProps)
     const {
         url,
         dCone = new Vector3(180, 230, 0.1),
-        rollOff = 1,
+        rollOff = .75,
         volume = 1,
         sourceObject = null,
         setAudioAnalyser,
@@ -68,11 +68,11 @@ export function Audio3D(props: AudioProps)
 
                 const speak = new PositionalAudio(listener);
                 speak.setMediaElementSource(audio);
-                speak.setRefDistance(5);
+                speak.setRefDistance(1);
                 speak.setRolloffFactor(rollOff);
 
                 speak.setVolume(volume);
-                speak.setDirectionalCone(dCone.x, dCone.y, dCone.z);
+                // speak.setDirectionalCone(dCone.x, dCone.y, dCone.z);
 
                 if (setAudioAnalyser)
                 {
@@ -121,7 +121,7 @@ export function Audio3D(props: AudioProps)
 
         speaker.setRolloffFactor(rollOff);
         speaker.setVolume(volume);
-        speaker.setDirectionalCone(dCone.x, dCone.y, dCone.z);
+        // speaker.setDirectionalCone(dCone.x, dCone.y, dCone.z);
     }, [ dCone, rollOff, volume ]);
 
     return (
