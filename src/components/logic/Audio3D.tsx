@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { GroupProps, useThree } from "@react-three/fiber";
 import { AudioAnalyser, PositionalAudio, Vector3, AudioListener } from "three";
-import autoprefixer from "autoprefixer";
 
 type AudioProps = {
     url: string;
