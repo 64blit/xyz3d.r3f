@@ -28,6 +28,7 @@ export const Media = ({ sceneManager, isDebugging }) =>
                                 sourceObject={element.object}
                                 muted={false}
                                 isDebugging={isDebugging}
+                                volume={element.volume}
                                 framed >
                             </Video3D>
                         ))}
@@ -41,6 +42,7 @@ export const Media = ({ sceneManager, isDebugging }) =>
                                 quaternion={element.worldRotation}
                                 muted={false}
                                 isDebugging={isDebugging}
+                                volume={element.volume}
                             />
                         ))}
                     </group>
