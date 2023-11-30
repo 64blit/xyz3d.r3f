@@ -153,7 +153,7 @@ export class CameraManager
             this.scrollHandler();
         } else if (avgFreq > 10)
         {
-            const avgFreqZoom = map(avgFreq, 0, 255, 0.15, 1.15);
+            const avgFreqZoom = map(avgFreq, 0, 255, 1.0, 1.15);
             this.controls.zoomTo(avgFreqZoom, true);
         }
 

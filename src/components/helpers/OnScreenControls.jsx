@@ -54,11 +54,12 @@ export const OnScreenControls = ({ xyzAPI }) =>
 
     const playSample = (index) =>
     {
-        const artist = artists[ index ];
-        const startZ = artist.position.z;
-        gsap.to(artist.scale, { x: 4, y: 4, z: 4, duration: 1, onComplete: () => gsap.to(artist.scale, { x: 1, y: 1, z: 1, duration: 0.5 }) });
-        gsap.to(artist.position, { z: 4, duration: .5, onComplete: () => gsap.to(artist.position, { z: startZ, duration: 0.5 }) });
-        sceneManager.playSound(artist.userData?.mediaSrc);
+        const artistObj = artists[ index ];
+        const startZ = artistObj.position.z;
+        gsap.to(artistObj.scale, { x: 4, y: 4, z: 4, duration: 1, onComplete: () => gsap.to(artistObj.scale, { x: 1, y: 1, z: 1, duration: 0.5 }) });
+        gsap.to(artistObj.position, { z: 4, duration: .5, onComplete: () => gsap.to(artistObj.position, { z: startZ, duration: 0.5 }) });
+        console.log(artistObj.userData?.mediaSrc);
+        sceneManager.playSound(artistObj);
     }
 
     return (

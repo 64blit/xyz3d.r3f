@@ -22,12 +22,16 @@ export class AudioManager
         // Function to play sound by name
         this.playSound = (parentObject, loop = false, audioObj = null) =>
         {
-            if (!parentObject.userData.mediaSrc) return;
+            if (!parentObject.userData?.mediaSrc) return;
             if (!audioObj) audioObj = sound;
 
 
-            const source = parentObject.userData.mediaSrc;
-            const volume = parentObject.userData.mediaVolume || 1;
+            const source = parentObject.userData?.mediaSrc;
+            const volume = parentObject.userData?.mediaVolume || 1;
+
+            console.log("Playing Sound: " + source)
+
+            if (!source) return;
 
             audioObj.setLoop(loop);
             audioObj.setVolume(volume);
@@ -51,7 +55,6 @@ export class AudioManager
                 loadedSounds[ source ] = buffer;
                 audioObj.setBuffer(buffer);
                 audioObj.play();
-
             });
 
         };
