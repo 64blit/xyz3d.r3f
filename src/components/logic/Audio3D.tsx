@@ -67,7 +67,7 @@ export function Audio3D(props: AudioProps)
 
                 const speak = new PositionalAudio(listener);
                 speak.setMediaElementSource(audio);
-                speak.setRefDistance(1);
+                speak.setRefDistance(5);
                 speak.setRolloffFactor(rollOff);
 
                 speak.setVolume(volume);
