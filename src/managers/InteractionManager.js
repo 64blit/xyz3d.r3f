@@ -36,7 +36,7 @@ export class InteractionManager
 
             if (sound != null && hasSoundTrigger) 
             {
-                this.playSound(sound);
+                this.playSound(event.object);
             }
 
             await Promise.all(animationPromises);
@@ -85,7 +85,7 @@ export class InteractionManager
 
             if (sound != null)
             {
-                this.playSound(sound);
+                this.playSound(event.object);
             }
         }
 
@@ -110,7 +110,7 @@ export class InteractionManager
 
             if (sound != null)
             {
-                this.playSound(sound);
+                this.playSound(event.object);
             }
         }
 

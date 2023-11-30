@@ -16,13 +16,17 @@ export class AudioManager
         const sound = new THREE.Audio(this.listener);
         const audioLoader = new THREE.AudioLoader();
 
-        // Function to play sound by name
-        this.playSound = (source, loop = false, audioObj = null) =>
+        this.playSound = (parentObject, loop = false, audioObj = null) =>
         {
+            if (!parentObject.userData.mediaSrc) return;
             if (!audioObj) audioObj = sound;
 
+
+            const source = parentObject.userData.mediaSrc;
+            const volume = parentObject.userData.mediaVolume || 1;
+
             audioObj.setLoop(loop);
-            audioObj.setVolume(1);
+            audioObj.setVolume(volume);
 
             if (audioObj.isPlaying)
             {
@@ -54,8 +58,11 @@ export class AudioManager
         {
             const element = this.loopingSounds[ i ];
             this.playSound(element, true, new THREE.Audio(this.listener));
-            console.log("Playing Looping Sound: ", element);
         }
+        this.loopingSounds.forEach((sound) =>
+        {
+            console.log("Playing Looping Sound: " + sound);
+        });
     }
 
 
@@ -77,26 +84,10 @@ export class AudioManager
             return;
         }
 
-        const mediaSrc = object.userData.mediaSrc;
-
         if (object.userData.mediaTrigger === "Looping")
         {
-            this.loopingSounds.push(mediaSrc);
+            this.loopingSounds.push(object);
         }
 
-        if (object.userData.mediaTrigger === "OnPointerEnter")
-        {
-            object.userData.mediaSrc = mediaSrc;
-        }
-
-        if (object.userData.mediaTrigger === "OnPointerExit")
-        {
-            object.userData.mediaSrc = mediaSrc;
-        }
-
-        if (object.userData.mediaTrigger === "OnSelect")
-        {
-            object.userData.mediaSrc = mediaSrc;
-        }
     }
 }
