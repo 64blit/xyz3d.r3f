@@ -16,6 +16,8 @@ export class AudioManager
         const sound = new THREE.Audio(this.listener);
         const audioLoader = new THREE.AudioLoader();
 
+        this.getAudio = () => sound;
+
         // create an AudioAnalyser, passing in the sound and desired fftSize
         this.analyser = new THREE.AudioAnalyser(sound, 32);
 
