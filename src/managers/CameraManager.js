@@ -6,12 +6,11 @@ export class CameraManager
 {
     constructor(sceneManager, controls, camera, scroll)
     {
-
+        this.scroll = scroll;
         this.sceneManager = sceneManager;
         this.controls = controls;
         this.camera = camera;
         this.busy = false;
-        this.scroll = scroll;
 
         // Function to navigate to a scene zone by index
         this.goToSceneZoneByIndex = (index) =>
@@ -56,17 +55,17 @@ export class CameraManager
             if (sceneZone.index < 0) return;
             if (!this.scroll) return;
 
-            const newScrollOffset = sceneZone.index / (this.sceneManager.sceneZones.length - 1);
-            const scrollTarget = this.scroll.el;
-            const scrollTop = (scrollTarget.scrollHeight - scrollTarget.clientHeight) * newScrollOffset;
-
-            scrollTarget.scrollTo({ top: scrollTop });
-
             const position = sceneZone.camera.anchor?.position;
 
             if (!position) return;
 
             const target = sceneZone.camera.targetPosition;
+
+            const newScrollOffset = sceneZone.index / (this.sceneManager.sceneZones.length - 1);
+            const scrollTarget = this.scroll.el;
+            const scrollTop = (scrollTarget.scrollHeight - scrollTarget.clientHeight) * newScrollOffset;
+
+            scrollTarget.scrollTo({ top: scrollTop });
 
             if (this.controls === undefined || this.controls === null) return;
 
@@ -112,8 +111,9 @@ export class CameraManager
         this.scrollHandler = () =>
         {
 
+            if (!this.scroll) return;
             if (this.busy) return;
-            if (this.scroll.delta < .0004) return;
+            if (this.scroll.delta < .00004) return;
 
             const scaledScrollOffset = this.scroll.offset * (this.sceneManager.waypoints.length - 1);
             const currentZoneIndex = Math.floor(scaledScrollOffset);

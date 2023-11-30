@@ -7,9 +7,9 @@ import { Environment } from '@react-three/drei';
 import { SplashScreen } from './helpers/SplashScreen.jsx';
 import { Seo } from './helpers/SEO.jsx';
 import { HelmetProvider } from 'react-helmet-async';
-import { NavBar } from './logic/NavBar.jsx';
 import { ErrorBoundary } from 'react-error-boundary';
 import { OnScreenControls } from './helpers/OnScreenControls.jsx';
+import { Perf } from 'r3f-perf'
 
 export function Xyz3D()
 {
@@ -19,7 +19,7 @@ export function Xyz3D()
     const [ isLoaded, setIsLoaded ] = useState(false);
     const [ xyzAPI, setXyzAPI ] = useState(null);
 
-    // if the user presses the "D" key, toggle debugging mode
+    // if the user presses the "-" key, toggle debugging mode
     React.useEffect(() =>
     {
         const handleKeyDown = (event) =>
@@ -33,7 +33,6 @@ export function Xyz3D()
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [ isDebugging ]);
-
 
     return (
         <HelmetProvider>
@@ -65,6 +64,7 @@ export function Xyz3D()
 
                     </Suspense>
 
+                    {isDebugging && <Perf />}
                 </Canvas>
 
 
@@ -79,7 +79,7 @@ export function Xyz3D()
             {/* The container for HTML content */}
             < HtmlOverlay content={popupContent} showPopup={showPopup} setShowPopup={setShowPopup} />
             {/* Navbar */}
-            {isLoaded && <NavBar xyzAPI={xyzAPI} />}
+
             {isLoaded && <OnScreenControls xyzAPI={xyzAPI} />}
 
 

@@ -51,6 +51,11 @@ export class SceneManager
         return this.animationManager.actions[ name ];
     }
 
+    getBoundedActions(obj)
+    {
+        return this.animationManager.getBoundedActions(obj);
+    }
+
     // Populate scene zones and objects within zones
     populateSceneZones(scene)
     {
@@ -179,16 +184,19 @@ export class SceneManager
 
         if ("Media" in object.userData)
         {
+            const volume = "mediaVolume" in object.userData ? object.userData?.mediaVolume : 1;
+
             if (object.userData.mediaType === "Audio")
             {
                 this.mediaObjects.audio.push({
                     object,
                     worldPosition,
                     worldRotation,
-                    mediaSrc: object.userData.mediaSrc
+                    mediaSrc: object.userData.mediaSrc,
+                    volume
                 });
-                object.userData.type = "interactable";
-                object.userData.interactableData = "audio";
+                object.userData.type = object.userData.type || "interactable";
+                object.userData.interactableData = object.userData.interactableData || "audio";
 
             } else if (object.userData.mediaType === "Video")
             {
@@ -197,14 +205,16 @@ export class SceneManager
                     object,
                     worldPosition,
                     worldRotation,
-                    mediaSrc: object.userData.mediaSrc
+                    mediaSrc: object.userData.mediaSrc,
+                    volume
                 });
             } else if (object.userData.mediaType === "3DPositionalAudio")
             {
                 this.mediaObjects.positionalAudio.push({
                     object,
                     worldPosition,
-                    mediaSrc: object.userData.mediaSrc
+                    mediaSrc: object.userData.mediaSrc,
+                    volume
                 });
             }
         }

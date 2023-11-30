@@ -12,7 +12,7 @@ export function ProgressLoader({ setIsLoaded })
     {
         setPercent(Math.floor(progress));
 
-        if (progress >= 99)
+        if (progress >= 99 || loaded >= total)
         {
             setIsLoaded(true);
         }

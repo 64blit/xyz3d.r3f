@@ -8,7 +8,11 @@
             "request": "launch",
             "runtimeExecutable": "C://Users//edmun//AppData//Local//BraveSoftware//Brave-Browser//Application//brave.exe",
             "url": "http://localhost:5173/index.html",
-            "webRoot": "C://Users//edmun//Documents//_SPACE//_WEB//library-js-xyz3d//example",
+            "webRoot": "${workspaceFolder}/src",
+            "sourceMapPathOverrides": {
+                "webpack:///./src/*": "${webRoot}/*",
+                "webpack:///./src/*?*": "${webRoot}/*"
+            },
             "port": 9222,
             "runtimeArgs": [
                 "--remote-debugging-port=9222",

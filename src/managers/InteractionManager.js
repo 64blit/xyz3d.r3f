@@ -13,22 +13,34 @@ export class InteractionManager
 
         this.handleInteraction = async (event) =>
         {
+            document.body.style.cursor = "pointer";
             event.stopPropagation();
 
             const type = event.object.userData.interactableType;
             const data = event.object.userData.interactableData;
 
-            const sound = event.object.userData.mediaSrc || null;
+            const hasSoundTrigger = event.object.userData?.mediaTrigger == "OnSelect";
 
-            if (sound != null)
+            const actions = event.object.userData.OnSelectAnimations || null;
+            const animationPromises = [];
+
+            if (actions != null)
             {
-                this.playSound(sound);
+                actions.forEach((actionName) =>
+                {
+                    animationPromises.push(this.playAnimation(actionName));
+                });
             }
 
-            // Play all the select animations first, then trigger the interaction
-            await this.playSelectAnimation(event.object);
 
             document.body.style.cursor = "pointer";
+            if (hasSoundTrigger) 
+            {
+                this.playSound(event.object);
+            }
+
+            await Promise.all(animationPromises);
+
 
             switch (type)
             {
@@ -65,12 +77,11 @@ export class InteractionManager
                 });
             }
 
-            const sound = event.object.userData.mediaSrc || null;
+            const hasSoundTrigger = event.object.userData?.mediaTrigger == "OnPointerEnter";
+            if (!hasSoundTrigger) return;
 
-            if (sound != null)
-            {
-                this.playSound(sound);
-            }
+            this.playSound(event.object);
+
         }
 
         this.handlePointerExit = (event) =>
@@ -87,36 +98,13 @@ export class InteractionManager
                 });
             }
 
-            const sound = event.object.userData.mediaSrc || null;
+            const hasSoundTrigger = event.object.userData?.mediaTrigger == "OnPointerExit";
 
-            if (sound != null)
-            {
-                this.playSound(sound);
-            }
+            if (!hasSoundTrigger) return;
+            this.playSound(event.object);
+
         }
 
-        this.playSelectAnimation = async (object) =>
-        {
-            const actions = object.userData.OnSelectAnimations || null;
-            const animationPromises = [];
-
-            if (actions != null)
-            {
-                actions.forEach((actionName) =>
-                {
-                    animationPromises.push(this.playAnimation(actionName));
-                });
-            }
-
-            const sound = object.userData.mediaSrc || null;
-
-            if (sound != null)
-            {
-                this.playSound(sound);
-            }
-
-            await Promise.all(animationPromises);
-        }
 
     }
 }

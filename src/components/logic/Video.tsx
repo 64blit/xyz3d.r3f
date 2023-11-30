@@ -54,8 +54,17 @@ export function Video(props: Props)
         v.src = src;
         v.autoplay = false;
         v.muted = muted ? muted : false;
+        v.volume = volume;
         return v;
     }, []);
+
+    useEffect(() =>
+    {
+        if (!speaker) return;
+
+        speaker.setVolume(volume);
+    }, [ volume, speaker ]);
+
 
     const toggleVideo = () =>
     {
@@ -81,8 +90,8 @@ export function Video(props: Props)
 
                 const speak = new PositionalAudio(listener);
                 speak.setMediaElementSource(video);
-                speak.setRefDistance(0.75);
-                speak.setRolloffFactor(1);
+                speak.setRefDistance(5);
+                speak.setRolloffFactor(.75);
                 speak.setVolume(volume);
                 speak.setDirectionalCone(180, 230, 0.1);
 
