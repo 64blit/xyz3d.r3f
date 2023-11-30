@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "exportit": "next build && next export",
+    "exportit": "next build",
     "start": "next start",
     "lint": "yarn prettier && yarn eslint",
     "eslint": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'",
