@@ -1,5 +1,5 @@
-import React, { useState, Suspense } from 'react';
-import { Canvas } from '@react-three/fiber';
+import React, { useState, Suspense, useRef } from 'react';
+import { Canvas, useThree } from '@react-three/fiber';
 import { SceneXyz3D } from './experience/SceneXyz3D.jsx';
 import { HtmlOverlay } from './helpers/HtmlOverlay.jsx';
 import { ProgressLoader } from './helpers/ProgressLoader.jsx';
@@ -18,6 +18,9 @@ export function Xyz3D()
     const [ isDebugging, setIsDebugging ] = useState(false);
     const [ isLoaded, setIsLoaded ] = useState(false);
     const [ xyzAPI, setXyzAPI ] = useState(null);
+    const [ screenClicked, setScreenClicked ] = useState(false);
+    const canvasParent = useRef();
+
 
     // if the user presses the "-" key, toggle debugging mode
     React.useEffect(() =>
@@ -37,50 +40,46 @@ export function Xyz3D()
     return (
         <HelmetProvider>
 
+            <div className="flex flex-col h-screen items-center transition-all transform delay-300 " >
 
-            {/* Wrapper div to cover the screen */}
-            <div className="absolute inset-0 bg-black">
+                <div id='canvasparent' ref={canvasParent} className={`w-full h-full shrink bg-black transition-all delay-300`} >
+                    {/* The seo content which is added to the head section. */}
+                    {isLoaded && <Seo xyzAPI={xyzAPI} />}
 
+                    {/* The 3D rendering canvas */}
+                    <Canvas>
 
-                {/* The 3D rendering canvas */}
-                <Canvas>
+                        {/* The loading screen */}
+                        <Suspense fallback={<ProgressLoader setIsLoaded={setIsLoaded} />}>
 
-                    {/* The loading screen */}
-                    <Suspense fallback={<ProgressLoader setIsLoaded={setIsLoaded} />}>
+                            {/* 3D Scene */}
+                            <SceneXyz3D
+                                path={"assets/scene.glb"}
+                                setShowPopup={setShowPopup}
+                                isDebugging={isDebugging}
+                                setPopupContent={setPopupContent}
+                                setXyzAPI={setXyzAPI}
+                            />
 
-                        {/* 3D Scene */}
-                        <SceneXyz3D
-                            path={"assets/scene.glb"}
-                            setShowPopup={setShowPopup}
-                            isDebugging={isDebugging}
-                            setPopupContent={setPopupContent}
-                            setXyzAPI={setXyzAPI}
-                        />
+                            {/* Skybox with an ambient light fallback */}
+                            <ErrorBoundary fallback={<ambientLight intensity={0} />}>
+                                <Environment files={"https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_43d_clear_puresky_1k.hdr"} frames={1} resolution={512} ground background />
+                            </ErrorBoundary>
 
-                        {/* Skybox with an ambient light fallback */}
-                        <ErrorBoundary fallback={<ambientLight intensity={1} />}>
-                            <Environment files={"https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_43d_clear_puresky_1k.hdr"} frames={1} resolution={512} background />
-                        </ErrorBoundary>
+                        </Suspense>
 
-                    </Suspense>
+                        {isDebugging && <Perf />}
+                    </Canvas>
 
-                    {isDebugging && <Perf />}
-                </Canvas>
+                </div >
 
+                {isLoaded &&
+                    <OnScreenControls xyzAPI={xyzAPI} setScreenClicked={setScreenClicked} isLoaded />
+                }
 
-            </div >
+                {/* <div id="bottomScreen" className={`flex-grow w-full h-0 transition-all delay-300 bg-slate-700 ${(isLoaded) ? 'h-1/4 flex-grow' : 'h-0 flex-shrink'} `} ></div> */}
 
-            {/* The splash screen we show indicating how to interact with the scene. */}
-            {isLoaded && <SplashScreen xyzAPI={xyzAPI} />}
-
-            {/* The seo content which is added to the head section. */}
-            {isLoaded && <Seo xyzAPI={xyzAPI} />}
-
-            {/* The container for HTML content */}
-            < HtmlOverlay content={popupContent} showPopup={showPopup} setShowPopup={setShowPopup} />
-            {/* Navbar */}
-
-            {isLoaded && <OnScreenControls xyzAPI={xyzAPI} />}
+            </div>
 
 
         </HelmetProvider >

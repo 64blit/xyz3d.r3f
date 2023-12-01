@@ -13,7 +13,7 @@ export class CameraManager
         this.busy = false;
 
         // Function to navigate to a scene zone by index
-        this.goToSceneZoneByIndex = (index) =>
+        this.goToSceneZoneByIndex = (index, speed = 1) =>
         {
             if (this.busy) return;
             this.busy = (true);
@@ -25,11 +25,11 @@ export class CameraManager
                 return;
             }
 
-            this.goToSceneZone(sceneZone);
+            this.goToSceneZone(sceneZone, speed);
         }
 
         // Function to navigate to a scene zone by name
-        this.goToSceneZoneByName = (name) =>
+        this.goToSceneZoneByName = (name, speed = 1) =>
         {
 
             if (this.busy) return;
@@ -45,11 +45,11 @@ export class CameraManager
                 return;
             }
 
-            this.goToSceneZone(sceneZone);
+            this.goToSceneZone(sceneZone, speed);
         }
 
         // Function to smoothly navigate to a scene zone
-        this.goToSceneZone = (sceneZone) =>
+        this.goToSceneZone = (sceneZone, speed = 1) =>
         {
             if (!sceneZone) return;
             if (sceneZone.index < 0) return;
@@ -113,7 +113,6 @@ export class CameraManager
 
             if (!this.scroll) return;
             if (this.busy) return;
-            if (this.scroll.delta < .00004) return;
 
             const scaledScrollOffset = this.scroll.offset * (this.sceneManager.waypoints.length - 1);
             const currentZoneIndex = Math.floor(scaledScrollOffset);
@@ -147,8 +146,7 @@ export class CameraManager
 
     update(avgFreq)
     {
-
-        if (this.scroll.delta > .0004)
+        if (this.scroll.delta > .000005)
         {
             this.scrollHandler();
         } else if (avgFreq > 10)

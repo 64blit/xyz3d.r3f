@@ -67,6 +67,20 @@ export class SceneManager
             child.traverse((node) =>
             {
 
+                if (node.name === "Ocean")
+                {
+                    // create a new shader material
+                    var material = new THREE.ShaderMaterial({
+                        uniforms: {
+                            time: { value: 1.0 },
+                            resolution: { value: new THREE.Vector2() }
+                        },
+                        vertexShader: ``,
+                        fragmentShader: ``
+                    });
+                    node.material = material;
+                }
+
                 // Extract animation data and update arrays
                 this.animationManager.parseAnimations(node);
                 this.audioManager.parseSounds(node);

@@ -1,10 +1,31 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import gsap from 'gsap';
 
-export const OnScreenControls = ({ xyzAPI }) =>
+export const OnScreenControls = ({ xyzAPI, isLoaded, setScreenClicked }) =>
 {
     if (!xyzAPI) return null;
 
+    // Only show controls after user clicks anywhere on screen
+    const [ showControls, setShowControls ] = useState(false);
+
+    useEffect(() =>
+    {
+        const cameraManager = xyzAPI.getCameraManager();
+        const handleClick = () =>
+        {
+            // scroll to the bottom of the page
+            cameraManager.scroll.el.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+
+            setTimeout(() =>
+            {
+                cameraManager.scroll.el.scrollTo({ top: document.body.scrollHeight * 2, behavior: 'smooth' });
+                setShowControls(true);
+                setScreenClicked(true);
+            }, 1000);
+        };
+        window.addEventListener("mousedown", handleClick);
+        return () => window.removeEventListener("mousedown", handleClick);
+    }, []);
 
     const { artists, sceneManager } = useMemo(() =>
     {
@@ -30,26 +51,29 @@ export const OnScreenControls = ({ xyzAPI }) =>
 
     const handleLeftClick = () =>
     {
+
+        let newIndex = currentIndex;
         setCurrentIndex(prevIndex =>
         {
-            const newIndex = (prevIndex - 1 + artists.length) % artists.length;
+            newIndex = (prevIndex - 1 + artists.length) % artists.length;
             playSample(newIndex);
 
             return newIndex;
         });
-        setCurrentArtist("▶ " + artists[ currentIndex ].userData?.artistName);
+        setCurrentArtist("▶ " + artists[ newIndex ].userData?.artistName);
     };
 
     const handleRightClick = () =>
     {
+        let newIndex = currentIndex;
         setCurrentIndex(prevIndex =>
         {
-            const newIndex = (prevIndex + 1) % artists.length;
+            newIndex = (prevIndex + 1) % artists.length;
             playSample(newIndex);
             return newIndex;
         });
 
-        setCurrentArtist("▶ " + artists[ currentIndex ].userData?.artistName);
+        setCurrentArtist("▶ " + artists[ newIndex ].userData?.artistName);
     };
 
     const playSample = (index) =>
@@ -62,39 +86,53 @@ export const OnScreenControls = ({ xyzAPI }) =>
         sceneManager.playSound(artistObj);
     }
 
-    return (
-        <div className="fixed bottom-0 left-0 right-0 h-[20vh]">
+    const styles = {
+        transition: 'height 0.5s ease-in-out'
+    };
 
-            <div className="flex flex-col justify-evenly items-center h-full bg-transparent transform ">
+    return (
+        <div id="onscreen" className={`flex-grow w-full transition-all delay-300 ${(isLoaded && showControls) ? 'h-1/4' : 'h-0'} `} style={styles}>
+
+            <div className="flex flex-col justify-evenly items-center h-full bg-transparent transform transition-all delay-500 ">
 
                 {currentArtist &&
                     <span className="bg-blue-500 text-white font-bold py-2 px-4 rounded-none"> {currentArtist} </span>
                 }
 
-                <div>
-                    <div className="flex h-full items-center">
+                <div className="flex h-full items-center">
 
+                    <button onClick={handleLeftClick} className="bg-gray-300 hover:bg-gray-500 text-black font-bold py-2 px-4 rounded-l-full transition-all duration-300 hover:scale-125">
+                        <i className="fas fa-arrow-right"> {"<"} </i>
+                    </button>
 
-                        <button onClick={handleLeftClick} className="bg-gray-300 hover:bg-gray-500 text-black font-bold py-2 px-4 rounded-l-full transition-all duration-300 hover:scale-125">
-                            <i className="fas fa-arrow-right"> {"<"} </i>
-                        </button>
+                    <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 selection:">
+                        Select an artist
+                    </button>
 
-                        <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 selection:">
-                            Select an artist
-                        </button>
+                    <button onClick={handleRightClick} className="bg-gray-300 hover:bg-gray-500 text-black font-bold py-2 px-4 rounded-r-full transition-all duration-300 hover:scale-125">
+                        <i className="fas fa-arrow-right"> {">"} </i>
+                    </button>
 
-                        <button onClick={handleRightClick} className="bg-gray-300 hover:bg-gray-500 text-black font-bold py-2 px-4 rounded-r-full transition-all duration-300 hover:scale-125">
-                            <i className="fas fa-arrow-right"> {">"} </i>
-                        </button>
-
-                    </div>
                 </div>
 
 
                 <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition-all duration-300 hover:scale-125">
                     BUY TICKETS
                 </button>
+
+                {/* <iframe
+                    width="30%"
+                    height="152"
+                    title="Spotify Embed: My Path to Spotify: Women in Engineering"
+                    style={{ borderRadius: '12px' }}
+                    frameBorder="0"
+                    allowFullScreen
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    src="https://open.spotify.com/embed/episode/7makk4oTQel546B0PZlDM5?utm_source=oembed"
+                ></iframe> */}
             </div>
+
+
         </div>
     );
 };

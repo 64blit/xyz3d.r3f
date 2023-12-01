@@ -15,7 +15,7 @@ import { Media } from '../logic/Media.jsx';
 
 export const SceneXyz3D = (props) =>  
 {
-    const { camera } = useThree();
+    const { invalidate, gl, camera } = useThree();
     const { scene, animations } = useGLTF(props.path);
     const { mixer, actions } = useAnimations(animations, scene);
 
@@ -24,6 +24,23 @@ export const SceneXyz3D = (props) =>
     const [ interactionManager, setInteractionManager ] = useState(null);
     const [ cameraManager, setCameraManager ] = useState(null);
 
+    useEffect(() =>
+    {
+        const handleResize = () =>
+        {
+            // Force React Three Fiber to update on window resize
+            invalidate();
+            console.log("resizing")
+        };
+
+        gl.domElement.addEventListener('resize', handleResize);
+
+        // Cleanup
+        return () =>
+        {
+            gl.domElement.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     const initializeManagers = (scroll) =>
     {
