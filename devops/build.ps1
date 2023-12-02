@@ -8,6 +8,8 @@ $src_path = "C:\Users\edmun\OneDrive\Documents\_SPACE\Web\xyz3d.r3f\"
 $preview_dest = "C:\Users\edmun\OneDrive\Documents\_SPACE\Blender\WebCrafterPro-blender-plugin\Templates\scroll\preview"
 $r3f_dest = "C:\Users\edmun\OneDrive\Documents\_SPACE\Blender\WebCrafterPro-blender-plugin\Templates\scroll\source"
 
+yarn install
+
 # Build the project using yarn
 Write-Host "Building the project..."
 
