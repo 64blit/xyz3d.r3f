@@ -180,8 +180,8 @@ export function Video(props: Props)
     }
 
     const max = Math.max(dims.x, dims.y);
-    const width = (dims.x / max) * size * 2;
-    const height = (dims.y / max) * size * 2;
+    const width = (dims.x / max) * size;
+    const height = (dims.y / max) * size;
 
     return (
         <group name="spacesvr-video" {...rest}>
