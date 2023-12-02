@@ -193,14 +193,14 @@ export function Video(props: Props)
                 </meshBasicMaterial>
             </mesh>
             {speaker && <primitive object={speaker} />}
-            {framed && (
+            {/* {framed && (
                 <Frame
                     width={width}
                     height={height}
                     thickness={frameWidth}
                     material={frameMaterial}
                 />
-            )}
+            )} */}
         </group>
     );
 }
