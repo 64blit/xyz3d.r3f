@@ -10,13 +10,10 @@ export class CameraManager
         this.sceneManager = sceneManager;
         this.controls = controls;
         this.camera = camera;
-        this.busy = false;
 
         // Function to navigate to a scene zone by index
         this.goToSceneZoneByIndex = (index) =>
         {
-            if (this.busy) return;
-            this.busy = (true);
 
             const sceneZone = this.sceneManager.waypoints[ index ];
             if (!sceneZone)
@@ -32,7 +29,6 @@ export class CameraManager
         this.goToSceneZoneByName = (name) =>
         {
 
-            if (this.busy) return;
             if (!this.camera) return;
             if (!this.sceneManager) return;
 
@@ -62,10 +58,7 @@ export class CameraManager
 
             if (this.controls === undefined || this.controls === null) return;
 
-            this.controls.setLookAt(...position, ...target, true).then(() =>
-            {
-                this.busy = false;
-            });
+            this.controls.setLookAt(...position, ...target, true);
 
             const tl = gsap.timeline();
 

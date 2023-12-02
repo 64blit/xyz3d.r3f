@@ -44,6 +44,7 @@ export function NavBar(props)
 
     const navigateTo = (name) => (event) =>
     {
+        console.log("Navigating to: ", name, props.xyzAPI)
         event.preventDefault();
         props.xyzAPI.goToSceneZoneByName(name);
     }

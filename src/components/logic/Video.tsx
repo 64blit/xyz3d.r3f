@@ -40,7 +40,7 @@ export function Video(props: Props)
 
     const listener = useRef<THREE.AudioListener>();
     const [ speaker, setSpeaker ] = useState<THREE.PositionalAudio>();
-    const [ dims, setDims ] = useState<Vector2 | null>();
+    const [ dims, setDims ] = useState<Vector2>();
 
     const [ callbacks, setCallbacks ] = useState({});
 
@@ -106,7 +106,13 @@ export function Video(props: Props)
                     .play()
                     .then(() =>
                     {
-                        setDims(new Vector2(video.videoWidth, video.videoHeight));
+                        const dimensions = new Vector2(video.videoWidth, video.videoHeight);
+                        const max = Math.max(dimensions.x, dimensions.y);
+                        const width = (dimensions.x / max) * size;
+                        const height = (dimensions.y / max) * size;
+
+                        setDims(new Vector2(width, height));
+                        console.log('video dimensions', width, height);
                         video.pause();
                     });
 
@@ -179,28 +185,24 @@ export function Video(props: Props)
         return null;
     }
 
-    const max = Math.max(dims.x, dims.y);
-    const width = (dims.x / max) * size;
-    const height = (dims.y / max) * size;
-
     return (
         <group name="spacesvr-video" {...rest}>
             <mesh
                 {...callbacks}>
-                <planeGeometry args={[ width, height ]} />
+                <planeGeometry args={[ dims.width, dims.height ]} />
                 <meshBasicMaterial side={DoubleSide}>
                     <videoTexture attach="map" args={[ video ]} encoding={sRGBEncoding} />
                 </meshBasicMaterial>
             </mesh>
             {speaker && <primitive object={speaker} />}
-            {framed && (
+            {/* {framed && (
                 <Frame
                     width={width}
                     height={height}
                     thickness={frameWidth}
                     material={frameMaterial}
                 />
-            )}
+            )} */}
         </group>
     );
 }
