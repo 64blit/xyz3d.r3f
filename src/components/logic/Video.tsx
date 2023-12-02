@@ -112,7 +112,6 @@ export function Video(props: Props)
                         const height = (dimensions.y / max) * size;
 
                         setDims(new Vector2(width, height));
-                        console.log('video dimensions', width, height);
                         video.pause();
                     });
 
@@ -191,7 +190,7 @@ export function Video(props: Props)
                 {...callbacks}>
                 <planeGeometry args={[ dims.width, dims.height ]} />
                 <meshBasicMaterial side={DoubleSide}>
-                    <videoTexture attach="map" args={[ video ]} encoding={sRGBEncoding} />
+                    <videoTexture attach="map" args={[ video ]} />
                 </meshBasicMaterial>
             </mesh>
             {speaker && <primitive object={speaker} />}
