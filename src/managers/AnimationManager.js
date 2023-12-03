@@ -61,7 +61,7 @@ export class AnimationManager
             const elementKey = keys[ index ];
             const element = this.actions[ elementKey ];
 
-            if (element._propertyBindings[ 0 ].binding.node.name === object.name)
+            if (element && element._propertyBindings && element._propertyBindings[ 0 ] && element._propertyBindings[ 0 ].binding && element._propertyBindings[ 0 ].binding.node && element._propertyBindings[ 0 ].binding.node.name === object.name)
             {
                 actions.push(element);
             }
