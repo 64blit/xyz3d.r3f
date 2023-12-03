@@ -61,7 +61,7 @@ export class AudioManager
         }
         this.loopingSounds.forEach((sound) =>
         {
-            console.log("Playing Looping Sound: " + sound);
+            console.log("Playing Looping Sound: ", sound);
         });
     }
 

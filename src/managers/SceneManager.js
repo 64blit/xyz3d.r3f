@@ -32,7 +32,16 @@ export class SceneManager
         this.fixZones();
 
         this.animationManager.playLoopingAnimations();
-        // this.audioManager.playLoopingSounds();
+
+        const playLoopingSounds = () =>
+        {
+            this.audioManager.playLoopingSounds();
+            window.removeEventListener("mousedown", playLoopingSounds);
+        }
+
+        window.addEventListener("mousedown", playLoopingSounds);
+
+
 
         this.playAnimation = (name, loopType = THREE.LoopOnce) =>
         {
