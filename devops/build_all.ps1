@@ -5,17 +5,17 @@
 git.exe checkout template-scroll
 
 # Run build.ps1 with powershell
-powershell.exe ./build.ps1
+powershell.exe ./devops/build.ps1
 
 # Change to template-orbit branch
 git.exe checkout template-orbit
 
 # Run build.ps1
-powershell.exe ./build.ps1
+powershell.exe ./devops/build.ps1
 
 
 # Change to template-walkvr branch
 git.exe checkout template-walkvr
 
 # Run build.ps1
-powershell.exe ./build.ps1
+powershell.exe ./devops/build.ps1
