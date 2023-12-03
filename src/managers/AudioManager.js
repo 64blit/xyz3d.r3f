@@ -23,7 +23,8 @@ export class AudioManager
 
 
             const source = parentObject.userData.mediaSrc;
-            const volume = parentObject.userData.mediaVolume || 1;
+            let volume = parentObject.userData?.mediaVolume;
+            if (!volume) volume = 1;
 
             audioObj.setLoop(loop);
             audioObj.setVolume(volume);
