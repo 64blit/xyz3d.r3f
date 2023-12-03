@@ -50,15 +50,14 @@ export function NavBar(props)
 
     return (
         <>
-            {sceneZones.length > 1 && <nav className="fixed top-0 right-0 flex flex-row p-4 w-screen">
+            {sceneManager && sceneZones.length >= 1 && <nav className="fixed top-0 right-0 flex flex-row p-4 w-screen">
 
                 <div className="flex justify-end w-full max-w-full">
                     <ul className="hidden md:flex md:flex-row-reverse items-center text-[18px] font-semibold  w-full max-w-full">
-                        {sceneManager &&
-                            sceneZones?.map((sceneZone, index) => (
-                                <li onClick={navigateTo(sceneZone.name)} key={generateKey(index)} className="text-white  transition duration-1000 ease-in-out border-white hover:italic hover:underline hover:scale-125  bg-black pl-4 pr-4 hover:cursor-pointer hover:text-blue-300"><a
-                                    href="#"> {sceneZone.name}</a></li>
-                            ))}
+                        {sceneZones?.map((sceneZone, index) => (
+                            <li onClick={navigateTo(sceneZone.name)} key={generateKey(index)} className="text-white  transition duration-1000 ease-in-out border-white hover:italic hover:underline hover:scale-125  bg-black pl-4 pr-4 hover:cursor-pointer hover:text-blue-300"><a
+                                href="#"> {sceneZone.name}</a></li>
+                        ))}
                     </ul>
 
                     <button className="block p-3 mx-10 md:hidden transition duration-500 ease-in-out  hover:bg-gray-200 rounded group bg-white">
@@ -73,13 +72,12 @@ export function NavBar(props)
                                     </li>
                                 </a>
 
-                                {sceneManager &&
-                                    sceneZones?.map((sceneZone, index) => (
-                                        <a href="#" key={generateKey(index)}>
-                                            <li onClick={navigateTo(sceneZone.name)} className="text-stone-600 p-5 transition duration-500 ease-in-out  hover:bg-black hover:text-white hover:scale-125 font-medium mx-4 my-1 hover:underline hover:italic"> {sceneZone.name}
-                                            </li>
-                                        </a>
-                                    ))}
+                                {sceneZones?.map((sceneZone, index) => (
+                                    <a href="#" key={generateKey(index)}>
+                                        <li onClick={navigateTo(sceneZone.name)} className="text-stone-600 p-5 transition duration-500 ease-in-out  hover:bg-black hover:text-white hover:scale-125 font-medium mx-4 my-1 hover:underline hover:italic"> {sceneZone.name}
+                                        </li>
+                                    </a>
+                                ))}
 
                             </ul>
                         </div>
