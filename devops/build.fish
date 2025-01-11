@@ -18,8 +18,8 @@ set r3f_dest "/Users/edmunddao/_SPACE/64blit/WebCrafterPro-blender-plugin/Templa
 
 # Ensure dependencies are installed
 echo "Installing dependencies..."
-yarn install || begin
-    echo "❌ Yarn install failed."
+npm install || begin
+    echo "❌ npm install failed."
     exit 1
 end
 
@@ -49,7 +49,6 @@ mkdir -p "$r3f_dest"
 echo "🗑️ Cleaning old files..."
 rm -rf "$preview_dest"/*
 rm -rf "$r3f_dest"/*
-rm -r "$build_path/assets"
 
 # Copy the dist folder contents to the preview destination
 echo "📂 Copying dist to preview..."

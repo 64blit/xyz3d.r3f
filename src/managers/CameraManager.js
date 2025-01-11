@@ -11,16 +11,32 @@ export class CameraManager
         this.camera = camera;
         this.busy = false;
 
+        this.hasUserScrolled = false;
+        this.scrollOffset = 0;
+
+        this.scroll.el.addEventListener("scroll", () =>
+        {
+            this.hasUserScrolled = true;
+            this.scrollOffset = this.scroll.el.scrollTop / this.scroll.el.scrollHeight;
+        });
+
+        this.scroll.el.addEventListener("wheel", () =>
+        {
+            this.hasUserScrolled = true;
+            this.scrollOffset = this.scroll.el.scrollTop / this.scroll.el.scrollHeight;
+        });
+
         // Function to navigate to a scene zone by index
         this.goToSceneZoneByIndex = (index) =>
         {
             if (this.busy) return;
-            this.busy = (true);
+            this.busy = true;
 
             const sceneZone = this.sceneManager.waypoints[ index ];
             if (!sceneZone)
             {
                 console.log("Scene zone not found, index: ", index);
+                this.busy = false;
                 return;
             }
 
@@ -54,21 +70,20 @@ export class CameraManager
             if (sceneZone.index < 0) return;
             if (!this.scroll) return;
 
+            this.hasUserScrolled = false;
+
             const position = sceneZone.camera.anchor?.position;
-            console.log('🍉managers/CameraManager.js:58/(sceneZone.camera.anchor?.position):', sceneZone.camera.anchor?.position)
 
             if (!position) return;
 
             const target = sceneZone.camera.targetPosition;
-            console.log('🔥managers/CameraManager.js:62/(sceneZone.camera.targetPosition):', sceneZone.camera.targetPosition)
 
-            const newScrollOffset = sceneZone.index / (this.sceneManager.sceneZones.length - 1);
-            console.log('🔭managers/CameraManager.js:64/(newScrollOffset):', newScrollOffset)
-            const scrollTarget = this.scroll.el;
-            const scrollTop = (scrollTarget.scrollHeight - scrollTarget.clientHeight) * newScrollOffset * 1.5;
+            const scrollTargetOffset = (sceneZone.index / (this.sceneManager.waypoints.length - 1));
+
+            this.scroll.el.scrollTo({ top: scrollTargetOffset * this.scroll.el.scrollHeight });
+
 
             if (this.controls === undefined || this.controls === null) return;
-            scrollTarget.scrollTo({ top: scrollTop });
 
             this.controls.setLookAt(...position, ...target, true).then(() =>
             {
@@ -110,16 +125,18 @@ export class CameraManager
         // Function to handle scrolling
         this.scrollHandler = () =>
         {
-
             if (!this.scroll) return;
+            if (!this.hasUserScrolled) return;
             if (this.busy) return;
-            if (this.scroll.delta < .00004) return;
+            if (this.scroll.delta < .000004) return;
 
-            const scaledScrollOffset = this.scroll.offset * (this.sceneManager.waypoints.length - 1);
+            const scaledScrollOffset = this.scrollOffset * (this.sceneManager.waypoints.length - 1);
+
             const currentZoneIndex = Math.floor(scaledScrollOffset);
             const nextZoneIndex = Math.ceil(scaledScrollOffset);
             const currentZone = this.sceneManager.waypoints[ currentZoneIndex ];
             const nextZone = this.sceneManager.waypoints[ nextZoneIndex ];
+
 
             if (!currentZone || !nextZone) return;
 
@@ -129,7 +146,9 @@ export class CameraManager
             const cameraPosition = currentZone.camera.anchor.position.clone().lerp(nextZone.camera.anchor.position, percent);
             const cameraTarget = currentZone.camera.targetPosition.clone().lerp(nextZone.camera.targetPosition, percent);
 
+
             this.controls.setLookAt(...cameraPosition, ...cameraTarget, true);
+
 
             if ("fov" in currentZone.camera.anchor)
             {
@@ -142,13 +161,19 @@ export class CameraManager
 
         };
 
+
+
         this.goToSceneZoneByIndex(0);
     }
 
 
+
     update()
     {
-        this.scrollHandler();
+        if (this.hasUserScrolled)
+        {
+            this.scrollHandler();
+        }
     }
 
 }
