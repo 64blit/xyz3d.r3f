@@ -1,4 +1,3 @@
-
 import { basicLerp } from '../utils/BaseUtils.js';
 import { gsap } from 'gsap';
 
@@ -56,18 +55,20 @@ export class CameraManager
             if (!this.scroll) return;
 
             const position = sceneZone.camera.anchor?.position;
+            console.log('🍉managers/CameraManager.js:58/(sceneZone.camera.anchor?.position):', sceneZone.camera.anchor?.position)
 
             if (!position) return;
 
             const target = sceneZone.camera.targetPosition;
+            console.log('🔥managers/CameraManager.js:62/(sceneZone.camera.targetPosition):', sceneZone.camera.targetPosition)
 
             const newScrollOffset = sceneZone.index / (this.sceneManager.sceneZones.length - 1);
+            console.log('🔭managers/CameraManager.js:64/(newScrollOffset):', newScrollOffset)
             const scrollTarget = this.scroll.el;
-            const scrollTop = (scrollTarget.scrollHeight - scrollTarget.clientHeight) * newScrollOffset;
-
-            scrollTarget.scrollTo({ top: scrollTop });
+            const scrollTop = (scrollTarget.scrollHeight - scrollTarget.clientHeight) * newScrollOffset * 1.5;
 
             if (this.controls === undefined || this.controls === null) return;
+            scrollTarget.scrollTo({ top: scrollTop });
 
             this.controls.setLookAt(...position, ...target, true).then(() =>
             {
@@ -101,7 +102,6 @@ export class CameraManager
                 { far: this.controls.camera.far },
                 { far: sceneZone.camera.anchor.far, duration: this.controls.smoothTime }
             );
-
 
             tl.play();
         }
