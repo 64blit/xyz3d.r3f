@@ -67,6 +67,9 @@ export class SceneManager
     // Populate scene zones and objects within zones
     populateSceneZones(scene)
     {
+        console.log('🍀managers/SceneManager.js:68/(scene):', scene)
+        scene.environmentIntesnity = .1;
+
         const children = [ ...scene.children ];
 
         // Traverse through each child node in the scene
@@ -74,6 +77,9 @@ export class SceneManager
         {
             child.traverse((node) =>
             {
+                console.log('🎡managers/SceneManager.js:75/(node):', node)
+                node.castShadow = true;
+                node.receiveShadow = true;
 
                 // Extract animation data and update arrays
                 this.animationManager.parseAnimations(node);

@@ -3,6 +3,8 @@ import { gsap } from 'gsap';
 
 export class CameraManager
 {
+
+
     constructor(sceneManager, controls, camera, scroll)
     {
         this.scroll = scroll;
@@ -14,11 +16,18 @@ export class CameraManager
         this.hasUserScrolled = false;
         this.scrollOffset = 0;
 
-        this.scroll.el.addEventListener("scroll", () =>
+        this.setScrollPercentage = (element, percentage) =>
+        {
+            const totalHeight = element.scrollHeight - element.clientHeight;
+            const scrollPosition = (percentage) * totalHeight;
+            element.scrollTop = scrollPosition;
+        }
+
+        this.scroll.el.addEventListener("click", () =>
         {
             this.hasUserScrolled = true;
             this.scrollOffset = this.scroll.el.scrollTop / this.scroll.el.scrollHeight;
-        });
+        })
 
         this.scroll.el.addEventListener("wheel", () =>
         {
@@ -80,7 +89,8 @@ export class CameraManager
 
             const scrollTargetOffset = (sceneZone.index / (this.sceneManager.waypoints.length - 1));
 
-            this.scroll.el.scrollTo({ top: scrollTargetOffset * this.scroll.el.scrollHeight });
+
+            this.setScrollPercentage(this.scroll.el, scrollTargetOffset);
 
 
             if (this.controls === undefined || this.controls === null) return;
@@ -136,7 +146,6 @@ export class CameraManager
             const nextZoneIndex = Math.ceil(scaledScrollOffset);
             const currentZone = this.sceneManager.waypoints[ currentZoneIndex ];
             const nextZone = this.sceneManager.waypoints[ nextZoneIndex ];
-
 
             if (!currentZone || !nextZone) return;
 

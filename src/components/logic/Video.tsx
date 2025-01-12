@@ -61,10 +61,11 @@ export function Video(props: Props) {
 
         const speak = new PositionalAudio(listener);
         speak.setMediaElementSource(video);
-        speak.setRefDistance(5);
+        speak.setRefDistance(10);
         speak.setRolloffFactor(0.75);
         speak.setVolume(volume);
         speak.setDirectionalCone(180, 230, 0.1);
+        speak.rotation.set(-Math.PI / 2, 0, 0);
 
         setSpeaker(speak);
       }
