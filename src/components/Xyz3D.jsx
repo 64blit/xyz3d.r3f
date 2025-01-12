@@ -40,7 +40,6 @@ export function Xyz3D() {
       <div className='absolute inset-0 bg-black'>
         {/* 3D rendering canvas */}
         <Canvas shadows={true} dpr={[1, 2]} gl={{ alpha: false }} onCreated={created}>
-          <BakeShadows />
           {/* Ground plane to visualize shadows */}
           <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]}>
             <planeGeometry args={[100, 100]} />
@@ -75,7 +74,7 @@ export function Xyz3D() {
                 intensity={1}
                 position={[0, 1000, 0]}
                 rotation={[115, 0, 0]}
-                shadow-bias={-0.00001}
+                shadow-bias={-0.0001}
                 shadow-mapSize-width={2048 * 2}
                 shadow-mapSize-height={2048 * 2}
                 shadow-camera-near={0.5}

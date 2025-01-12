@@ -23,10 +23,6 @@ export class CameraManager
             element.scrollTop = scrollPosition;
         }
 
-        this.scroll.el.addEventListener("click", () =>
-        {
-            this.hasUserScrolled = true;
-        })
 
         this.scroll.el.addEventListener("scroll", () =>
         {
