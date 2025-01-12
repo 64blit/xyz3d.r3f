@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { GroupProps, useThree } from "@react-three/fiber";
 import { Frame } from "./Frame";
 import { DoubleSide, Material, PositionalAudio, sRGBEncoding, Vector2, AudioListener } from "three";
+import { Html } from "@react-three/drei";
+import { element } from "three/examples/jsm/nodes/Nodes.js";
 
 type Props = {
   src: string;
@@ -24,11 +26,17 @@ export function Video(props: Props) {
   const [dims, setDims] = useState<Vector2 | null>();
 
   const [callbacks, setCallbacks] = useState({});
+  const videoRef = useRef<HTMLVideoElement>(document.createElement("video"));
 
   const video = useMemo(() => {
-    const v = document.createElement("video");
+    if (!src) return null;
+    if (videoRef.current && videoRef.current.src === src) return videoRef.current;
+
+    const v = videoRef.current;
+    if (!v) return null;
     // @ts-ignore
     v.playsInline = true;
+    v.autoplay = true;
     v.crossOrigin = "anonymous";
     v.loop = true;
     v.src = src;
@@ -36,8 +44,14 @@ export function Video(props: Props) {
     v.autoplay = false;
     v.muted = muted ? muted : false;
     v.volume = volume;
+
+    v.addEventListener("loadeddata", () => {
+      setDims(new Vector2(v.videoWidth, v.videoHeight));
+      console.log("🍀logic/Video.tsx:100/(video):", v.videoWidth);
+    });
+
     return v;
-  }, []);
+  }, [src, videoRef.current]);
 
   useEffect(() => {
     if (!speaker) return;
@@ -46,17 +60,27 @@ export function Video(props: Props) {
   }, [volume, speaker]);
 
   const toggleVideo = () => {
+    if (!video) return;
     if (video.paused) {
       video.play();
+      console.log("🌿logic/Video.tsx:59/(video.paused):", video);
     } else {
+      console.log("🍩logic/Video.tsx:64/(video.pause):", video);
       video.pause();
     }
   };
 
   useEffect(() => {
     const setupAudio = () => {
+      if (!video) return;
       if (!muted && !video.paused && !speaker) {
         const listener = new AudioListener();
+        listener.name = src + "-listener";
+        camera.children.forEach(child => {
+          if (child.name === listener.name) {
+            camera.remove(child);
+          }
+        });
         camera.add(listener);
 
         const speak = new PositionalAudio(listener);
@@ -73,17 +97,8 @@ export function Video(props: Props) {
       }
     };
 
-    const startVideo = () => {
-      const videoPromise = video.play().then(() => {
-        setDims(new Vector2(video.videoWidth, video.videoHeight));
-        video.pause();
-      });
-
-      setupAudio();
-      return videoPromise;
-    };
-
     const addCallbacks = () => {
+      if (!video) return;
       const tempCallbacks = {};
       if ("Looping" === sourceObject.userData.mediaTrigger) {
         video.play();
@@ -99,13 +114,15 @@ export function Video(props: Props) {
           video.pause();
         };
       }
+
       setCallbacks(tempCallbacks);
     };
 
     if (video) {
-      startVideo().then(() => {
-        addCallbacks();
-      });
+      console.log("🍿logic/Video.tsx:129/(video):", video);
+
+      setupAudio();
+      addCallbacks();
     }
   }, [speaker, video, muted, camera, volume, sourceObject]);
 
@@ -122,6 +139,7 @@ export function Video(props: Props) {
         setSpeaker(undefined);
       }
       if (video) {
+        console.log("✨logic/Video.tsx:134/(video):", video);
         video.pause();
         video.remove();
       }
@@ -137,7 +155,7 @@ export function Video(props: Props) {
   const height = (dims.y / max) * size;
 
   return (
-    <group name='spacesvr-video' {...rest}>
+    <group name={"spacesvr-video" + src} {...rest}>
       <mesh {...callbacks}>
         <planeGeometry args={[width, height]} />
         <meshBasicMaterial side={DoubleSide}>
