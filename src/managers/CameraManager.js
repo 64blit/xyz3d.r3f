@@ -26,11 +26,11 @@ export class CameraManager
         this.scroll.el.addEventListener("click", () =>
         {
             this.hasUserScrolled = true;
-            this.scrollOffset = this.scroll.el.scrollTop / this.scroll.el.scrollHeight;
         })
 
-        this.scroll.el.addEventListener("wheel", () =>
+        this.scroll.el.addEventListener("scroll", () =>
         {
+            if (this.busy) return;
             this.hasUserScrolled = true;
             this.scrollOffset = this.scroll.el.scrollTop / this.scroll.el.scrollHeight;
         });

@@ -65,7 +65,9 @@ export function Video(props: Props) {
         speak.setRolloffFactor(0.75);
         speak.setVolume(volume);
         speak.setDirectionalCone(180, 230, 0.1);
+        // use the rotation of the object to set the direction of the sound
         speak.rotation.set(-Math.PI / 2, 0, 0);
+        // speak.rotation.set(0, 0, 0);
 
         setSpeaker(speak);
       }

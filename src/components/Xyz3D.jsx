@@ -39,7 +39,7 @@ export function Xyz3D() {
       {/* Wrapper div to cover the screen */}
       <div className='absolute inset-0 bg-black'>
         {/* 3D rendering canvas */}
-        <Canvas shadows={"soft"} dpr={[1, 2]} gl={{ alpha: false }} onCreated={created}>
+        <Canvas shadows={true} dpr={[1, 2]} gl={{ alpha: false }} onCreated={created}>
           <BakeShadows />
           {/* Ground plane to visualize shadows */}
           <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]}>
