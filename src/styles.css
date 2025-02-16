@@ -1,6 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* add tailwind */
+@import 'tailwindcss';
 
 * {
   box-sizing: border-box;
@@ -32,7 +31,11 @@ body {
   position: fixed;
   overflow: hidden;
   overscroll-behavior-y: none;
-  font-family: helvetica neue, helvetica, arial, sans-serif;
+  font-family:
+    helvetica neue,
+    helvetica,
+    arial,
+    sans-serif;
   color: black;
   -webkit-font-smoothing: antialiased;
 }

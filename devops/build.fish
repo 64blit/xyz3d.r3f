@@ -1,8 +1,5 @@
 #!/usr/bin/env fish
 
-# Enable strict mode
-set -e
-
 # Set the path of the dist folder
 set build_path "/Users/edmunddao/_SPACE/64blit/xyz3d.r3f/dist"
 
@@ -70,5 +67,8 @@ rm -f "$preview_dest"/assets/scene.glb
 rm -f "$r3f_dest"/public/assets/scene.glb
 rm -f "$preview_dest"/yarn.lock "$r3f_dest"/yarn.lock
 rm -f "$preview_dest"/package-lock.json "$r3f_dest"/package-lock.json
+
+mkdir -p "$preview_dest"/assets
+mkdir -p "$r3f_dest"/public/assets
 
 echo "✅ Build and file transfer completed!"

@@ -1,14 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react'
 
-import { Audio3D } from "./Audio3D.tsx";
-import { Video } from "./Video";
+import { Audio3D } from './Audio3D.tsx'
+import { Video } from './Video'
 
 export const Media = (props = { sceneManager }) => {
-  const [mediaContent, setMediaContent] = useState(null);
+  const [mediaContent, setMediaContent] = useState(null)
 
   useEffect(() => {
-    if (!props.sceneManager) return;
-    if (!props.sceneManager.mediaObjects) return;
+    if (!props.sceneManager) return
+    if (!props.sceneManager.mediaObjects) return
 
     const loadMedia = event => {
       const tempMediaContent = (
@@ -42,18 +42,18 @@ export const Media = (props = { sceneManager }) => {
             ))}
           </group>
         </>
-      );
+      )
 
-      setMediaContent(tempMediaContent);
-      document.removeEventListener("click", loadMedia);
-    };
+      setMediaContent(tempMediaContent)
+      document.removeEventListener('click', loadMedia)
+    }
 
-    document.addEventListener("click", loadMedia);
+    document.addEventListener('click', loadMedia)
 
     return () => {
-      document.removeEventListener("click", loadMedia);
-    };
-  }, [props.sceneManager]);
+      document.removeEventListener('click', loadMedia)
+    }
+  }, [props.sceneManager])
 
-  return <>{mediaContent}</>;
-};
+  return <>{mediaContent}</>
+}

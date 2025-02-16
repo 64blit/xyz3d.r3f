@@ -1,30 +1,25 @@
-import React from "react";
-import { Html, useProgress } from "@react-three/drei";
-import LoadingScreen from "./LoadingScreen.jsx";
+import React from 'react'
+import { Html, useProgress } from '@react-three/drei'
+import LoadingScreen from './LoadingScreen.jsx'
 
-export function ProgressLoader({ setIsLoaded })
-{
-    const { active, progress, errors, item, loaded, total } = useProgress();
+export function ProgressLoader({ setIsLoaded }) {
+  const { active, progress, errors, item, loaded, total } = useProgress()
 
-    const [ percent, setPercent ] = React.useState(0);
+  const [percent, setPercent] = React.useState(0)
 
-    React.useEffect(() =>
-    {
-        setPercent(Math.floor(progress));
+  React.useEffect(() => {
+    setPercent(Math.floor(progress))
 
-        if (progress >= 99 || loaded >= total)
-        {
-            setIsLoaded(true);
-        }
+    if (progress >= 99 || loaded >= total) {
+      setIsLoaded(true)
+    }
+  }, [progress])
 
-    }, [ progress ]);
-
-
-    return (
-        <>
-            <Html fullscreen>
-                <LoadingScreen progress={percent} />
-            </Html>
-        </>
-    );
+  return (
+    <>
+      <Html fullscreen>
+        <LoadingScreen progress={percent} />
+      </Html>
+    </>
+  )
 }
