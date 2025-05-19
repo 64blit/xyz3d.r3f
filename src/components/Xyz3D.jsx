@@ -1,4 +1,4 @@
-import React, { useState, Suspense } from 'react'
+import React, { useState, Suspense, useEffect } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { SceneXyz3D } from './experience/SceneXyz3D.jsx'
 import { HtmlOverlay } from './helpers/HtmlOverlay.jsx'
@@ -10,16 +10,22 @@ import { HelmetProvider } from 'react-helmet-async'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Perf } from 'r3f-perf'
 import * as THREE from 'three'
+import useStore from '../store'
 
 export function Xyz3D() {
-  const [showPopup, setShowPopup] = useState(false)
-  const [popupContent, setPopupContent] = useState(null)
-  const [isDebugging, setIsDebugging] = useState(false)
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [xyzAPI, setXyzAPI] = useState(null)
+  const showPopup = useStore(state => state.showPopup)
+  const popupContent = useStore(state => state.popupContent)
+  const isDebugging = useStore(state => state.isDebugging)
+  const isLoaded = useStore(state => state.isLoaded)
+  const xyzAPI = useStore(state => state.xyzAPI)
+  const setShowPopup = useStore(state => state.setShowPopup)
+  const setPopupContent = useStore(state => state.setPopupContent)
+  const setIsDebugging = useStore(state => state.setIsDebugging)
+  const setIsLoaded = useStore(state => state.setIsLoaded)
+  const setXyzAPI = useStore(state => state.setXyzAPI)
 
   // if the user presses the "-" key, toggle debugging mode
-  React.useEffect(() => {
+  useEffect(() => {
     const handleKeyDown = event => {
       if (event.key === '-') {
         setIsDebugging(!isDebugging)
@@ -28,7 +34,7 @@ export function Xyz3D() {
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isDebugging])
+  }, [isDebugging, setIsDebugging])
 
   const created = obj => {
     console.log('🌿components/Xyz3D.jsx:33/(obj):', obj)

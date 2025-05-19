@@ -1,10 +1,16 @@
 import { Bounds, meshBounds } from '@react-three/drei'
 import * as THREE from 'three'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
+
 export class AnimationManager {
   constructor(animations, actions) {
     this.animations = animations
     this.actions = actions
     this.loopingAnimations = []
+    this.scrollTriggers = []
 
     // Function to play animation by name
     this.playAnimation = (name, loopType = THREE.LoopOnce) => {
@@ -108,6 +114,10 @@ export class AnimationManager {
     extractAnimations('OnPointerEnterAnimations', object.userData)
     extractAnimations('OnPointerExitAnimations', object.userData)
     extractAnimations('OnSelectAnimations', object.userData)
+    
+    // Add support for scroll-triggered animations
+    extractAnimations('OnScrollEnterAnimations', object.userData)
+    extractAnimations('OnScrollExitAnimations', object.userData)
   }
 
   // Update target object's for animations
@@ -116,5 +126,48 @@ export class AnimationManager {
     animationClone.setLoop(THREE.LoopOnce)
     animationClone.clampWhenFinished = true
     object.userData.animationClones.push(animationClone)
+  }
+  
+  // Set up ScrollTrigger for animations
+  setupScrollTriggers(scroll, sceneManager) {
+    this.scrollTriggers.forEach(trigger => trigger.kill());
+    this.scrollTriggers = [];
+    
+    // Get all objects with scroll animations
+    const objectsWithScrollAnimations = [];
+    sceneManager.scene.traverse(node => {
+      if (node.userData && (node.userData.OnScrollEnterAnimations || node.userData.OnScrollExitAnimations)) {
+        objectsWithScrollAnimations.push(node);
+      }
+    });
+    
+    objectsWithScrollAnimations.forEach(object => {
+      const zone = sceneManager.getSceneZone(object.userData.zone);
+      if (!zone) return;
+      
+      const progress = zone.index / (sceneManager.waypoints.length - 1);
+      
+      const trigger = ScrollTrigger.create({
+        trigger: scroll.el,
+        start: `top+=${progress * 100 - 5}% top`,
+        end: `top+=${progress * 100 + 5}% top`,
+        onEnter: () => {
+          if (object.userData.OnScrollEnterAnimations) {
+            object.userData.OnScrollEnterAnimations.forEach(anim => {
+              this.playAnimation(anim);
+            });
+          }
+        },
+        onLeave: () => {
+          if (object.userData.OnScrollExitAnimations) {
+            object.userData.OnScrollExitAnimations.forEach(anim => {
+              this.playAnimation(anim);
+            });
+          }
+        }
+      });
+      
+      this.scrollTriggers.push(trigger);
+    });
   }
 }

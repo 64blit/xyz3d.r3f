@@ -1,5 +1,8 @@
 import { basicLerp } from '../utils/BaseUtils.js'
 import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
 
 export class CameraManager {
   constructor(sceneManager, controls, camera, scroll) {
@@ -11,6 +14,7 @@ export class CameraManager {
 
     this.hasUserScrolled = false
     this.scrollOffset = 0
+    this.scrollTriggers = []
 
     this.setScrollPercentage = (element, percentage) => {
       const totalHeight = element.scrollHeight - element.clientHeight
@@ -148,6 +152,37 @@ export class CameraManager {
         this.controls.update(0)
       }
     }
+
+    this.setupScrollTriggers = () => {
+      this.scrollTriggers.forEach(trigger => trigger.kill());
+      this.scrollTriggers = [];
+      
+      this.sceneManager.waypoints.forEach((waypoint, index) => {
+        if (index === 0) return; // Skip first waypoint
+        
+        const progress = index / (this.sceneManager.waypoints.length - 1);
+        const prevWaypoint = this.sceneManager.waypoints[index - 1];
+        
+        const trigger = ScrollTrigger.create({
+          trigger: this.scroll.el,
+          start: `top+=${progress * 100 - 10}% top`,
+          end: `top+=${progress * 100 + 10}% top`,
+          onUpdate: (self) => {
+            const t = self.progress;
+            const position = prevWaypoint.camera.anchor.position.clone()
+              .lerp(waypoint.camera.anchor.position, t);
+            const target = prevWaypoint.camera.targetPosition.clone()
+              .lerp(waypoint.camera.targetPosition, t);
+            
+            if (!this.busy) {
+              this.controls.setLookAt(...position, ...target, true);
+            }
+          }
+        });
+        
+        this.scrollTriggers.push(trigger);
+      });
+    };
 
     this.goToSceneZoneByIndex(0)
   }
